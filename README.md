@@ -3,16 +3,16 @@ layout: "post"
 title: "readme"
 date: "2018-07-30 17:42"
 ---
-IPABuildShell
+AutoPackingShell
 ==
 
-`IPABuildShell` 一个轻量级 iOS 快速自动打包工具，在你电脑已经导入证书签名的前提下，最简单的只需要一键`./IPABuildShell.sh` 就能生成IPA。当然，如果你需要更多的功能，详见帮助`-h | --help`
+`AutoPackingShell` 一个轻量级 iOS 快速自动打包工具，在你电脑已经导入证书签名的前提下，最简单的只需要一键`./AutoPackingShell.sh` 就能生成IPA。当然，如果你需要更多的功能，详见帮助`-h | --help`
 
 ```
 
-fenglihaideMacBook-Pro: fenglihai$ /Users/itx/IPABuildShell/IPABuildShell.sh -h
+fenglihaideMacBook-Pro: fenglihai$ /Users/itx/AutoPackingShell/AutoPackingShell.sh -h
 
-Usage:IPABuildShell.sh -[abcdptx] [--enable-bitcode YES/NO] [--auto-buildversion YES/NO] ...
+Usage:AutoPackingShell.sh -[abcdptx] [--enable-bitcode YES/NO] [--auto-buildversion YES/NO] ...
 可选项：
 -a | --archs <armv7|arm64|armv7 arm64> 指定构建架构集，例如：-a 'armv7'或者 -a 'arm64' 或者 -a 'armv7 arm64' 等，默认"armv7 arm64"
 -b | --bundle-id bundleId 设置Bundle Id
@@ -40,21 +40,21 @@ Usage:IPABuildShell.sh -[abcdptx] [--enable-bitcode YES/NO] [--auto-buildversion
 - 支持`--show-profile-detail provisionfile` 查看授权文件类型、创建日期、过期日期、使用证书签名ID、使用证书的创建日期等
 
   ```
-    bluemoon007deiMac:RFIDAPP itx$ IPABuildShell.sh  --show-profile-detail "/Users/itx/Library/MobileDevice/Provisioning Profiles/bc64dd0a-bc32-4015-a5a8-04da1d97a646.mobileprovision"
-   [IPABuildShell]  【授权文件】名字：dev_lipeiyao
-   [IPABuildShell]  【授权文件】类型：development（内部测试）
-   [IPABuildShell]  【授权文件】TeamID：5JP793NCMQ
-   [IPABuildShell]  【授权文件】Team Name：Lihai Feng
-   [IPABuildShell]  【授权文件】BundleID：cn.com.itx.lipeiyao
-   [IPABuildShell]  【授权文件】UUID：bc64dd0a-bc32-4015-a5a8-04da1d97a646
-   [IPABuildShell]  【授权文件】创建时间：2018年06月04
-   [IPABuildShell]  【授权文件】过期时间：2019年06月04
-   [IPABuildShell]  【授权文件】有效天数：314
-   [IPABuildShell]  【授权文件】使用的证书签名ID：iPhone Developer: Lihai Feng (6N464U2W5R)
-   [IPABuildShell]  【授权文件】使用的证书序列号：6706890764097142373 (0x5d13a99d855bbe65)
-   [IPABuildShell]  【授权文件】使用的证书创建时间：2018年05月23
-   [IPABuildShell]  【授权文件】使用的证书过期时间：2019年05月24
-   [IPABuildShell]  【授权文件】使用的证书有效天数：302
+    bluemoon007deiMac:RFIDAPP itx$ AutoPackingShell.sh  --show-profile-detail "/Users/itx/Library/MobileDevice/Provisioning Profiles/bc64dd0a-bc32-4015-a5a8-04da1d97a646.mobileprovision"
+   [AutoPackingShell]  【授权文件】名字：dev_lipeiyao
+   [AutoPackingShell]  【授权文件】类型：development（内部测试）
+   [AutoPackingShell]  【授权文件】TeamID：5JP793NCMQ
+   [AutoPackingShell]  【授权文件】Team Name：Lihai Feng
+   [AutoPackingShell]  【授权文件】BundleID：cn.com.itx.lipeiyao
+   [AutoPackingShell]  【授权文件】UUID：bc64dd0a-bc32-4015-a5a8-04da1d97a646
+   [AutoPackingShell]  【授权文件】创建时间：2018年06月04
+   [AutoPackingShell]  【授权文件】过期时间：2019年06月04
+   [AutoPackingShell]  【授权文件】有效天数：314
+   [AutoPackingShell]  【授权文件】使用的证书签名ID：iPhone Developer: Lihai Feng (6N464U2W5R)
+   [AutoPackingShell]  【授权文件】使用的证书序列号：6706890764097142373 (0x5d13a99d855bbe65)
+   [AutoPackingShell]  【授权文件】使用的证书创建时间：2018年05月23
+   [AutoPackingShell]  【授权文件】使用的证书过期时间：2019年05月24
+   [AutoPackingShell]  【授权文件】使用的证书有效天数：302
   ```
 
 - 允许指定授权文件目录,脚本将只在该目录匹配授权文件
@@ -88,8 +88,8 @@ Usage:IPABuildShell.sh -[abcdptx] [--enable-bitcode YES/NO] [--auto-buildversion
 安装
 ==
 
-1. #### IPABuildShell.sh 下载到本地,并赋予可执行权限
-    `chmod +x /路径/IPABuildShell.sh `
+1. #### AutoPackingShell.sh 下载到本地,并赋予可执行权限
+    `chmod +x /路径/AutoPackingShell.sh `
 
 2. #### 安装xcpretty（可选）
     `sudo gem install xcpretty`
@@ -109,14 +109,14 @@ Usage:IPABuildShell.sh -[abcdptx] [--enable-bitcode YES/NO] [--auto-buildversion
 
 
   ```
-  /脚本目录/IPABuildShell.sh
+  /脚本目录/AutoPackingShell.sh
   ```
 
 ![](http://ozhqm0ga1.bkt.clouddn.com/11.png)
 
 或者指定构建的Target
 ```
-/脚本目录/IPABuildShell.sh -target "Test_Main"
+/脚本目录/AutoPackingShell.sh -target "Test_Main"
 ```
 
 ![](http://ozhqm0ga1.bkt.clouddn.com/22.png)
@@ -210,7 +210,7 @@ source ~/.bash_profile
 
 # 1. 增加-t参数指定构建的Target
 # 2. 优化一些日志输出
-# 3. 使用--debug 参数代替-t | --config-type参数 来指定Debug或Release模式，详见 IPABuildShell -h
+# 3. 使用--debug 参数代替-t | --config-type参数 来指定Debug或Release模式，详见 AutoPackingShell -h
 #--------------------------------------------
 # 1. 增加支持ad-hoc打包格式
 # 2. 增加-v参数输出详细的构建信息

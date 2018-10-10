@@ -1,13 +1,13 @@
 #!/bin/bash
 
 # ----------------------------------------------------------------------
-# name:         IPABuildShell.sh
+# name:         AutoPackingShell.sh
 # version:      1.0.0(100)
 # createTime:   2018-08-30
-# description:  iOS 自动打包
+# description:  iOS 自动打包，可配置: Icon,LaunchImage,Info.plist,Config.plist
 # author:       liboy
 # email:        779385288@qq.com
-# github:       https://github.com/liboy/ios_auto_package_shell
+# github:       https://github.com/liboy/LBAutoPackingShell
 # ----------------------------------------------------------------------
 # 该脚本使用方法
 # step 1. 配置该脚本;
@@ -16,12 +16,15 @@
 # step 4. 选择不同选项....
 # step 5. Success  🎉 🎉 🎉!
 
+## 脚本文件目录
+Shell_File_Path=$(cd `dirname $0`; pwd)
 
 # 引用公用文件（public.sh）
 source "./public.sh"
-# 引用公用方法文件（ipa_public_function.sh）
+# 引用预打包公用文件pre_build_function.sh
+source "./pre_build_function.sh"
+# 引用打包公用文件（ipa_public_function.sh）
 source "./ipa_public_function.sh"
-
 
 ##############################################默认配置###############################################
 
@@ -77,6 +80,28 @@ while [ "$1" != "" ]; do
     shift
 done
 
+###########################################打包前项目配置处理#####################################################
+
+## 初始化用户配置 
+initUserConfigFile
+## 初始化项目配置
+initProjectConfig
+
+
+## 拷贝项目(打包工程)
+# copyProjectFile
+
+## 生成并替换AppIcon
+createAppIcon
+
+## 替换launchImage
+replaceLaunchImage
+
+## 更改项目配置文件
+changeProjectProfile
+
+
+###########################################IPA构建#####################################################
 
 ## 构建开始时间
 startTimeSeconds=`date +%s`
@@ -131,7 +156,7 @@ else
 	else
 		# `basename $0`值显示当前脚本或命令的名字
 		# $0显示会包括当前脚本或命令的路径
-		errorExit "当前目录不存在.xcworkspace或.xcodeproj工程文件，请在项目工程目录下执行脚本$(basename $0)"
+		errorExit "项目目录"$Shell_Work_Path"不存在.xcworkspace或.xcodeproj工程文件，"
 	fi
 	xcprojPathList=("$xcodeprojPath")
 fi

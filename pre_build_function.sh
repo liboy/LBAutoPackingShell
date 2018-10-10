@@ -8,7 +8,7 @@
 # description:  打包之前处理函数文件
 # author:       liboy
 # email:        779385288@qq.com
-# github:       https://github.com/liboy/ios_auto_package_shell
+# github:       https://github.com/liboy/LBAutoPackingShell
 # ----------------------------------------------------------------------
 
 # ********************* user_config.plist *********************
@@ -61,23 +61,6 @@ function setBuildVersion () {
         exit 1
     fi
     $CMD_PlistBuddy -c "Set :CFBundleVersion $buildVersion" "$infoPlistFile"
-}
-
-# clear cache ==================================================
-
-function clearTmpCache() {
-
-    #执行完毕，删除临时工程
-    if [ -d "${project_build_path}" ]; then
-        rm -rf ${project_build_path}
-        if [ $? -eq 0 ];then
-            echo "执行完毕，删除临时工程成功"
-        else
-            echo "Error: 执行完毕，删除临时工程失败"
-            pwd
-            exit
-        fi
-    fi
 }
 
 

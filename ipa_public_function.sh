@@ -8,7 +8,7 @@
 # description:  ipa打包函数文件
 # author:       liboy
 # email:        779385288@qq.com
-# github:       https://github.com/liboy/ios_auto_package_shell
+# github:       https://github.com/liboy/LBAutoPackingShell
 # ----------------------------------------------------------------------
 
 function usage
@@ -1003,6 +1003,7 @@ function removeFileWithPath() {
         	errorExit "删除文件失败 $filePath "
         fi
     fi
+    
 }
 
 ##字符串版本号比较：大于等于

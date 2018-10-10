@@ -8,7 +8,7 @@
 # description:  公用文件
 # author:       liboy
 # email:        779385288@qq.com
-# github:       https://github.com/liboy/ios_auto_package_shell
+# github:       https://github.com/liboy/LBAutoPackingShell
 # ----------------------------------------------------------------------
 
 #############################################常用工具#############################################
@@ -47,14 +47,14 @@ Shell_Work_Path=$project_build_path
 
 ## 日志格式化输出
 function logit() {
-    echo -e "\033[32m [IPABuildShell] \033[0m $@" 
+    echo -e "\033[32m [AutoPackingShell] \033[0m $@" 
     echo "$@" >> "$Tmp_Log_File"
 
 }
 
 ## 错误日志输出
 function errorExit() {
-    echo -e "\033[31m【IPABuildShell】$@ \033[0m"
+    echo -e "\033[31m【AutoPackingShell】$@ \033[0m"
     exit 1
 }
 
