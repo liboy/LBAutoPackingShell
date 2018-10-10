@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>project_name</key>
+	<string>iXiao</string>
+	<key>project_source_path</key>
+	<string>/Users/liboy/Desktop/小禾项目/iXiao</string>
+	<key>resource_name</key>
+	<string>xinyue</string>
+	<key>unlock_keychain_pwd</key>
+	<string>4765030</string>
+	<key>provision_dir</key>
+	<string>/Users/liboy/Desktop/自动打包/描述文件包</string>
+	<key>configration_type</key>
+	<string>Simulation</string>
+	<key>channel</key>
+	<string>development</string>
+</dict>
+</plist>

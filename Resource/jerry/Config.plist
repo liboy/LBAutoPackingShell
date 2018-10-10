@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>project_id</key>
+	<string>387c84e4e765db6e43651888abfb9c7a</string>
+	<key>merchant_id</key>
+	<string>dd6474f78cf35b7dda442c7fc95a3057</string>
+	<key>system_color</key>
+	<string>#ca2729</string>
+	<key>agencyIntro_url</key>
+	<string>http://m.baonahao.com/Guides/agencyIntro/name:jerry</string>
+	<key>merchant_phone</key>
+	<string>400-818-3666</string>
+	<key>baidu_MapKey</key>
+	<string>dGrRmy2wIsPdEcYbCX4A7ovV7O0WXClL</string>
+	<key>weChat_AppID</key>
+	<string>wx7970eeb75e386c65</string>
+	<key>weChat_AppSecret</key>
+	<string>7aed82dadfc7b4312b12ca08e92f95ff</string>
+	<key>jPush_AppKey</key>
+	<string>3c911c9ce62d3e2363038fb6</string>
+	<key>uMeng_AppKey</key>
+	<string>589ae125f5ade422920014da</string>
+	<key>bugly_AppId</key>
+	<string>d5b26e4644</string>
+	<key>bugly_AppKey</key>
+	<string>0e3b6ae8-c69f-4e7f-8179-b1e21d2ff1ff</string>
+	<key>alipay_URLScheme</key>
+	<string>com.baonahao.jerry</string>
+	<key>wechat_URLScheme</key>
+	<string>wx7970eeb75e386c65</string>
+</dict>
+</plist>

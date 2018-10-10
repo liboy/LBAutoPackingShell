@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>BundleIdentifier</key>
+	<string>com.BaoNaHaoParent.doumanschool</string>
+	<key>Name</key>
+	<string>豆曼国际教育</string>
+	<key>Version</key>
+	<string>1.5.0</string>
+	<key>Build</key>
+	<string>150</string>
+</dict>
+</plist>

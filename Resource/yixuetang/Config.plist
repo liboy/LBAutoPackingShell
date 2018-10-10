@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>project_id</key>
+	<string>a26d7da622804f22bcee5fed1d00af4d</string>
+	<key>merchant_id</key>
+	<string>8ceb3288a922455fa5f02163fbe3cf6f</string>
+	<key>system_color</key>
+	<string>#34A535</string>
+	<key>agencyIntro_url</key>
+	<string>http://webview.m.baonahao.com/view/MerchantIntroduce/yiXueTang.html</string>
+	<key>merchant_phone</key>
+	<string>024-31891686</string>
+	<key>baidu_MapKey</key>
+	<string>BiTjcEDpOgtC5wLY3zrZHilhVGIPre2c</string>
+	<key>weChat_AppID</key>
+	<string></string>
+	<key>weChat_AppSecret</key>
+	<string></string>
+	<key>jPush_AppKey</key>
+	<string>1b51ae5df053d8182fec96b2</string>
+	<key>uMeng_AppKey</key>
+	<string>5a33794bf43e482cc30000fc</string>
+	<key>bugly_AppId</key>
+	<string>df9afd2e9f</string>
+	<key>bugly_AppKey</key>
+	<string>3c7d8371-628f-44aa-ae17-4e651ff45533</string>
+	<key>alipay_URLScheme</key>
+	<string>com.baonahao.yixuetang</string>
+	<key>wechat_URLScheme</key>
+	<string></string>
+</dict>
+</plist>

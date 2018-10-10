@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>project_id</key>
+	<string>006862ad22f54d6cb1d12c898086e036</string>
+	<key>merchant_id</key>
+	<string>45aa462eb68b4dfbb04223546ca817d8</string>
+	<key>system_color</key>
+	<string>#CA2519</string>
+	<key>agencyIntro_url</key>
+	<string>http://webview.m.baonahao.com/view/MerchantIntroduce/haina.html</string>
+	<key>merchant_phone</key>
+	<string>400-818-3666</string>
+	<key>baidu_MapKey</key>
+	<string>ui8s2eDUvs4KrYT48Z60ExQj13zLSbrx</string>
+	<key>weChat_AppID</key>
+	<string></string>
+	<key>weChat_AppSecret</key>
+	<string></string>
+	<key>jPush_AppKey</key>
+	<string>ae30337b4e96d2ae19e36fb3</string>
+	<key>uMeng_AppKey</key>
+	<string>5acd68c1f29d9848b300017f</string>
+	<key>bugly_AppId</key>
+	<string>16c0006f22</string>
+	<key>bugly_AppKey</key>
+	<string>aa575e22-b245-41a7-909c-c4a7da3df7ad</string>
+	<key>alipay_URLScheme</key>
+	<string>com.baonahao.haina</string>
+	<key>wechat_URLScheme</key>
+	<string></string>
+</dict>
+</plist>

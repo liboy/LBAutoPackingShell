@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>agencyIntro_url</key>
+	<string>http://webview.m.baonahao.com/view/MerchantIntroduce/baCui.html</string>
+	<key>alipay_URLScheme</key>
+	<string>com.baonahao.bacui</string>
+	<key>baidu_MapKey</key>
+	<string>TStDycMXjz7FBUNNHxyTNSzoIlbXPzN3</string>
+	<key>bugly_AppId</key>
+	<string>651ef7367e</string>
+	<key>bugly_AppKey</key>
+	<string>e021d78f-fd47-4022-863a-634899f1c55a</string>
+	<key>jPush_AppKey</key>
+	<string>b68ab231b2a4efffe20a3730</string>
+	<key>merchant_id</key>
+	<string>8988424dfa1247529541df9a98bdcc59</string>
+	<key>merchant_phone</key>
+	<string>0516-85700228</string>
+	<key>project_id</key>
+	<string>b81b5eb6f76c4cbb83a79f96c5023dcc</string>
+	<key>system_color</key>
+	<string>FF8627</string>
+	<key>uMeng_AppKey</key>
+	<string>5af25039b27b0a3de8000593</string>
+	<key>weChat_AppID</key>
+	<string></string>
+	<key>weChat_AppSecret</key>
+	<string></string>
+	<key>wechat_URLScheme</key>
+	<string></string>
+</dict>
+</plist>

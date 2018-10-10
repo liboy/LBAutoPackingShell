@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>project_id</key>
+	<string>f256e4ee5c6d4ca1b087eec5064e7937</string>
+	<key>merchant_id</key>
+	<string>e974996c71be4754b566ee61b0ad4695</string>
+	<key>system_color</key>
+	<string>92C2E8</string>
+	<key>baidu_MapKey</key>
+	<string>eTlbcj6BoSfeUKpkGeecGR16cAhkp3lk</string>
+	<key>weChat_AppID</key>
+	<string></string>
+	<key>weChat_AppSecret</key>
+	<string></string>
+	<key>jPush_AppKey</key>
+	<string>4e15b697b5f5b5477d570b71</string>
+	<key>uMeng_AppKey</key>
+	<string>5b815573a40fa3250f000041 </string>
+	<key>bugly_AppId</key>
+	<string>22a0e6b01e</string>
+	<key>bugly_AppKey</key>
+	<string>6b82985b-f15a-479b-95bb-7b3d55c6af72</string>
+	<key>home_page_num</key>
+	<string>4</string>
+	<key>mine_page_num</key>
+	<string>4</string>
+	<key>is_allied_school</key>
+	<string>2</string>
+	<key>login_type</key>
+	<string>2</string>
+	<key>is_always_show_guidepage</key>
+	<string>1</string>
+	<key>guide_page_num</key>
+	<string>0</string>
+</dict>
+</plist>

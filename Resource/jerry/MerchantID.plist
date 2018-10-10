@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Test</key>
+	<dict>
+		<key>merchant_id</key>
+		<string>97ff3f092ee3983194fd7e7924280f24</string>
+	</dict>
+	<key>Loaction</key>
+	<dict>
+		<key>merchant_id</key>
+		<string>a7e431fbeb2b805b38180cd2ca8d1d27</string>
+	</dict>
+	<key>FangZhen</key>
+	<dict>
+		<key>merchant_id</key>
+		<string>97ff3f092ee3983194fd7e7924280f24</string>
+	</dict>
+	<key>online</key>
+	<dict>
+		<key>merchant_idTest</key>
+		<string>06f3ee4037d0376447cd4fc3893cb5d1</string>
+		<key>merchant_id</key>
+		<string>dd6474f78cf35b7dda442c7fc95a3057</string>
+	</dict>
+</dict>
+</plist>
