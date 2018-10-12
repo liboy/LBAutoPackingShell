@@ -22,17 +22,14 @@ function setPathPlist() {
 }
 
 # ********************* 读资源文件 *********************
-
-function printResource_App() {
-    # 脚本资源里APP.plist文件路径
-    local appPlistPath="${resource_path}/APP.plist"
-    echo `$CMD_PlistBuddy -c "Print :${1}" ${appPlistPath}`
-}
-
 function printResource_Config() {
     # 脚本资源里Config.plist文件路径
-    local configPlistPath="${resource_path}/Config.plist"
+    local configPlistPath="${Tmp_resource_path}/Config.plist"
     echo `$CMD_PlistBuddy -c "Print :${1}" ${configPlistPath}`
+}
+function setResource_Config() {
+    local configPlistPath="${Tmp_resource_path}/Config.plist"
+    echo `$CMD_PlistBuddy -c 'Set :'${1}' "'${2}'"' $configPlistPath`
 }
 
 function setProject_Config() {
@@ -103,14 +100,14 @@ function copyProjectFile() {
 ## 生成并替换AppIcon
 function createAppIcon() {
 
-    # ************* 需要安装Blade ************* https://github.vimcom/jondot/blade
+    # ************* 安装Blade ************* https://github.vimcom/jondot/blade
     # blade --help 查看命令
     # -s Icon( *注意：1024*1024,无alph,png格式)
     # -t AppIcon.appiconset里的Contents.json文件
     # -o 输出路径 AppIcon.appiconset
     # -c 覆盖旧的Contents.json文件
 
-    ResourceIconFilePath="$resource_path/icon.png"
+    ResourceIconFilePath="$Tmp_resource_path/icon.png"
     if [ ! -f "${ResourceIconFilePath}" ]; then
         errorExit "${ResourceIconFilePath}不存在"
     fi 
@@ -140,7 +137,7 @@ function replaceLaunchImage() {
     # 640x1136(4英寸)     目前机型: 5，5s，SE
     # 640x960(3.5英寸)    目前机型: 4，4s
     LaunchImageArray=("1125x2436" "1242x2208" "750x1334" "640x1136" "640x960")
-    LaunchImagePath="$resource_path/LaunchImage"
+    LaunchImagePath="$Tmp_resource_path/LaunchImage"
 
 
     #========================= 生成LaunchImage =========================
@@ -177,8 +174,6 @@ function initUserConfigFile() {
     project_name=`printPathPlist "project_name"`
     # 项目源码文件路径
     project_source_path=`printPathPlist "project_source_path"`
-    # 机构的资源文件名称
-    resource_name=`printPathPlist "resource_name"`
     # keychain解锁密码，即开机密码
     UNLOCK_KEYCHAIN_PWD=`printPathPlist "unlock_keychain_pwd"`
     # 授权文件目录，默认在~/Library/MobileDevice/Provisioning Profiles
@@ -192,9 +187,6 @@ function initUserConfigFile() {
 
     # 指定分发渠道，development 内部分发，app-store商店分发，enterprise企业分发， ad-hoc 企业内部分发"
     CHANNEL=`printPathPlist "channel"`
-
-    # 机构的资源文件路径
-    resource_path="${Shell_File_Path}/Resource/${resource_name}"
 
 
     logit "【用户配置】项目名称: ${project_name}"
@@ -211,50 +203,23 @@ function initUserConfigFile() {
 function initProjectConfig() {
 
     #**************************Resource/APP.plist ***************************
-    APP_CFBundleIdentifier=`printResource_App "BundleIdentifier"`
-    APP_CFBundleDisplayName=`printResource_App "Name"`
-    #APP_CFBundleShortVersionString=`printResource_App "Version"`
-    #APP_CFBundleVersion=`printResource_App "Build"`
+    APP_CFBundleIdentifier=`printResource_Config "BundleIdentifier"`
+    APP_CFBundleDisplayName=`printResource_Config "Name"`
+    #APP_CFBundleShortVersionString=`printResource_Config "Version"`
+    #APP_CFBundleVersion=`printResource_Config "Build"`
 
-    #
+    #工程原BundleId
     project_CFBundleIdentifier=`printProject_Info "CFBundleIdentifier"`
 
     logit "【项目配置】APP名称: $APP_CFBundleDisplayName"
     logit "【项目配置】新BundleId: $APP_CFBundleIdentifier"
     logit "【项目配置】原BundleId: ${project_CFBundleIdentifier}"
 
-    #************************** 读取脚本配置文件Config.plist ***************************
-    CONFIG_project_id=`printResource_Config "project_id"`
-    CONFIG_merchant_id=`printResource_Config "merchant_id"`
-    CONFIG_system_color=`printResource_Config "system_color"`
-    CONFIG_baidu_MapKey=`printResource_Config "baidu_MapKey"`
-    CONFIG_weChat_AppID=`printResource_Config "weChat_AppID"`
-    CONFIG_weChat_AppSecret=`printResource_Config "weChat_AppSecret"`
-    CONFIG_uMeng_AppKey=`printResource_Config "uMeng_AppKey"`
-    CONFIG_bugly_AppId=`printResource_Config "bugly_AppId"`
-    CONFIG_bugly_AppKey=`printResource_Config "bugly_AppKey"`
-    CONFIG_jPush_AppKey=`printResource_Config "jPush_AppKey"`
-
-    
-    logit "【项目配置】-------------------项目配置---------------------"
-    logit "【项目配置】project_id：               $CONFIG_project_id"
-    logit "【项目配置】merchant_id：              $CONFIG_merchant_id"
-    logit "【项目配置】system_color：             $CONFIG_system_color"
-    logit "【项目配置】baidu_MapKey：             $CONFIG_baidu_MapKey"
-    logit "【项目配置】uMeng_AppKey：             $CONFIG_uMeng_AppKey"
-    logit "【项目配置】bugly_AppId：              $CONFIG_bugly_AppId"
-    logit "【项目配置】bugly_AppKey：             $CONFIG_bugly_AppKey"
-    logit "【项目配置】jPush_AppKey：             $CONFIG_jPush_AppKey"
-    logit "【项目配置】weChat_AppID：             $CONFIG_weChat_AppID"
-    logit "【项目配置】weChat_AppSecret：         $CONFIG_weChat_AppSecret"
-
-    logit "【项目配置】alipay_URLScheme：         $APP_CFBundleIdentifier"
-    logit "【项目配置】wechat_URLScheme：         $CONFIG_weChat_AppID"
 }
 
-## 更改项目配置文件
-function changeProjectProfile() {
-    
+## 更改项目infoPist
+function changeProjectInfoPlist() {
+
     #========================= 更改info.plist文件 =========================
     
     setProject_Info "CFBundleIdentifier" "$APP_CFBundleIdentifier"
@@ -266,7 +231,6 @@ function changeProjectProfile() {
 
     # project.pbxproj文件路径
     local pbxprojPath="${project_build_path}/${project_name}.xcodeproj/project.pbxproj"
-    logit "【配置信息】修改project.pbxproj文件里BundleId: ${pbxprojPath}"
     if [ ! -f "${pbxprojPath}" ]; then
         errorExit  "project.pbxproj文件不存在${pbxprojPath}"
     fi
@@ -280,61 +244,95 @@ function changeProjectProfile() {
     
 
     #在Info中需要更改URLScheme (支付宝、微信URLScheme的设置)
+    wechat_URLScheme=`printResource_Config "weChat_AppID"`
+
     UrlSchemeNameArray=("alipay" "wechat")
     # 下标对应UrlSchemeNameArray中
-    UrlSchemesArray=($APP_CFBundleIdentifier $CONFIG_weChat_AppID) 
-
+    UrlSchemesArray=($APP_CFBundleIdentifier $wechat_URLScheme) 
+    # 遍历（带数组下标）
     for i in "${!UrlSchemeNameArray[@]}"; do
         #读取CFBundleURLTypes数组下第i个CFBundleURLName的值
         BundleUrlName=`printProject_Info "CFBundleURLTypes:$i:CFBundleURLName"`
         if [ $(contains "${UrlSchemeNameArray[@]}" ${BundleUrlName}) == "y" ]; then
-
             setProject_Info "CFBundleURLTypes:'${i}':CFBundleURLSchemes:0" "${UrlSchemesArray[$i]}"
-            logit "【配置信息】$BundleUrlName 存在插入scheme: ${UrlSchemesArray[$i]}"
+            logit "【URLScheme配置】$BundleUrlName: ${UrlSchemesArray[$i]}"
         else
-            logit "【配置信息】没有 ${UrlSchemeNameArray[$i]} 的URLScheme"
+            logit "【URLScheme配置】${UrlSchemeNameArray[$i]}不存在!"
         fi
     done
 
+}
 
-    logit "【配置信息】更改项目中 Config.plist 文件"
+## 更改项目配置文件
+function changeProjectProfile() {
+    
+    #************************** 读取脚本配置文件Config.plist ***************************
+    # CONFIG_project_id=`printResource_Config "project_id"`
+    # CONFIG_merchant_id=`printResource_Config "merchant_id"`
+    # CONFIG_system_color=`printResource_Config "system_color"`
+    # CONFIG_baidu_MapKey=`printResource_Config "baidu_MapKey"`
+    # CONFIG_weChat_AppID=`printResource_Config "weChat_AppID"`
+    # CONFIG_weChat_AppSecret=`printResource_Config "weChat_AppSecret"`
+    # CONFIG_uMeng_AppKey=`printResource_Config "uMeng_AppKey"`
+    # CONFIG_bugly_AppId=`printResource_Config "bugly_AppId"`
+    # CONFIG_bugly_AppKey=`printResource_Config "bugly_AppKey"`
+    # CONFIG_jPush_AppKey=`printResource_Config "jPush_AppKey"`
+
+    # CONFIG_home_page_num=`printResource_Config "home_page_num"`
+    # CONFIG_mine_page_num=`printResource_Config "mine_page_num"`
+    # CONFIG_is_allied_school=`printResource_Config "is_allied_school"`
+    # CONFIG_login_type=`printResource_Config "login_type"`
+    # CONFIG_is_always_show_guidepage=`printResource_Config "is_always_show_guidepage"`
+    # CONFIG_guide_page_num=`printResource_Config "guide_page_num"`
+
+    
+    # logit "【项目配置】-------------------项目配置---------------------"
+    # logit "【项目配置】project_id：               $CONFIG_project_id"
+    # logit "【项目配置】merchant_id：              $CONFIG_merchant_id"
+    # logit "【项目配置】system_color：             $CONFIG_system_color"
+    # logit "【项目配置】baidu_MapKey：             $CONFIG_baidu_MapKey"
+    # logit "【项目配置】uMeng_AppKey：             $CONFIG_uMeng_AppKey"
+    # logit "【项目配置】bugly_AppId：              $CONFIG_bugly_AppId"
+    # logit "【项目配置】bugly_AppKey：             $CONFIG_bugly_AppKey"
+    # logit "【项目配置】jPush_AppKey：             $CONFIG_jPush_AppKey"
+    # logit "【项目配置】weChat_AppID：             $CONFIG_weChat_AppID"
+    # logit "【项目配置】weChat_AppSecret：         $CONFIG_weChat_AppSecret"
+
+    # logit "【项目配置】home_page_num：            $CONFIG_home_page_num"
+    # logit "【项目配置】mine_page_num：            $CONFIG_mine_page_num"
+    # logit "【项目配置】is_allied_school：         $CONFIG_is_allied_school"
+    # logit "【项目配置】login_type：               $CONFIG_login_type"
+    # logit "【项目配置】is_always_show_guidepage： $CONFIG_is_always_show_guidepage"
+    # logit "【项目配置】guide_page_num：           $CONFIG_guide_page_num"
+    
+    
+    logit "【项目配置】更改项目中Config.plist文件..."
+    # config.plist key 数组
+    ConfigPlistKeyArray=("project_id" "merchant_id" "system_color" "baidu_MapKey" "weChat_AppID" "weChat_AppSecret" "uMeng_AppKey" "bugly_AppId" "bugly_AppKey" "jPush_AppKey" "home_page_num" "mine_page_num" "is_allied_school" "login_type" "is_always_show_guidepage" "guide_page_num") 
     # 脚本资源里Config.plist文件路径
-    resource_config_plist="${resource_path}/Config.plist"
+    resource_config_plist="${Tmp_resource_path}/Config.plist"
     # 项目里Config.plist文件路径
     project_config_plist="${project_build_path}/${project_name}/Configs/Config.plist"
     
     if [ ! -f "${resource_config_plist}" ]; then
         errorExit "Resource中缺少Config.plist 文件"
     fi
-    cp -rf "${resource_config_plist}" "${project_config_plist}"
-    if [ $? -eq 0 ];then
-        logit "【配置信息】替换Config.plist文件成功"
-    else
-        errorExit "替换Config.plist文件失败"
-    fi
+    # cp -rf "${resource_config_plist}" "${project_config_plist}"
+    
 
-    # setProject_Config "project_id" "$CONFIG_project_id"
-    # setProject_Config "merchant_id" "$CONFIG_merchant_id"
-    # setProject_Config "system_color" "$CONFIG_system_color"
-    # setProject_Config "baidu_MapKey" "$CONFIG_baidu_MapKey"
-    # setProject_Config "weChat_AppID" "$CONFIG_weChat_AppID"
-    # setProject_Config "weChat_AppSecret" "$CONFIG_weChat_AppSecret"
-    # setProject_Config "uMeng_AppKey" "$CONFIG_uMeng_AppKey"
-    # setProject_Config "bugly_AppId" "$CONFIG_bugly_AppId"
-    # setProject_Config "bugly_AppKey" "$CONFIG_bugly_AppKey"
-    # setProject_Config "jPush_AppKey" "$CONFIG_jPush_AppKey"
+    for i in "${!ConfigPlistKeyArray[@]}"; do
+        local dictKey=${ConfigPlistKeyArray[$i]}
+        local dictValue=`printResource_Config "$dictKey"`
+        # 替换对应值
+        setProject_Config "$dictKey" "$dictValue"
+        if [ $? -eq 0 ];then
+            logit "【项目配置】$dictKey: $dictValue"
+        else
+            warning "替换Config.plist文件$dictKey失败"
+        fi
+    done
 
 
-    # echo "=========== 更改MerchantID.plist 文件 ==========="
-    # # 脚本资源里MerchantID.plist文件路径
-    # resource_merchantid_plist="${resource_path}/MerchantID.plist"
-    # if [ ! -f "${resource_merchantid_plist}" ]; then
-    #     echo "缺少MerchantID.plist"
-    #     exit
-    # fi
-    # # 项目里MerchantID.plist文件路径
-    # project_merchantid_plist="${project_build_path}/${project_name}/Configs/MerchantID.plist"
-    # cp -rf "${resource_merchantid_plist}" "${project_merchantid_plist}"
 }
 
 

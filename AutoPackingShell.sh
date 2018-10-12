@@ -9,27 +9,20 @@
 # email:        779385288@qq.com
 # github:       https://github.com/liboy/LBAutoPackingShell
 # ----------------------------------------------------------------------
-# 该脚本使用方法
-# step 1. 配置该脚本;
-# step 2. cd 该脚本目录，运行chmod +x start.sh;
-# step 3. 终端运行 sh autopacking.sh;
-# step 4. 选择不同选项....
-# step 5. Success  🎉 🎉 🎉!
 
 ## 脚本文件目录
 Shell_File_Path=$(cd `dirname $0`; pwd)
 
 # 引用公用文件（public.sh）
-source "./public.sh"
+source "$Shell_File_Path/public.sh"
 # 引用预打包公用文件pre_build_function.sh
-source "./pre_build_function.sh"
+source "$Shell_File_Path/pre_build_function.sh"
 # 引用打包公用文件（ipa_public_function.sh）
-source "./ipa_public_function.sh"
+source "$Shell_File_Path/ipa_public_function.sh"
 
 ##############################################默认配置###############################################
 
 CODE_SIGN_STYLE='Manual'
-
 ##指定构建的target,默认工程的第一个target
 BUILD_TARGET="" 
 
@@ -96,6 +89,9 @@ createAppIcon
 
 ## 替换launchImage
 replaceLaunchImage
+
+## 更改项目info.plist文件
+changeProjectInfoPlist
 
 ## 更改项目配置文件
 changeProjectProfile
