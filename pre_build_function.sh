@@ -203,16 +203,16 @@ function initUserConfigFile() {
 function initProjectConfig() {
 
     #**************************Resource/APP.plist ***************************
-    APP_CFBundleIdentifier=`printResource_Config "BundleIdentifier"`
-    APP_CFBundleDisplayName=`printResource_Config "Name"`
-    #APP_CFBundleShortVersionString=`printResource_Config "Version"`
-    #APP_CFBundleVersion=`printResource_Config "Build"`
+    APP_BundleId=`printResource_Config "BundleIdentifier"`
+    APP_Name=`printResource_Config "Name"`
+    #APP_Version=`printResource_Config "Version"`
+    #APP_Build=`printResource_Config "Build"`
 
     #工程原BundleId
     project_CFBundleIdentifier=`printProject_Info "CFBundleIdentifier"`
 
-    logit "【项目配置】APP名称: $APP_CFBundleDisplayName"
-    logit "【项目配置】新BundleId: $APP_CFBundleIdentifier"
+    logit "【项目配置】APP名称: $APP_Name"
+    logit "【项目配置】新BundleId: $APP_BundleId"
     logit "【项目配置】原BundleId: ${project_CFBundleIdentifier}"
 
 }
@@ -222,10 +222,10 @@ function changeProjectInfoPlist() {
 
     #========================= 更改info.plist文件 =========================
     
-    setProject_Info "CFBundleIdentifier" "$APP_CFBundleIdentifier"
-    setProject_Info "CFBundleDisplayName" "$APP_CFBundleDisplayName"
-#    setProject_Info "CFBundleShortVersionString" "$APP_CFBundleShortVersionString"
-#    setProject_Info "CFBundleVersion" "$APP_CFBundleVersion"
+    setProject_Info "CFBundleIdentifier" "$APP_BundleId"
+    setProject_Info "CFBundleDisplayName" "$APP_Name"
+#    setProject_Info "CFBundleShortVersionString" "$APP_Version"
+#    setProject_Info "CFBundleVersion" "$APP_Build"
     logit "【配置信息】更改后BundleId: `printProject_Info "CFBundleIdentifier"`"
 
 
@@ -234,11 +234,11 @@ function changeProjectInfoPlist() {
     if [ ! -f "${pbxprojPath}" ]; then
         errorExit  "project.pbxproj文件不存在${pbxprojPath}"
     fi
-    sed -i '' s/$project_CFBundleIdentifier/$APP_CFBundleIdentifier/g $pbxprojPath
+    sed -i '' s/$project_CFBundleIdentifier/$APP_BundleId/g $pbxprojPath
     if [ $? -eq 0 ];then
         logit "【配置信息】修改project.pbxproj文件BundleId成功"
     else
-        errorExit "修改PRODUCT_BUNDLE_IDENTIFIER失败"
+        errorExit "修改project.pbxproj文件BundleId失败"
     fi
     
     
@@ -248,7 +248,7 @@ function changeProjectInfoPlist() {
 
     UrlSchemeNameArray=("alipay" "wechat")
     # 下标对应UrlSchemeNameArray中
-    UrlSchemesArray=($APP_CFBundleIdentifier $wechat_URLScheme) 
+    UrlSchemesArray=($APP_BundleId $wechat_URLScheme) 
     # 遍历（带数组下标）
     for i in "${!UrlSchemeNameArray[@]}"; do
         #读取CFBundleURLTypes数组下第i个CFBundleURLName的值
@@ -307,8 +307,7 @@ function changeProjectProfile() {
     
     
     logit "【项目配置】更改项目中Config.plist文件..."
-    # config.plist key 数组
-    ConfigPlistKeyArray=("project_id" "merchant_id" "system_color" "baidu_MapKey" "weChat_AppID" "weChat_AppSecret" "uMeng_AppKey" "bugly_AppId" "bugly_AppKey" "jPush_AppKey" "home_page_num" "mine_page_num" "is_allied_school" "login_type" "is_always_show_guidepage" "guide_page_num") 
+    
     # 脚本资源里Config.plist文件路径
     resource_config_plist="${Tmp_resource_path}/Config.plist"
     # 项目里Config.plist文件路径
@@ -335,6 +334,97 @@ function changeProjectProfile() {
 
 }
 
+## 服务器调用脚本接口
+## 根据项目需求从json文件获取资源配置信息
+function configResourceFile() {
+
+    # 临时存放资源文件目录
+    Tmp_resource_path="${Package_Dir}/Resource/"
+    mkdir -p $Tmp_resource_path
+    # 拷贝配置文件模板config_tpl.plist到资源文件目录
+    cp -rp "${Shell_File_Path}/config_tpl.plist" $Tmp_resource_path
+    # 所需的json配置文件路径
+    json_file_path=$1
+    # 测试
+    json_file_path="${Shell_File_Path}/test.json"
+
+    resource_json_file="$Tmp_resource_path/config.json"
+    logit "【资源配置】$resource_json_file" 
+    # 复制打包参数json文件到打包脚本目录
+    cp -rp $json_file_path $resource_json_file
+    # 打印json
+    jq . $resource_json_file
+
+    # https://blog.csdn.net/offbye/article/details/38379195
+    # mac下安装jq，使用brew install jq
+    # 解析json 打包参数
+    
+    #************************** 工程配置信息 ***************************
+ 
+    APP_Name=`cat $resource_json_file | jq -r '.app_name'`
+    APP_BundleId=`cat $resource_json_file | jq -r '.APPLICATION_ID'`
+    APP_Version=`cat $resource_json_file | jq -r '.VERSION_NAME'`
+    APP_Build=`cat $resource_json_file | jq -r '.VERSION_CODE'`
+
+    #************************** 业务配置信息 ***************************
+
+    CONFIG_project_id=`cat $resource_json_file | jq -r '.PROJECTID'`
+    CONFIG_merchant_id=`cat $resource_json_file | jq -r '.MERCHANT_ID'`
+    CONFIG_system_color=`cat $resource_json_file | jq -r '.color_theme'`
+    CONFIG_baidu_MapKey=`cat $resource_json_file | jq -r '.com_baidu_lbsapi_API_KEY'`
+    CONFIG_uMeng_AppKey=`cat $resource_json_file | jq -r '.UMENGKEY'`
+    CONFIG_bugly_AppId=`cat $resource_json_file | jq -r '.BUGLY_APPID'`
+    CONFIG_bugly_AppKey=`cat $resource_json_file | jq -r '.'BUGLY_APPKEY`
+    CONFIG_jPush_AppKey=`cat $resource_json_file | jq -r '.JPUSHKEY'`
+    CONFIG_home_page_num=`cat $resource_json_file | jq -r '.TempletStatus'`
+    CONFIG_mine_page_num=`cat $resource_json_file | jq -r '.PersonalCenterStatus'`
+    CONFIG_is_allied_school=`cat $resource_json_file | jq -r '.IsAlliedSchool'`
+    CONFIG_login_type=`cat $resource_json_file | jq -r '.LOGINFIRST'`
+    CONFIG_is_always_show_guidepage=`cat $resource_json_file | jq -r '.GuideModel'`
+    CONFIG_guide_page_num=`cat $resource_json_file | jq -r '.GuideCount'`
+    # CONFIG_weChat_AppID=`printResource_Config "weChat_AppID"`
+    # CONFIG_weChat_AppSecret=`printResource_Config "weChat_AppSecret"`
+    #************************** 图片文件资源 ***************************
+     
+    apk_name=`cat $resource_json_file | jq -r '.apk_name'`
+    icon=`cat $resource_json_file | jq -r '.icon'`
+    start_img=`cat $resource_json_file | jq -r '.start_img'`
+
+    GRADLE_SRC=`cat $resource_json_file | jq -r '.GRADLE_SRC'`
+    uri_name=`cat $resource_json_file | jq -r '.Platform'`
+
+    ## 下载图片
+    # you-get -o ~/Desktop/PackageLog -O pic 'https://photo.16pic.com/00/03/11/16pic_311875_b.jpg'
+    # icon
+    you-get -o $Tmp_resource_path -O icon "$uri_name/$icon"
+
+
+    # 脚本资源里Config.plist文件路径
+    resource_config_plist="${Tmp_resource_path}/Config.plist"
+    # 重命名
+    mv "${Tmp_resource_path}config_tpl.plist" $resource_config_plist
+
+    #修改配置文件config.plist
+    logit "【资源配置】配置资源Config.plist文件中..."
+    # key->value数组
+    ConfigPlistValueArray=($APP_Name $APP_BundleId $APP_Version $APP_Build $CONFIG_project_id $CONFIG_merchant_id $CONFIG_system_color $CONFIG_baidu_MapKey $CONFIG_uMeng_AppKey $CONFIG_bugly_AppId $CONFIG_bugly_AppKey $CONFIG_jPush_AppKey $CONFIG_home_page_num $CONFIG_mine_page_num $CONFIG_is_allied_school $CONFIG_login_type $CONFIG_is_always_show_guidepage $CONFIG_guide_page_num $CONFIG_weChat_AppID $CONFIG_weChat_AppSecret)
+
+    if [ ! -f "${resource_config_plist}" ]; then
+        errorExit "Resource中缺少Config.plist 文件"
+    fi
+
+    for i in "${!ConfigPlistKeyArray[@]}"; do
+        dictKey=${ConfigPlistKeyArray[$i]}
+        dictValue=${ConfigPlistValueArray[$i]}
+        # 替换对应值
+        setResource_Config "$dictKey" "$dictValue"
+        if [ $? -eq 0 ];then
+            logit "【资源配置】$dictKey: $dictValue"
+        else
+            warning "配置资源Config.plist文件$dictKey失败"
+        fi
+    done
+}
 
 
 

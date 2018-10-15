@@ -62,6 +62,10 @@ while [ "$1" != "" ]; do
 			pgyerUpload "$1"
 			exit;
 			;;
+		--config-resource )
+			shift
+			configResourceFile "$1"
+			;;
         -h | --help )
             usage
             ;;
@@ -82,7 +86,7 @@ initProjectConfig
 
 
 ## 拷贝项目(打包工程)
-# copyProjectFile
+copyProjectFile
 
 ## 生成并替换AppIcon
 createAppIcon

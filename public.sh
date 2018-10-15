@@ -51,6 +51,8 @@ ShellUserConfigPlist="$Shell_File_Path/user_config.plist"
 Shell_Work_Path=$project_build_path
 
 
+# config.plist key 数组
+ConfigPlistKeyArray=("Name" "BundleIdentifier" "Version" "Build" "project_id" "merchant_id" "system_color" "baidu_MapKey" "uMeng_AppKey" "bugly_AppId" "bugly_AppKey" "jPush_AppKey" "home_page_num" "mine_page_num" "is_allied_school" "login_type" "is_always_show_guidepage" "guide_page_num" "weChat_AppID" "weChat_AppSecret") 
 #############################################日志函数#############################################
 
 ## 日志格式化输出
