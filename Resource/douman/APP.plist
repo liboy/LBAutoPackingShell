@@ -4,7 +4,7 @@
 <dict>
 	<key>BundleIdentifier</key>
 	<string>com.BaoNaHaoParent.doumanschool</string>
-	<key>Name</key>
+	<key>AppName</key>
 	<string>豆曼国际教育</string>
 	<key>Version</key>
 	<string>1.5.0</string>

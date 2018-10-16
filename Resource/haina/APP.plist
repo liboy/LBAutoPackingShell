@@ -4,7 +4,7 @@
 <dict>
 	<key>BundleIdentifier</key>
 	<string>com.BaoNaHaoParent.hainaschool</string>
-	<key>Name</key>
+	<key>AppName</key>
 	<string>海纳培优</string>
 	<key>Version</key>
 	<string>1.5.0</string>

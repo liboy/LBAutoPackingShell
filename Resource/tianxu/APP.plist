@@ -4,7 +4,7 @@
 <dict>
 	<key>BundleIdentifier</key>
 	<string>com.BaoNaHaoParent.tianxuschool</string>
-	<key>Name</key>
+	<key>AppName</key>
 	<string>天旭理科中心</string>
 	<key>Version</key>
 	<string>1.5.0</string>

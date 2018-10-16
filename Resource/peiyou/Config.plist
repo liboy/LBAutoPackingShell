@@ -32,7 +32,7 @@
 	<string>2</string>
 	<key>is_always_show_guidepage</key>
 	<string>0</string>
-	<key>guide_page_num</key>
+	<key>guide_count</key>
 	<string>0</string>
 </dict>
 </plist>

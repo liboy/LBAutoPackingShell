@@ -4,7 +4,7 @@
 <dict>
 	<key>BundleIdentifier</key>
 	<string>com.baonahao.taiyanghuaschool</string>
-	<key>Name</key>
+	<key>AppName</key>
 	<string>太阳花教育</string>
 	<key>Version</key>
 	<string>2.0.0</string>

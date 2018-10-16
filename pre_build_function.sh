@@ -130,15 +130,7 @@ function createAppIcon() {
 function replaceLaunchImage() {
 
     # 由于无法使用LaunchScreen来适配单张启动图（无法清除iPhone缓存），因此使用了LaunchImage来设置启动图
-    # LaunchImage需要的启动图需要对应尺寸，目前需要
-    # 1125x2436(5.8英寸)  目前机型: iPhoneX
-    # 1242x2208(5.5英寸)  目前机型: 6Plus，6sPlus，7Plus
-    # 750x1334(4.7英寸)   目前机型: 6，6s，7
-    # 640x1136(4英寸)     目前机型: 5，5s，SE
-    # 640x960(3.5英寸)    目前机型: 4，4s
-    LaunchImageArray=("1125x2436" "1242x2208" "750x1334" "640x1136" "640x960")
     LaunchImagePath="$Tmp_resource_path/LaunchImage"
-
 
     #========================= 生成LaunchImage =========================
     # 遍历查看对应尺寸Image
@@ -199,27 +191,21 @@ function initUserConfigFile() {
     
 
 }
-## 初始化项目里配置
-function initProjectConfig() {
 
-    #**************************Resource/APP.plist ***************************
+## 更改项目infoPist
+function changeProjectInfoPlist() {
+    #**************************Resource/Config.plist ***************************
     APP_BundleId=`printResource_Config "BundleIdentifier"`
-    APP_Name=`printResource_Config "Name"`
+    APP_Name=`printResource_Config "AppName"`
     #APP_Version=`printResource_Config "Version"`
     #APP_Build=`printResource_Config "Build"`
 
-    #工程原BundleId
+     #工程原BundleId
     project_CFBundleIdentifier=`printProject_Info "CFBundleIdentifier"`
 
     logit "【项目配置】APP名称: $APP_Name"
     logit "【项目配置】新BundleId: $APP_BundleId"
     logit "【项目配置】原BundleId: ${project_CFBundleIdentifier}"
-
-}
-
-## 更改项目infoPist
-function changeProjectInfoPlist() {
-
     #========================= 更改info.plist文件 =========================
     
     setProject_Info "CFBundleIdentifier" "$APP_BundleId"
@@ -266,46 +252,6 @@ function changeProjectInfoPlist() {
 ## 更改项目配置文件
 function changeProjectProfile() {
     
-    #************************** 读取脚本配置文件Config.plist ***************************
-    # CONFIG_project_id=`printResource_Config "project_id"`
-    # CONFIG_merchant_id=`printResource_Config "merchant_id"`
-    # CONFIG_system_color=`printResource_Config "system_color"`
-    # CONFIG_baidu_MapKey=`printResource_Config "baidu_MapKey"`
-    # CONFIG_weChat_AppID=`printResource_Config "weChat_AppID"`
-    # CONFIG_weChat_AppSecret=`printResource_Config "weChat_AppSecret"`
-    # CONFIG_uMeng_AppKey=`printResource_Config "uMeng_AppKey"`
-    # CONFIG_bugly_AppId=`printResource_Config "bugly_AppId"`
-    # CONFIG_bugly_AppKey=`printResource_Config "bugly_AppKey"`
-    # CONFIG_jPush_AppKey=`printResource_Config "jPush_AppKey"`
-
-    # CONFIG_home_page_num=`printResource_Config "home_page_num"`
-    # CONFIG_mine_page_num=`printResource_Config "mine_page_num"`
-    # CONFIG_is_allied_school=`printResource_Config "is_allied_school"`
-    # CONFIG_login_type=`printResource_Config "login_type"`
-    # CONFIG_is_always_show_guidepage=`printResource_Config "is_always_show_guidepage"`
-    # CONFIG_guide_page_num=`printResource_Config "guide_page_num"`
-
-    
-    # logit "【项目配置】-------------------项目配置---------------------"
-    # logit "【项目配置】project_id：               $CONFIG_project_id"
-    # logit "【项目配置】merchant_id：              $CONFIG_merchant_id"
-    # logit "【项目配置】system_color：             $CONFIG_system_color"
-    # logit "【项目配置】baidu_MapKey：             $CONFIG_baidu_MapKey"
-    # logit "【项目配置】uMeng_AppKey：             $CONFIG_uMeng_AppKey"
-    # logit "【项目配置】bugly_AppId：              $CONFIG_bugly_AppId"
-    # logit "【项目配置】bugly_AppKey：             $CONFIG_bugly_AppKey"
-    # logit "【项目配置】jPush_AppKey：             $CONFIG_jPush_AppKey"
-    # logit "【项目配置】weChat_AppID：             $CONFIG_weChat_AppID"
-    # logit "【项目配置】weChat_AppSecret：         $CONFIG_weChat_AppSecret"
-
-    # logit "【项目配置】home_page_num：            $CONFIG_home_page_num"
-    # logit "【项目配置】mine_page_num：            $CONFIG_mine_page_num"
-    # logit "【项目配置】is_allied_school：         $CONFIG_is_allied_school"
-    # logit "【项目配置】login_type：               $CONFIG_login_type"
-    # logit "【项目配置】is_always_show_guidepage： $CONFIG_is_always_show_guidepage"
-    # logit "【项目配置】guide_page_num：           $CONFIG_guide_page_num"
-    
-    
     logit "【项目配置】更改项目中Config.plist文件..."
     
     # 脚本资源里Config.plist文件路径
@@ -334,12 +280,13 @@ function changeProjectProfile() {
 
 }
 
+
 ## 服务器调用脚本接口
 ## 根据项目需求从json文件获取资源配置信息
 function configResourceFile() {
 
     # 临时存放资源文件目录
-    Tmp_resource_path="${Package_Dir}/Resource/"
+    Tmp_resource_path="${Package_Dir}/Resource"
     mkdir -p $Tmp_resource_path
     # 拷贝配置文件模板config_tpl.plist到资源文件目录
     cp -rp "${Shell_File_Path}/config_tpl.plist" $Tmp_resource_path
@@ -371,43 +318,39 @@ function configResourceFile() {
     CONFIG_project_id=`cat $resource_json_file | jq -r '.PROJECTID'`
     CONFIG_merchant_id=`cat $resource_json_file | jq -r '.MERCHANT_ID'`
     CONFIG_system_color=`cat $resource_json_file | jq -r '.color_theme'`
-    CONFIG_baidu_MapKey=`cat $resource_json_file | jq -r '.com_baidu_lbsapi_API_KEY'`
+    CONFIG_baidu_MapKey=`cat $resource_json_file | jq -r '.baidu_MapKey'`
     CONFIG_uMeng_AppKey=`cat $resource_json_file | jq -r '.UMENGKEY'`
     CONFIG_bugly_AppId=`cat $resource_json_file | jq -r '.BUGLY_APPID'`
     CONFIG_bugly_AppKey=`cat $resource_json_file | jq -r '.'BUGLY_APPKEY`
     CONFIG_jPush_AppKey=`cat $resource_json_file | jq -r '.JPUSHKEY'`
-    CONFIG_home_page_num=`cat $resource_json_file | jq -r '.TempletStatus'`
-    CONFIG_mine_page_num=`cat $resource_json_file | jq -r '.PersonalCenterStatus'`
+    CONFIG_home_page_num=`cat $resource_json_file | jq -r '.home_page_num'`
+    CONFIG_mine_page_num=`cat $resource_json_file | jq -r '.mine_page_num'`
     CONFIG_is_allied_school=`cat $resource_json_file | jq -r '.IsAlliedSchool'`
     CONFIG_login_type=`cat $resource_json_file | jq -r '.LOGINFIRST'`
     CONFIG_is_always_show_guidepage=`cat $resource_json_file | jq -r '.GuideModel'`
-    CONFIG_guide_page_num=`cat $resource_json_file | jq -r '.GuideCount'`
+    CONFIG_guide_count=`cat $resource_json_file | jq -r '.GuideCount'`
     # CONFIG_weChat_AppID=`printResource_Config "weChat_AppID"`
     # CONFIG_weChat_AppSecret=`printResource_Config "weChat_AppSecret"`
+    
     #************************** 图片文件资源 ***************************
-     
-    apk_name=`cat $resource_json_file | jq -r '.apk_name'`
+    
+    Domain_Url=`cat $resource_json_file | jq -r '.Platform'`
     icon=`cat $resource_json_file | jq -r '.icon'`
-    start_img=`cat $resource_json_file | jq -r '.start_img'`
-
-    GRADLE_SRC=`cat $resource_json_file | jq -r '.GRADLE_SRC'`
-    uri_name=`cat $resource_json_file | jq -r '.Platform'`
-
+    LaunchImage=`cat $resource_json_file | jq -r '.start_img'`
+    
     ## 下载图片
-    # you-get -o ~/Desktop/PackageLog -O pic 'https://photo.16pic.com/00/03/11/16pic_311875_b.jpg'
-    # icon
-    you-get -o $Tmp_resource_path -O icon "$uri_name/$icon"
+    downloadResourceFile "$Domain_Url" "$icon" "$LaunchImage" "$CONFIG_guide_count"
 
 
     # 脚本资源里Config.plist文件路径
     resource_config_plist="${Tmp_resource_path}/Config.plist"
     # 重命名
-    mv "${Tmp_resource_path}config_tpl.plist" $resource_config_plist
+    mv "${Tmp_resource_path}/config_tpl.plist" $resource_config_plist
 
     #修改配置文件config.plist
     logit "【资源配置】配置资源Config.plist文件中..."
     # key->value数组
-    ConfigPlistValueArray=($APP_Name $APP_BundleId $APP_Version $APP_Build $CONFIG_project_id $CONFIG_merchant_id $CONFIG_system_color $CONFIG_baidu_MapKey $CONFIG_uMeng_AppKey $CONFIG_bugly_AppId $CONFIG_bugly_AppKey $CONFIG_jPush_AppKey $CONFIG_home_page_num $CONFIG_mine_page_num $CONFIG_is_allied_school $CONFIG_login_type $CONFIG_is_always_show_guidepage $CONFIG_guide_page_num $CONFIG_weChat_AppID $CONFIG_weChat_AppSecret)
+    ConfigPlistValueArray=($APP_Name $APP_BundleId $APP_Version $APP_Build $CONFIG_project_id $CONFIG_merchant_id $CONFIG_system_color $CONFIG_baidu_MapKey $CONFIG_uMeng_AppKey $CONFIG_bugly_AppId $CONFIG_bugly_AppKey $CONFIG_jPush_AppKey $CONFIG_home_page_num $CONFIG_mine_page_num $CONFIG_is_allied_school $CONFIG_login_type $CONFIG_is_always_show_guidepage $CONFIG_guide_count $CONFIG_weChat_AppID $CONFIG_weChat_AppSecret)
 
     if [ ! -f "${resource_config_plist}" ]; then
         errorExit "Resource中缺少Config.plist 文件"
@@ -426,7 +369,55 @@ function configResourceFile() {
     done
 }
 
+## 生成不同分辨率启动图
+function createLaunchImages() {
+    local imgPath=$1
+    # iPhone 3.5" @2x
+    sips -Z 960 -c 960 640 "$imgPath" --out "$Tmp_resource_path/LaunchImage640x960.png"
+    # iPhone 4.0" @2x
+    sips -Z 1136 -c 1136 640 "$imgPath" --out "$Tmp_resource_path/LaunchImage640x1136.png"
+    # iPhone 5.5" @3x - landscape
+    sips -Z 2208 -c 2208 1242 "$imgPath" --out "$Tmp_resource_path/LaunchImage1242x2208.png"
+    # iPhone 5.5" @3x - portrait
+    # sips -r 90 "$Tmp_resource_path/LaunchImage1242x2208.png" --out $Tmp_resource_path/LaunchImage2208x1242.png
+    # iPhone 4.7" @2x
+    sips -Z 1334 -c 1334 750 "$imgPath" --out "$Tmp_resource_path/LaunchImage750x1334.png"
+    # iPhone X @3x - landscape
+    sips -Z 2436 -c 2436 1125 "$imgPath" --out "$Tmp_resource_path/LaunchImage1125x2436.png"
+}
 
+## 下载图片
+function downloadResourceFile() {
+
+    local domain=$1
+    local icon=$2
+    local launchImage=$3
+    local guideCount=$4
+    # icon
+    you-get -o $Tmp_resource_path -O icon "$domain$icon"
+
+    # 启动图
+    you-get -o $Tmp_resource_path -O LaunchImage "$domain$launchImage"
+    # for i in "${!LaunchImageArray[@]}"; do
+    #     local jsonName="LaunchImage${LaunchImageArray[$i]}"
+    #     local launchimage=`cat $resource_json_file | jq -r ."$jsonName"` 
+    #     local filePaht="$Domain_Url/$launchimage"
+    #     logit "【启动图下载】$launchimage"
+    #     you-get -o $Tmp_resource_path -O $jsonName "$filePaht"
+    # done
+    createLaunchImages "$Tmp_resource_path/LaunchImage.png"
+
+    # 引导图
+    for (( i = 1; i <= "${guideCount}"; i++ )); do
+        local jsonName="guide_img_$i"
+        local image_url=`cat $resource_json_file | jq -r ."$jsonName"` 
+        local filePaht="$Domain_Url/$image_url"
+        logit "【引导图下载】$image_url"
+        you-get -o $Tmp_resource_path -O $jsonName "$filePaht"
+    done
+
+
+}
 
 
 

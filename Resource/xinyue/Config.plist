@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BundleIdentifier</key>
+	<string>com.BaoNaHaoParent.xinyueschool</string>
+	<key>AppName</key>
+	<string>心乐琴行</string>
+	<key>Version</key>
+	<string>1.5.0</string>
+	<key>Build</key>
+	<string>150</string>
 	<key>project_id</key>
 	<string>42ec4e99080c44598e422b69c3286324</string>
 	<key>merchant_id</key>
@@ -32,7 +40,7 @@
 	<string>2</string>
 	<key>is_always_show_guidepage</key>
 	<string>0</string>
-	<key>guide_page_num</key>
+	<key>guide_count</key>
 	<string>0</string>
 </dict>
 </plist>

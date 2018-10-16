@@ -81,9 +81,6 @@ done
 
 ## 初始化用户配置 
 initUserConfigFile
-## 初始化项目配置
-initProjectConfig
-
 
 ## 拷贝项目(打包工程)
 copyProjectFile
