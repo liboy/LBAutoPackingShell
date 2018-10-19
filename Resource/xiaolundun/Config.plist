@@ -3,33 +3,33 @@
 <plist version="1.0">
 <dict>
 	<key>BundleIdentifier</key>
-	<string>com.baonahao.zhihuitaschool</string>
+	<string>com.baonahao.xiaolundunschool</string>
 	<key>AppName</key>
-	<string>智汇塔教育</string>
+	<string>小伦敦英语</string>
 	<key>Version</key>
-	<string>2.0.0</string>
+	<string>1.5.0</string>
 	<key>Build</key>
-	<string>200</string>
+	<string>150</string>
 	<key>project_id</key>
-	<string>f256e4ee5c6d4ca1b087eec5064e7937</string>
+	<string>29290642a8b94dda859e6c53ee62a2ce</string>
 	<key>merchant_id</key>
-	<string>e974996c71be4754b566ee61b0ad4695</string>
+	<string>d15aad4f22b24384a0c23b6bfcfa55da</string>
 	<key>system_color</key>
-	<string>92C2E8</string>
+	<string>60B1C1</string>
 	<key>baidu_MapKey</key>
-	<string>eTlbcj6BoSfeUKpkGeecGR16cAhkp3lk</string>
+	<string>b5szEXmNbWMIfXH4cwfVlexGnLQpCbWU</string>
 	<key>weChat_AppID</key>
 	<string></string>
 	<key>weChat_AppSecret</key>
 	<string></string>
 	<key>jPush_AppKey</key>
-	<string>4e15b697b5f5b5477d570b71</string>
+	<string>8fe193ea835599acc4f937a0</string>
 	<key>uMeng_AppKey</key>
-	<string>5b815573a40fa3250f000041 </string>
+	<string>5bac8cfdb465f599b6000195</string>
 	<key>bugly_AppId</key>
-	<string>22a0e6b01e</string>
+	<string>75625fb530</string>
 	<key>bugly_AppKey</key>
-	<string>6b82985b-f15a-479b-95bb-7b3d55c6af72</string>
+	<string>baffe4c1-8bbb-4090-a2a9-395cd807df7f</string>
 	<key>home_page_num</key>
 	<string>4</string>
 	<key>mine_page_num</key>
@@ -39,7 +39,7 @@
 	<key>login_type</key>
 	<string>2</string>
 	<key>is_always_show_guidepage</key>
-	<string>1</string>
+	<string>0</string>
 	<key>guide_count</key>
 	<string>0</string>
 </dict>

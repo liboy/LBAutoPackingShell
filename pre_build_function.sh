@@ -3,7 +3,7 @@
 
 # ----------------------------------------------------------------------
 # name:         pre_build_function.sh
-# version:      1.0.0(100)
+# version:      1.0.6(106)
 # createTime:   2018-08-30
 # description:  打包之前处理函数文件
 # author:       liboy
@@ -76,6 +76,57 @@ function contains() {
     return 1
 }
 
+## 初始化用户配置
+function initUserConfigFile() {
+
+    ## 打包工程文件拷贝目录路径
+    project_build_path="$Package_Dir/iXiao_build"
+    ##历史打包备份目录
+    History_Package_Dir="$Package_Dir/History"
+    ## 脚本生成的日志文件
+    Tmp_Log_File="$Package_Dir/package_log.txt"
+    ## 脚本临时生成最终用于构建的配置文件
+    Tmp_Build_Xcconfig_File="$Package_Dir/build.xcconfig"
+    ##临时OptionsPlist文件
+    Tmp_Options_Plist_File="$Package_Dir/optionsplist.plist"
+   
+    logit "【用户配置】预打包项目路径: ${project_build_path}"
+    logit "【用户配置】历史打包备份目录: ${History_Package_Dir}"
+    logit "【用户配置】脚本生成的日志文件: ${Tmp_Log_File}"
+    logit "【用户配置】构建的配置文件: ${Tmp_Build_Xcconfig_File}"
+    logit "【用户配置】临时OptionsPlist文件: ${Tmp_Options_Plist_File}"
+    
+    #脚本全局参数配置文件user_config.plist(脚本参数优先于全局配置参数)
+   
+    # 项目名称
+    project_name=`printPathPlist "project_name"`
+    # 项目源码文件路径
+    project_source_path=`printPathPlist "project_source_path"`
+    # keychain解锁密码，即开机密码
+    UNLOCK_KEYCHAIN_PWD=`printPathPlist "unlock_keychain_pwd"`
+    # 授权文件目录，默认在~/Library/MobileDevice/Provisioning Profiles
+    PROVISION_DIR=`printPathPlist "provision_dir"`
+    if [[ "$PROVISION_DIR" ]]; then
+        PROVISION_DIR="${HOME}/Library/MobileDevice/Provisioning Profiles"
+    fi
+    # 构建模式：Debug/Release 
+    # Simulation/AppStore
+    CONFIGRATION_TYPE=`printPathPlist "configration_type"`
+
+    # 指定分发渠道，development 内部分发，app-store商店分发，enterprise企业分发， ad-hoc 企业内部分发"
+    CHANNEL=`printPathPlist "channel"`
+
+
+    logit "【用户配置】项目名称: ${project_name}"
+    logit "【用户配置】源码文件路径: ${project_source_path}"
+    logit "【用户配置】keychain解锁密码: ${UNLOCK_KEYCHAIN_PWD}"
+    logit "【用户配置】授权文件目录: ${PROVISION_DIR}"
+    logit "【用户配置】构建模式: ${CONFIGRATION_TYPE}"
+    logit "【用户配置】分发渠道: ${CHANNEL}"
+    
+
+}
+
 ## 拷贝项目到打包目录
 function copyProjectFile() {
 
@@ -132,7 +183,6 @@ function replaceLaunchImage() {
     # 由于无法使用LaunchScreen来适配单张启动图（无法清除iPhone缓存），因此使用了LaunchImage来设置启动图
     LaunchImagePath="$Tmp_resource_path/LaunchImage"
 
-    #========================= 生成LaunchImage =========================
     # 遍历查看对应尺寸Image
     LaunchImageIsBool="true"
     for i in "${!LaunchImageArray[@]}"; do
@@ -157,40 +207,7 @@ function replaceLaunchImage() {
     done
 }
 
-## 初始化用户配置
-function initUserConfigFile() {
-    
-    #脚本全局参数配置文件user_config.plist(脚本参数优先于全局配置参数)
-   
-    # 项目名称
-    project_name=`printPathPlist "project_name"`
-    # 项目源码文件路径
-    project_source_path=`printPathPlist "project_source_path"`
-    # keychain解锁密码，即开机密码
-    UNLOCK_KEYCHAIN_PWD=`printPathPlist "unlock_keychain_pwd"`
-    # 授权文件目录，默认在~/Library/MobileDevice/Provisioning Profiles
-    PROVISION_DIR=`printPathPlist "provision_dir"`
-    if [[ "$PROVISION_DIR" ]]; then
-        PROVISION_DIR="${HOME}/Library/MobileDevice/Provisioning Profiles"
-    fi
-    # 构建模式：Debug/Release 
-    # Simulation/AppStore
-    CONFIGRATION_TYPE=`printPathPlist "configration_type"`
 
-    # 指定分发渠道，development 内部分发，app-store商店分发，enterprise企业分发， ad-hoc 企业内部分发"
-    CHANNEL=`printPathPlist "channel"`
-
-
-    logit "【用户配置】项目名称: ${project_name}"
-    logit "【用户配置】源码文件路径: ${project_source_path}"
-    logit "【用户配置】预打包项目路径: ${project_build_path}"
-    logit "【用户配置】keychain解锁密码: ${UNLOCK_KEYCHAIN_PWD}"
-    logit "【用户配置】授权文件目录: ${PROVISION_DIR}"
-    logit "【用户配置】构建模式: ${CONFIGRATION_TYPE}"
-    logit "【用户配置】分发渠道: ${CHANNEL}"
-    
-
-}
 
 ## 更改项目infoPist
 function changeProjectInfoPlist() {
@@ -201,13 +218,13 @@ function changeProjectInfoPlist() {
     #APP_Build=`printResource_Config "Build"`
 
      #工程原BundleId
-    project_CFBundleIdentifier=`printProject_Info "CFBundleIdentifier"`
+    ProjectBundleId=`printProject_Info "CFBundleIdentifier"`
 
     logit "【项目配置】APP名称: $APP_Name"
     logit "【项目配置】新BundleId: $APP_BundleId"
-    logit "【项目配置】原BundleId: ${project_CFBundleIdentifier}"
+    logit "【项目配置】原BundleId: ${ProjectBundleId}"
+
     #========================= 更改info.plist文件 =========================
-    
     setProject_Info "CFBundleIdentifier" "$APP_BundleId"
     setProject_Info "CFBundleDisplayName" "$APP_Name"
 #    setProject_Info "CFBundleShortVersionString" "$APP_Version"
@@ -220,7 +237,7 @@ function changeProjectInfoPlist() {
     if [ ! -f "${pbxprojPath}" ]; then
         errorExit  "project.pbxproj文件不存在${pbxprojPath}"
     fi
-    sed -i '' s/$project_CFBundleIdentifier/$APP_BundleId/g $pbxprojPath
+    sed -i '' s/$ProjectBundleId/$APP_BundleId/g $pbxprojPath
     if [ $? -eq 0 ];then
         logit "【配置信息】修改project.pbxproj文件BundleId成功"
     else
@@ -285,8 +302,15 @@ function changeProjectProfile() {
 ## 根据项目需求从json文件获取资源配置信息
 function configResourceFile() {
 
+    ## 打包输出目录
+    Package_Dir=~/Desktop/PackageLog/`date +"%Y%m%d%H%M%S"`
+    if [[ ! -d "$Package_Dir" ]]; then
+        mkdir -p "$Package_Dir"
+    else
+        errorExit "打包输出目录有误"
+    fi
     # 临时存放资源文件目录
-    Tmp_resource_path="${Package_Dir}/Resource"
+    Tmp_resource_path="$Package_Dir/Resource"
     mkdir -p $Tmp_resource_path
     # 拷贝配置文件模板config_tpl.plist到资源文件目录
     cp -rp "${Shell_File_Path}/config_tpl.plist" $Tmp_resource_path
@@ -296,7 +320,7 @@ function configResourceFile() {
     json_file_path="${Shell_File_Path}/test.json"
 
     resource_json_file="$Tmp_resource_path/config.json"
-    logit "【资源配置】$resource_json_file" 
+    logit "【资源配置】json文件: $resource_json_file" 
     # 复制打包参数json文件到打包脚本目录
     cp -rp $json_file_path $resource_json_file
     # 打印json
@@ -398,13 +422,7 @@ function downloadResourceFile() {
 
     # 启动图
     you-get -o $Tmp_resource_path -O LaunchImage "$domain$launchImage"
-    # for i in "${!LaunchImageArray[@]}"; do
-    #     local jsonName="LaunchImage${LaunchImageArray[$i]}"
-    #     local launchimage=`cat $resource_json_file | jq -r ."$jsonName"` 
-    #     local filePaht="$Domain_Url/$launchimage"
-    #     logit "【启动图下载】$launchimage"
-    #     you-get -o $Tmp_resource_path -O $jsonName "$filePaht"
-    # done
+    # 生成不同分辨率启动图
     createLaunchImages "$Tmp_resource_path/LaunchImage.png"
 
     # 引导图

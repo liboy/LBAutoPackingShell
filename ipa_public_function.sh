@@ -3,7 +3,7 @@
 
 # ----------------------------------------------------------------------
 # name:         ipa_public_function.sh
-# version:      1.0.0(100)
+# version:      1.0.6(106)
 # createTime:   2018-08-30
 # description:  ipa打包函数文件
 # author:       liboy
@@ -15,7 +15,7 @@ function usage
 {
 	# setAliasShortCut
 	echo ""
-	echo "Usage:$(basename $0) -[abcdptvhx] [--enable-bitcode] [--auto-buildversion] ..."
+	echo "Usage:$(basename $0) -[abcdptvhx] [--show-profile-detail] [--pgyer-upload] ..."
 	echo "可选项："
 	echo "  -a | --archs <armv7|arm64|armv7 arm64> 指定构建架构集，例如：-a 'armv7'或者 -a 'arm64' 或者 -a 'armv7 arm64' 等"
   	echo "  -b | --bundle-id <bundleId> 设置Bundle Id"
@@ -39,19 +39,6 @@ function usage
 
 #############################################基本配置#############################################
 
-
-function getXcconfigValue() {
-	local xcconfigFile=$1
-	local key=$2
-	if [[ ! -f "$xcconfigFile" ]]; then
-		exit 1
-	fi
-	## 去掉//开头 ;  查找key=特征，去掉双引号
-	local value=$(grep -v "[ ]*//" "$xcconfigFile" | grep -e "[ ]*$key[ ]*=" | tail -1| cut -d "=" -f2 | grep -o "[^ ]\+\( \+[^ ]\+\)*" | sed 's/\"//g' | sed "s/\'//g" ) 
-
-	echo $value
-}
-
 ## 初始化build.xcconfig配置文件
 function initBuildXcconfig() {
 	local xcconfigFile=$Tmp_Build_Xcconfig_File
@@ -63,23 +50,6 @@ function initBuildXcconfig() {
 		touch "$xcconfigFile"
 	fi
 	echo $xcconfigFile
-}
-## 初始化用户配置文件user.xcconfig
-function initUserXcconfig() {
-	if [[ -f "$Shell_User_Xcconfig_File" ]]; then
-		local allKeys=(CHANNEL)
-		for key in ${allKeys[@]}; do
-
-			local value=$(getXcconfigValue "$Shell_User_Xcconfig_File" "$key")
-			
-			if [[ "$value" ]]; then
-				# 重新赋值变量
-				eval "$key"='$value'
-				logit "【初始化用户配置】${key} = `eval echo "$value"`"
-			fi
-
-		done
-	fi
 }
 
 ## 备份历史数据
@@ -111,7 +81,7 @@ function getXcodeVersion() {
 ##查找xcworkspace工程启动文件
 function findXcworkspace() {
 
-	local xcworkspace=$(find "$Shell_Work_Path" -maxdepth 1  -type d -iname "*.xcworkspace")
+	local xcworkspace=$(find "$project_build_path" -maxdepth 1  -type d -iname "*.xcworkspace")
 	if [[ -d "$xcworkspace" ]] || [[ -f "${xcworkspace}/contents.xcworkspacedata" ]]; then
 		echo $xcworkspace
 	fi
@@ -141,7 +111,7 @@ function getAllXcprojPathFromWorkspace() {
 ##查找xcodeproj工程启动文件
 function findXcodeproj() {
 
-	local xcodeprojPath=$(find "$Shell_Work_Path" -maxdepth 1  -type d -iname "*.xcodeproj")
+	local xcodeprojPath=$(find "$project_build_path" -maxdepth 1  -type d -iname "*.xcodeproj")
 	if [[ ! -d "$xcodeprojPath" ]] || [[ ! -f "${xcodeprojPath}/project.pbxproj" ]]; then
 		exit 1
 	fi
@@ -293,12 +263,12 @@ function getInfoPlistFile()
 ## 获取git仓库版本数量
 function getGitRepositoryVersionNumbers (){
 	## 是否存在.git目录
-	local gitRepository=$(find "$Shell_Work_Path" -maxdepth 1  -type d -iname ".git")
+	local gitRepository=$(find "$project_build_path" -maxdepth 1  -type d -iname ".git")
 	if [[ ! -d "$gitRepository" ]]; then
 		exit 1
 	fi
 
-	local gitRepositoryVersionNumbers=$(git -C "$Shell_Work_Path" rev-list HEAD 2>/dev/null | wc -l | grep -o "[^ ]\+\( \+[^ ]\+\)*")
+	local gitRepositoryVersionNumbers=$(git -C "$project_build_path" rev-list HEAD 2>/dev/null | wc -l | grep -o "[^ ]\+\( \+[^ ]\+\)*")
 	if [[ $? -ne 0 ]]; then
 		## 可能是git只有在本地，而没有提交到服务器,或者没有网络
 		exit 1
@@ -632,7 +602,7 @@ function getProvisionCodeSignExpireTimestamp {
 }
 
 ## 获取授权文件信息
-function getProfileInfo() {
+function getProvisionfileInfo() {
 
 	if [[ ! -f "$1" ]]; then
 		errorExit "指定授权文件不存在!"
@@ -725,7 +695,7 @@ function unlockKeychain(){
 ##检查podfile是否存在
 function checkPodfileExist() {
 
-	local podfile=$(find "$Shell_Work_Path" -maxdepth 1  -type f -iname "Podfile")
+	local podfile=$(find "$project_build_path" -maxdepth 1  -type f -iname "Podfile")
 	if [[ ! -f "$podfile" ]]; then
 		exit 1
 	fi
@@ -914,7 +884,7 @@ function checkIPA() {
 	local appVersion=`$CMD_PlistBuddy -c "Print :CFBundleShortVersionString" $ipaInfoPlistFile`
 	local appBuildVersion=`$CMD_PlistBuddy -c "Print :CFBundleVersion" $ipaInfoPlistFile`
 
-
+	# $ codesign -vv -d Example.app 会列出一些有关 Example.app 的签名信息
 	local appCodeSignIdenfifier=$($CMD_Codesign -dvvv "$app" 2>/tmp/log.txt &&  grep Authority /tmp/log.txt | head -n 1 | cut -d "=" -f2)
 	#支持最小的iOS版本
 	local supportMinimumOSVersion=$($CMD_PlistBuddy -c "print :MinimumOSVersion" "$ipaInfoPlistFile")
@@ -931,7 +901,7 @@ function checkIPA() {
 	logit "【IPA 信息】支持的archs:$supportArchitectures"
 	logit "【IPA 信息】签名:$appCodeSignIdenfifier"
 
-	# getProfileInfo "$mobileProvisionFile"
+	# getProvisionfileInfo "$mobileProvisionFile"
 
     ## 清除解压出来的Playload
     rm -rf ${Package_Dir}/Payload
@@ -1020,8 +990,8 @@ function getXcprettyPath() {
 
 ### 显示当前脚本版本号的
 function getShellVersion(){
-	if [[ -d "${Shell_Work_Path}/.git" ]]; then
-		gitVersionCount=`git -C "$Shell_Work_Path" rev-list HEAD | wc -l | grep -o "[^ ]\+\( \+[^ ]\+\)*"`
+	if [[ -d "${Shell_File_Path}/.git" ]]; then
+		gitVersionCount=`git -C "$Shell_File_Path" rev-list HEAD | wc -l | grep -o "[^ ]\+\( \+[^ ]\+\)*"`
 		logit "${gitVersionCount}"
 	fi
 }

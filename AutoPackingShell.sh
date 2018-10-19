@@ -2,7 +2,7 @@
 
 # ----------------------------------------------------------------------
 # name:         AutoPackingShell.sh
-# version:      1.0.0(100)
+# version:      1.0.6(106)
 # createTime:   2018-08-30
 # description:  iOS 自动打包，可配置: Icon,LaunchImage,Info.plist,Config.plist
 # author:       liboy
@@ -54,7 +54,7 @@ while [ "$1" != "" ]; do
 			set -x;;
         --show-profile-detail )
 			shift
-			getProfileInfo "$1"
+			getProvisionfileInfo "$1"
 			exit;
 			;;
 		--pgyer-upload )
@@ -153,7 +153,7 @@ else
 	else
 		# `basename $0`值显示当前脚本或命令的名字
 		# $0显示会包括当前脚本或命令的路径
-		errorExit "项目目录"$Shell_Work_Path"不存在.xcworkspace或.xcodeproj工程文件，"
+		errorExit "项目目录"$project_build_path"不存在.xcworkspace或.xcodeproj工程文件，"
 	fi
 	xcprojPathList=("$xcodeprojPath")
 fi
@@ -282,10 +282,10 @@ fi
 ##导入授权文件
 open "$provisionFile"
 
-logit "【构建信息】匹配授权文件：$provisionFile"
+logit "【构建信息】匹配授权文件: $provisionFile"
 
 ## 展示授权文件信息
-getProfileInfo "$provisionFile"
+getProvisionfileInfo "$provisionFile"
 
 ## 解锁钥匙串
 unlockKeychain
@@ -311,9 +311,8 @@ fi
 ## 进行构建配置信息覆盖，关闭BitCode、签名手动、配置签名等
 xcconfigFile=$(initBuildXcconfig)
 if [[ "$xcconfigFile" ]]; then
-	logit "【签名设置】初始化XCconfig配置文件：$xcconfigFile"
+	logit "【签名设置】初始化build.xcconfig配置文件：$xcconfigFile"
 fi
-
 
 setXCconfigWithKeyValue "CODE_SIGN_STYLE" "$CODE_SIGN_STYLE"
 setXCconfigWithKeyValue "PROVISIONING_PROFILE_SPECIFIER" "$(getProvisionfileName "$provisionFile")" 
@@ -329,7 +328,7 @@ podfile=$(checkPodfileExist)
 if [[ "$podfile" ]]; then
 	logit "【cocoapods】pod install";
 	##必须cd到此工程目录
-	cd "${Shell_Work_Path}"  
+	cd "${project_build_path}"  
 	pod install
 	cd - 
 fi
