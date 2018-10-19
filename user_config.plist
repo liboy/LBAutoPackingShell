@@ -8,8 +8,6 @@
 	<string>/Users/liboy/Desktop/小禾项目/iXiao</string>
 	<key>unlock_keychain_pwd</key>
 	<string>4765030</string>
-	<key>provision_dir</key>
-	<string>/Users/liboy/Desktop/自动打包/描述文件包</string>
 	<key>configration_type</key>
 	<string>Simulation</string>
 	<key>channel</key>

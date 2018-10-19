@@ -29,7 +29,11 @@ Tmp_Log_File="$Package_Dir/package_log.txt"
 
 # 默认资源文件路径
 Tmp_resource_path="${Shell_File_Path}/Resource/yidiantong"
-
+# 授权文件目录，默认在~/Library/MobileDevice/Provisioning Profiles
+PROVISION_DIR="${Shell_File_Path}/MobileProvision"
+# if [[ "$PROVISION_DIR" ]]; then
+#     PROVISION_DIR="${HOME}/Library/MobileDevice/Provisioning Profiles"
+# fi
 ## 用户配置Plist文件
 ShellUserConfigPlist="$Shell_File_Path/user_config.plist"
 

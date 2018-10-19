@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BundleIdentifier</key>
+	<string>com.baonahao.taiyanghuaschool</string>
+	<key>AppName</key>
+	<string>太阳花教育</string>
+	<key>Version</key>
+	<string>2.0.0</string>
+	<key>Build</key>
+	<string>200</string>
 	<key>project_id</key>
 	<string>bba6438fce90437d8cc01ca9923d5ecb</string>
 	<key>merchant_id</key>

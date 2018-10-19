@@ -93,9 +93,9 @@ function initUserConfigFile() {
     logit "【用户配置】预打包项目路径: ${project_build_path}"
     logit "【用户配置】历史打包备份目录: ${History_Package_Dir}"
     logit "【用户配置】脚本生成的日志文件: ${Tmp_Log_File}"
-    logit "【用户配置】构建的配置文件: ${Tmp_Build_Xcconfig_File}"
-    logit "【用户配置】临时OptionsPlist文件: ${Tmp_Options_Plist_File}"
-    
+    logit "【用户配置】脚本生成构建的配置文件: ${Tmp_Build_Xcconfig_File}"
+    logit "【用户配置】脚本生成OptionsPlist文件: ${Tmp_Options_Plist_File}"
+    logit "【用户配置】授权文件目录: ${PROVISION_DIR}"
     #脚本全局参数配置文件user_config.plist(脚本参数优先于全局配置参数)
    
     # 项目名称
@@ -104,11 +104,7 @@ function initUserConfigFile() {
     project_source_path=`printPathPlist "project_source_path"`
     # keychain解锁密码，即开机密码
     UNLOCK_KEYCHAIN_PWD=`printPathPlist "unlock_keychain_pwd"`
-    # 授权文件目录，默认在~/Library/MobileDevice/Provisioning Profiles
-    PROVISION_DIR=`printPathPlist "provision_dir"`
-    if [[ "$PROVISION_DIR" ]]; then
-        PROVISION_DIR="${HOME}/Library/MobileDevice/Provisioning Profiles"
-    fi
+    
     # 构建模式：Debug/Release 
     # Simulation/AppStore
     CONFIGRATION_TYPE=`printPathPlist "configration_type"`
@@ -120,7 +116,6 @@ function initUserConfigFile() {
     logit "【用户配置】项目名称: ${project_name}"
     logit "【用户配置】源码文件路径: ${project_source_path}"
     logit "【用户配置】keychain解锁密码: ${UNLOCK_KEYCHAIN_PWD}"
-    logit "【用户配置】授权文件目录: ${PROVISION_DIR}"
     logit "【用户配置】构建模式: ${CONFIGRATION_TYPE}"
     logit "【用户配置】分发渠道: ${CHANNEL}"
     
@@ -311,6 +306,8 @@ function configResourceFile() {
     fi
     # 临时存放资源文件目录
     Tmp_resource_path="$Package_Dir/Resource"
+    # 授权文件目录
+    PROVISION_DIR=$Tmp_resource_path
     mkdir -p $Tmp_resource_path
     # 拷贝配置文件模板config_tpl.plist到资源文件目录
     cp -rp "${Shell_File_Path}/config_tpl.plist" $Tmp_resource_path
@@ -361,10 +358,14 @@ function configResourceFile() {
     Domain_Url=`cat $resource_json_file | jq -r '.Platform'`
     icon=`cat $resource_json_file | jq -r '.icon'`
     LaunchImage=`cat $resource_json_file | jq -r '.start_img'`
-    
     ## 下载图片
     downloadResourceFile "$Domain_Url" "$icon" "$LaunchImage" "$CONFIG_guide_count"
 
+    # 描述文件路径
+    MobileProvision = `cat $resource_json_file | jq -r '.mobileprovision'`
+    # 下载
+    you-get -o $Tmp_resource_path -O ProvisionFile "$Domain_Url$MobileProvision"
+    
 
     # 脚本资源里Config.plist文件路径
     resource_config_plist="${Tmp_resource_path}/Config.plist"
