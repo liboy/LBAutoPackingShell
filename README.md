@@ -11,6 +11,12 @@ LBAutoPackingShell
 
 ## 安装使用
 ```
+安装 Homebrew
+/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+# https://blog.csdn.net/offbye/article/details/38379195
+# mac下安装jq，使用brew install jq
+
 # ************* 安装Blade ************* 
 # https://github.vimcom/jondot/blade
 # blade --help 查看命令
@@ -19,9 +25,10 @@ LBAutoPackingShell
 # -o 输出路径 AppIcon.appiconset
 # -c 覆盖旧的Contents.json文件
 
-
+安装 You-Get
 # You-Get是一个小型命令行实用程序，用于从Web下载媒体内容（视频，音频，图像），以防没有其他方便的方法。
 # Github 项目：https://github.com/soimort/you-get
+brew install you-get
 
 
 # 该脚本使用方法

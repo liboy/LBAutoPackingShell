@@ -31,6 +31,17 @@ pgyer_apiKey="b9bcf5ef168fdf8ce379ae9ab9bd8dcc"
 
 ###########################################核心逻辑#####################################################
 
+jq -h
+if [[ ! $? -eq 0 ]]; then
+    errorExit "【环境配置】请使用brew install jq安装 "  
+fi
+
+you-get -h
+if [[ ! $? -eq 0 ]]; then
+    errorExit "【环境配置】请使用brew install you-get安装 "  
+fi
+
+
 while [ "$1" != "" ]; do
     case $1 in
         -b | --bundle-id )

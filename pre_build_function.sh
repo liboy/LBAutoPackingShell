@@ -322,11 +322,8 @@ function configResourceFile() {
     cp -rp $json_file_path $resource_json_file
     # 打印json
     jq . $resource_json_file
-
-    # https://blog.csdn.net/offbye/article/details/38379195
-    # mac下安装jq，使用brew install jq
-    # 解析json 打包参数
     
+    # 解析json 打包参数
     #************************** 工程配置信息 ***************************
  
     APP_Name=`cat $resource_json_file | jq -r '.app_name'`
