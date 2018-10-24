@@ -21,18 +21,22 @@ CMD_Codesign=$(which codesign)
 
 #############################################常用变量#############################################
 
-## 打包输出目录
-Package_Dir=~/Desktop/PackageLog 
+CurrentDateStr=`date +"%Y%m%d%H%M%S"`
+## 默认线下打包输出目录
+Package_Dir=~/Desktop/PackageLog/Offline
+if [[ ! -d "$Package_Dir" ]]; then
+    mkdir -p "$Package_Dir"
+fi
 
 ## 脚本生成的日志文件
-Tmp_Log_File="$Package_Dir/package_log.txt"
+Tmp_Log_File="$Package_Dir/${CurrentDateStr}.txt"
 
 # 默认资源文件路径
 Tmp_resource_path="${Shell_File_Path}/Resource/yidiantong"
 # 授权文件目录，默认在~/Library/MobileDevice/Provisioning Profiles
-PROVISION_DIR="${Shell_File_Path}/MobileProvision"
-# if [[ "$PROVISION_DIR" ]]; then
-#     PROVISION_DIR="${HOME}/Library/MobileDevice/Provisioning Profiles"
+Provision_Dir="${Shell_File_Path}/MobileProvision"
+# if [[ "$Provision_Dir" ]]; then
+#     Provision_Dir="${HOME}/Library/MobileDevice/Provisioning Profiles"
 # fi
 ## 用户配置Plist文件
 ShellUserConfigPlist="$Shell_File_Path/user_config.plist"

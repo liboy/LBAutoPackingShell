@@ -30,7 +30,7 @@ function usage
 	
 	echo "  --show-profile-detail <provisionfile> 查看授权文件的信息详情(development、enterprise、app-store、ad-hoc)"
 	echo "  --pgyer-upload <ipafilepath>  指定IPA文件上传蒲公英"
-	echo "  --config-resource <jsonfilepath>  指定json文件配置脚本资源配置信息后打包项目"
+	echo "  --config-resource <jsonfilepath> <datestr> 指定json文件和时间字符串(例:20181023140504）配置脚本资源配置信息后打包项目"
 	
 	exit 0
 }

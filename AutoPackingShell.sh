@@ -31,12 +31,12 @@ pgyer_apiKey="b9bcf5ef168fdf8ce379ae9ab9bd8dcc"
 
 ###########################################核心逻辑#####################################################
 
-jq -h
+jq -h >/dev/null 2>&1
 if [[ ! $? -eq 0 ]]; then
     errorExit "【环境配置】请使用brew install jq安装 "  
 fi
 
-you-get -h
+you-get -h >/dev/null 2>&1
 if [[ ! $? -eq 0 ]]; then
     errorExit "【环境配置】请使用brew install you-get安装 "  
 fi
@@ -74,8 +74,8 @@ while [ "$1" != "" ]; do
 			exit;
 			;;
 		--config-resource )
-			shift
-			configResourceFile "$1"
+			configResourceFile "$2" "$3"
+			shift 2
 			;;
         -h | --help )
             usage
@@ -286,9 +286,9 @@ checkOpenssl
 
 logit "【构建信息】进行授权文件匹配..."
 ## 匹配授权文件
-provisionFile=$(matchMobileProvisionFile "$CHANNEL" "$projectBundleId" "$PROVISION_DIR")
+provisionFile=$(matchMobileProvisionFile "$CHANNEL" "$projectBundleId" "$Provision_Dir")
 if [[ ! "$provisionFile" ]]; then
-	errorExit "不存在BundleId为:${projectBundleId}，分发渠道为:${CHANNEL}的授权文件，请检查${PROVISION_DIR}目录是否存在对应授权文件"
+	errorExit "不存在BundleId为:${projectBundleId}，分发渠道为:${CHANNEL}的授权文件，请检查${Provision_Dir}目录是否存在对应授权文件"
 fi
 ##导入授权文件
 open "$provisionFile"

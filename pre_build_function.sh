@@ -83,8 +83,6 @@ function initUserConfigFile() {
     project_build_path="$Package_Dir/iXiao_build"
     ##历史打包备份目录
     History_Package_Dir="$Package_Dir/History"
-    ## 脚本生成的日志文件
-    Tmp_Log_File="$Package_Dir/package_log.txt"
     ## 脚本临时生成最终用于构建的配置文件
     Tmp_Build_Xcconfig_File="$Package_Dir/build.xcconfig"
     ##临时OptionsPlist文件
@@ -95,7 +93,7 @@ function initUserConfigFile() {
     logit "【用户配置】脚本生成的日志文件: ${Tmp_Log_File}"
     logit "【用户配置】脚本生成构建的配置文件: ${Tmp_Build_Xcconfig_File}"
     logit "【用户配置】脚本生成OptionsPlist文件: ${Tmp_Options_Plist_File}"
-    logit "【用户配置】授权文件目录: ${PROVISION_DIR}"
+    logit "【用户配置】授权文件目录: ${Provision_Dir}"
     #脚本全局参数配置文件user_config.plist(脚本参数优先于全局配置参数)
    
     # 项目名称
@@ -297,22 +295,33 @@ function changeProjectProfile() {
 ## 根据项目需求从json文件获取资源配置信息
 function configResourceFile() {
 
-    ## 打包输出目录
-    Package_Dir=~/Desktop/PackageLog/`date +"%Y%m%d%H%M%S"`
+    # 所需的json配置文件路径
+    local json_file_path=$1
+    # 服务器动态时间标记（用来隔离打包）
+    CurrentDateStr=$2
+    if [[ ! $CurrentDateStr ]]; then
+        errorExit "请传入服务器时间字符串"
+    fi
+    
+    ## 线上打包输出目录
+    Package_Dir=~/Desktop/PackageLog/Online/$CurrentDateStr
     if [[ ! -d "$Package_Dir" ]]; then
         mkdir -p "$Package_Dir"
     else
-        errorExit "打包输出目录有误"
+        errorExit "线上打包输出目录重复，请检查"
     fi
+    ## 脚本生成的日志文件
+    Tmp_Log_File="$Package_Dir/package_log.txt"
+    # 自动打开打包输出目录
+    open $Package_Dir
     # 临时存放资源文件目录
     Tmp_resource_path="$Package_Dir/Resource"
     # 授权文件目录
-    PROVISION_DIR=$Tmp_resource_path
+    Provision_Dir=$Tmp_resource_path
     mkdir -p $Tmp_resource_path
     # 拷贝配置文件模板config_tpl.plist到资源文件目录
     cp -rp "${Shell_File_Path}/config_tpl.plist" $Tmp_resource_path
-    # 所需的json配置文件路径
-    json_file_path=$1
+    
     # 测试
     json_file_path="${Shell_File_Path}/test.json"
 
@@ -359,7 +368,7 @@ function configResourceFile() {
     downloadResourceFile "$Domain_Url" "$icon" "$LaunchImage" "$CONFIG_guide_count"
 
     # 描述文件路径
-    MobileProvision = `cat $resource_json_file | jq -r '.mobileprovision'`
+    MobileProvision=`cat $resource_json_file | jq -r '.mobileprovision'`
     # 下载
     you-get -o $Tmp_resource_path -O ProvisionFile "$Domain_Url$MobileProvision"
     
