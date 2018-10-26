@@ -15,6 +15,8 @@ function usage
 {
 	# setAliasShortCut
 	echo ""
+	# `basename $0`值显示当前脚本或命令的名字
+	# $0显示会包括当前脚本或命令的路径
 	echo "Usage:$(basename $0) -[abcdptvhx] [--show-profile-detail] [--pgyer-upload] ..."
 	echo "可选项："
 	echo "  -a | --archs <armv7|arm64|armv7 arm64> 指定构建架构集，例如：-a 'armv7'或者 -a 'arm64' 或者 -a 'armv7 arm64' 等"
@@ -75,28 +77,63 @@ function historyBackup() {
 
 ## 获取Xcode版本
 function getXcodeVersion() {
-	local xcodeVersion=`$CMD_Xcodebuild -version | head -1 | cut -d " " -f 2`
-	echo $xcodeVersion
+	xcodeVersion=`$CMD_Xcodebuild -version | head -1 | cut -d " " -f 2`
+	if [[ ! "$xcodeVersion" ]]; then
+		errorExit "获取当前XcodeVersion失败"
+	fi
+	logit "【构建信息】Xcode版本：$xcodeVersion"
 }
 
 
-##查找xcworkspace工程启动文件
+## 查找xcworkspace工程启动文件,获取xcodeproj工程列表
 function findXcworkspace() {
 
-	local xcworkspace=$(find "$project_build_path" -maxdepth 1  -type d -iname "*.xcworkspace")
+	xcworkspace=$(find "$project_build_path" -maxdepth 1  -type d -iname "*.xcworkspace")
+	xcworkspacedataFile="$xcworkspace/contents.xcworkspacedata"
 	if [[ -d "$xcworkspace" ]] || [[ -f "${xcworkspace}/contents.xcworkspacedata" ]]; then
-		echo $xcworkspace
+		logit "【构建信息】项目结构：多工程协同(workspace)"
+		logit "【构建信息】xcworkspace文件：$xcworkspace"
+		## 外括号作用是转变为数组
+		xcprojPathList=($(getAllXcprojPathFromWorkspace "$xcworkspace"))
+		num=${#xcprojPathList[@]} ##数组长度 
+		if [[ $num -gt 1 ]]; then
+			i=0
+			for xcproj in ${xcprojPathList[*]}; do
+				i=$(expr $i + 1)
+				logit "【构建信息】工程${i}：${xcproj##*/}"
+			done
+		fi
+
+	else
+		## 查找xcodeproj工程启动文件
+		logit "【构建信息】项目结构：单工程"
+		xcodeprojPath=$(find "$project_build_path" -maxdepth 1  -type d -iname "*.xcodeproj")
+		if [[ -d "$xcodeprojPath" ]] || [[ -f "${xcodeprojPath}/project.pbxproj" ]]; then
+			logit "【构建信息】工程路径:$xcodeprojPath"
+		else
+			errorExit "项目目录$project_build_path不存在.xcworkspace或.xcodeproj工程文件"
+		fi
+		xcprojPathList=("$xcodeprojPath")
+
 	fi
+
+	## 构建的xcprojPath列表,即除去Pods.xcodeproj之外的
+	xcprojList=()
+	for (( i = 0; i < ${#xcprojPathList[*]}; i++ )); do
+		path=${xcprojPathList[i]};
+		if [[ "${path##*/}" == "Pods.xcodeproj" ]]; then
+			continue;
+		fi
+		## 数组追加元素括号里面第一个参数不能用双引号，否则会多出一个空格
+		xcprojList=(${xcprojList[*]} "$path")
+	done
+	logit "【构建信息】可构建的工程数量（不含Pods）:${#xcprojList[*]}"
+
 }
 
-## 获取workspace的项目路径列表
+## 获取workspace的项目路径列表xcodeproj
 function getAllXcprojPathFromWorkspace() {
-	local xcworkspace=$1;
-	local xcworkspacedataFile="$xcworkspace/contents.xcworkspacedata";
-	if [[ ! -f "$xcworkspacedataFile" ]]; then
-		echo "xcworkspacedata 文件不存在";
-		exit 1;
-	fi
+	
 	local list=($(grep "location =" "$xcworkspacedataFile" | cut -d "\"" -f2 | cut -d ":" -f2))
 	## 补充完整路径
 	local completePathList=()
@@ -104,43 +141,17 @@ function getAllXcprojPathFromWorkspace() {
 		local path="${xcworkspace}/../${xcproj}"
 		## 数组追加元素括号里面第一个参数不能用双引号，否则会多出一个空格
 		completePathList=(${completePathList[*]} "$path")
-
 	done
 	echo "${completePathList[*]}"
 }
 
 
-##查找xcodeproj工程启动文件
-function findXcodeproj() {
-
-	local xcodeprojPath=$(find "$project_build_path" -maxdepth 1  -type d -iname "*.xcodeproj")
-	if [[ ! -d "$xcodeprojPath" ]] || [[ ! -f "${xcodeprojPath}/project.pbxproj" ]]; then
-		exit 1
-	fi
-	echo  $xcodeprojPath
-}
-
-
-##这里只取第一个target
-function getTargetName()
-{
-	local pbxproj=$1/project.pbxproj
-	local targetId=$2
-	if [[ ! -f "$pbxproj" ]]; then
-		exit 1
-	fi
-	local targetName=$($CMD_PlistBuddy -c "Print :objects:$targetId:name" "$pbxproj")
-	echo $targetName
-}
-
 ## 获取xcproj的所有target
 ## 比分数组元素本身带有空格，所以采用字符串用“;”作为分隔符，而不是用数组。
-function getAllTargetsInfoFromXcprojList() {
-	## 转换成数组
+function getTargetsFromXcprojList() {
 	local xcprojList=$1
-
-	## 因在mac 系统下 在for循环中无法使用map ，所以使用数组来代替，元素格式为 targetId:targetName:xcprojPath
-	local wrapXcprojListStr='' ##
+	# 元素格式为 targetId:targetName:xcprojPath
+	local targetsInfoListStr='' ##
 	## 获取每个子工程的target
 	for (( i = 0; i < ${#xcprojList[*]}; i++ )); do
 		local xcprojPath=${xcprojList[i]};
@@ -154,23 +165,37 @@ function getAllTargetsInfoFromXcprojList() {
 			for targetId in ${targetIds[*]}; do
 				local targetName=$($CMD_PlistBuddy -c "Print :objects:$targetId:name" "$pbxprojPath")
 				local info="${targetId}:${targetName}:${xcprojPath}"
-				if [[ "$wrapXcprojListStr" == '' ]]; then
-					wrapXcprojListStr="$info";
+				if [[ "$targetsInfoListStr" == '' ]]; then
+					targetsInfoListStr="$info";
 				else
-					wrapXcprojListStr="${wrapXcprojListStr};${info}";
+					targetsInfoListStr="${targetsInfoListStr};${info}";
 
 				fi
 			done
 		fi
 	done
-	echo "$wrapXcprojListStr"
+
+	## 将字符串以分号分割成数组
+	# 记录当前分隔符号
+	OLD_IFS="$IFS"
+	IFS=";"
+	targetsInfoList=($targetsInfoListStr)
+	IFS="$OLD_IFS" ##还原
+
+	logit "【构建信息】可构建的Target数量（不含Pods）:${#targetsInfoList[*]}"
+	for i in "${!targetsInfoList[@]}"; do
+		local targetInfo=${targetsInfoList[$i]} 
+		tId=$(getTargetInfoValue "$targetInfo" "id")
+		tName=$(getTargetInfoValue "$targetInfo" "name")
+		logit "【构建信息】可构建Target${i}：${tName}"
+	done
 
 }
 
 
 ## 例如分割
-# 16A99C1E1C744CE000907D37:iXiao:/Users/liboy/Desktop/自动打包/xinyue/iXiao.xcworkspace/../iXiao.xcodeproj;
-# 16A99C371C744CE100907D37:iXiaoTests:/Users/liboy/Desktop/自动打包/xinyue/iXiao.xcworkspace/../iXiao.xcodeproj
+# 16A99C1E1C744CE000907D37:iXiao:/iXiao.xcworkspace/../iXiao.xcodeproj;
+# 16A99C371C744CE100907D37:iXiaoTests:/iXiao.xcworkspace/../iXiao.xcodeproj
 function getTargetInfoValue(){
 
 	local targetInfo="$1"
@@ -197,6 +222,7 @@ function getTargetInfoValue(){
 	fi
 	echo "$value"
 }
+
 
 ## 获取配置ID列表,主要是后续用来获取bundle id
 function getConfigurationIds() {
@@ -352,7 +378,7 @@ function checkOpenssl() {
 function getProfileBundleId()
 {
 	local profile=$1
-	local applicationIdentifier=$($CMD_PlistBuddy -c 'Print :Entitlements:application-identifier' /dev/stdin <<< "$($CMD_Security cms -D -i "$profile" 2>/dev/null )")
+	local applicationIdentifier=$($CMD_PlistBuddy -c 'Print :Entitlements:application-identifier' /dev/stdin <<< "$($CMD_Security cms -D -i "$profile" 2>/dev/null)" )
 	if [[ $? -ne 0 ]]; then
 		exit 1;
 	fi
@@ -371,7 +397,7 @@ function getProfileType() {
 	##判断是否存在key:ProvisionedDevices
 	local haveKey=$($CMD_Security cms -D -i "$profile" 2>/dev/null | sed -e '/Array {/d' -e '/}/d' -e 's/^[ \t]*//' | grep ProvisionedDevices)
 	if [[ "$haveKey" ]]; then
-		local getTaskAllow=$($CMD_PlistBuddy -c 'Print :Entitlements:get-task-allow' /dev/stdin <<< $($CMD_Security cms -D -i "$profile" 2>/dev/null ) )
+		local getTaskAllow=$($CMD_PlistBuddy -c 'Print :Entitlements:get-task-allow' /dev/stdin <<< "$($CMD_Security cms -D -i "$profile" 2>/dev/null)" )
 		if [[ $getTaskAllow == true ]]; then
 			profileType='development'
 		else
@@ -399,7 +425,7 @@ function getProvisionfileExpireTimestmap() {
 	##切换到英文环境，不然无法转换成时间戳
     export LANG="en_US.UTF-8"
     ##获取授权文件的过期时间
-    local expirationTime=`$CMD_PlistBuddy -c 'Print :ExpirationDate' /dev/stdin <<< $($CMD_Security cms -D -i "$provisionFile" 2>/tmp/log.txt)`
+    local expirationTime=$($CMD_PlistBuddy -c 'Print :ExpirationDate' /dev/stdin <<< "$($CMD_Security cms -D -i "$provisionFile" 2>/dev/null)" )
     local timestamp=`date -j -f "%a %b %d  %T %Z %Y" "$expirationTime" "+%s"`
     # echo $(date -r `expr $timestamp `  "+%Y年%m月%d" )
     echo "$timestamp"
@@ -500,7 +526,7 @@ function getProvisionfileCreateTimestmap {
 	##切换到英文环境，不然无法转换成时间戳
     export LANG="en_US.UTF-8"
     ##获取授权文件的过期时间
-    local createTime=`$CMD_PlistBuddy -c 'Print :CreationDate' $Tmp_Provision_Plist_File)`
+    local createTime=$($CMD_PlistBuddy -c 'Print :CreationDate' $Tmp_Provision_Plist_File)
     local timestamp=`date -j -f "%a %b %d  %T %Z %Y" "$createTime" "+%s"`
     # echo $(date -r `expr $timestamp `  "+%Y年%m月%d" )
     echo "$timestamp"
@@ -701,11 +727,10 @@ function checkPodfileExist() {
 
 
 ### 开始构建归档，因为该函数里面逻辑较多，所以在里面添加了日志打印
-function archiveBuild()
-{
+function archiveBuild() {
 	local targetName=$1
 	local xcconfigFile=$2
-	local xcworkspacePath=$(findXcworkspace)
+	local xcworkspacePath=$3
 
 	## 暂时使用全局变量---
 	archivePath="${Package_Dir}"/$targetName.xcarchive
@@ -773,7 +798,7 @@ function exportIPA() {
 	# %.* 表示去除最后的文件后缀
 	# local targetName=${archivePath%.*}
 	# targetName=${targetName##*/}
-	local xcodeVersion=$(getXcodeVersion)
+	
 	## warning项目耦合处 CONFIGRATION_TYPE
 	exportPath="${Package_Dir}"/${CONFIGRATION_TYPE}.ipa
 
@@ -801,37 +826,6 @@ function exportIPA() {
 		errorExit "导出ipa失败，请检查日志。"
 	fi
 }
-
-##打包的时候：会报 archived-expanded-entitlements.xcent  文件缺失!这是xcode的bug
-##链接：http://stackoverflow.com/questions/28589653/mac-os-x-build-server-missing-archived-expanded-entitlements-xcent-file-in-ipa
-## 发现在 xcode >= 8.3.3 以上都不存在 ,在xcode8.2.1 存在
-function repairXcentFile()
-{
-
-	local exportPath=$1
-	local archivePath=$2
-	local xcodeVersion=$(getXcodeVersion)
-
-	## 小于8.3(不包含8.3)
-	if ! versionCompareGE "$xcodeVersion" "8.3"; then
-		local appName=`basename "$exportPath" .ipa`
-		local xcentFile="${archivePath}"/Products/Applications/"${appName}".app/archived-expanded-entitlements.xcent
-		if [[ -f "$xcentFile" ]]; then
-			# baxcent文件从archive中拷贝到IPA中
-			unzip -o "$exportPath" -d /"$Package_Dir" >/dev/null 2>&1
-			local app="${Package_Dir}"/Payload/"${appName}".app
-			cp -af "$xcentFile" "$app" >/dev/null 2>&1
-			##压缩,并覆盖原有的ipa
-			cd "${Package_Dir}"  ##必须cd到此目录 ，否则zip会包含绝对路径
-			zip -qry  "$exportPath" Payload >/dev/null 2>&1 && rm -rf Payload
-			cd - >/dev/null 2>&1
-			## 因为重新加压，文件名和路径都没有变化
-			local ipa=$exportPath
-			echo  "$ipa"
-		fi
-	fi
-}
-
 
 
 #构建完成，校验ipa

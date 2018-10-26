@@ -96,19 +96,19 @@ done
 initUserConfigFile
 
 ## 拷贝项目(打包工程)
-copyProjectFile
+# copyProjectFile
 
-## 生成并替换AppIcon
-createAppIcon
+# ## 生成并替换AppIcon
+# createAppIcon
 
-## 替换launchImage
-replaceLaunchImage
+# ## 替换launchImage
+# replaceLaunchImage
 
-## 更改项目info.plist文件
-changeProjectInfoPlist
+# ## 更改项目info.plist文件
+# changeProjectInfoPlist
 
-## 更改项目配置文件
-changeProjectProfile
+# ## 更改项目配置文件
+# changeProjectProfile
 
 
 ###########################################IPA构建#####################################################
@@ -124,85 +124,15 @@ if [[ $? -eq 0 ]]; then
 fi
 
 
-### Xcode版本
-xcVersion=$(getXcodeVersion)
+## 获取Xcode版本
+getXcodeVersion
 
-if [[ ! "$xcVersion" ]]; then
-	errorExit "获取当前XcodeVersion失败"
-fi
-logit "【构建信息】Xcode版本：$xcVersion"
+## 查找xcworkspace工程启动文件,获取xcproj 工程列表
+findXcworkspace
 
 
-## 获取xcproj 工程列表
-xcprojPathList=()
-
-## 查找xcworkspace工程启动文件
-xcworkspace=$(findXcworkspace)
-logit "【构建信息】xcworkspace文件：$xcworkspace"
-if [[ "$xcworkspace" ]]; then
-	
-	logit "【构建信息】项目结构：多工程协同(workspace)"
-	##  外括号作用是转变为数组
-	xcprojPathList=($(getAllXcprojPathFromWorkspace "$xcworkspace"))
-	num=${#xcprojPathList[@]} ##数组长度 
-
-	if [[ $num -gt 1 ]]; then
-		i=0
-		for xcproj in ${xcprojPathList[*]}; do
-			i=$(expr $i + 1)
-			logit "【构建信息】工程${i}：${xcproj##*/}"
-		done
-	fi
-
-else
-	## 查找xcodeproj 文件
-	logit "【构建信息】项目结构：单工程"
-	xcodeprojPath=$(findXcodeproj)
-	if [[ "$xcodeprojPath" ]]; then
-		logit "【构建信息】工程路径:$xcodeprojPath"
-	else
-		# `basename $0`值显示当前脚本或命令的名字
-		# $0显示会包括当前脚本或命令的路径
-		errorExit "项目目录"$project_build_path"不存在.xcworkspace或.xcodeproj工程文件，"
-	fi
-	xcprojPathList=("$xcodeprojPath")
-fi
-
-
-## 构建的xcprojPath列表,即除去Pods.xcodeproj之外的
-buildXcprojPathList=()
-for (( i = 0; i < ${#xcprojPathList[*]}; i++ )); do
-	path=${xcprojPathList[i]};
-	if [[ "${path##*/}" == "Pods.xcodeproj" ]]; then
-		continue;
-	fi
-	## 数组追加元素括号里面第一个参数不能用双引号，否则会多出一个空格
-	buildXcprojPathList=(${buildXcprojPathList[*]} "$path")
-done
-logit "【构建信息】可构建的工程数量（不含Pods）:${#buildXcprojPathList[*]}"
-
-
-## 获取可构建的工程的所有target
-targetsInfoListStr=$(getAllTargetsInfoFromXcprojList "${buildXcprojPathList[*]}")
-# 16A99C1E1C744CE000907D37:iXiao:/Users/liboy/Desktop/自动打包/xinyue/iXiao.xcworkspace/../iXiao.xcodeproj;
-# 16A99C371C744CE100907D37:iXiaoTests:/Users/liboy/Desktop/自动打包/xinyue/iXiao.xcworkspace/../iXiao.xcodeproj
-
-## 将字符串以分号分割成数组
-# 记录当前分隔符号
-OLD_IFS="$IFS"
-IFS=";"
-targetsInfoList=($targetsInfoListStr)
-IFS="$OLD_IFS" ##还原
-
-logit "【构建信息】可构建的Target数量（不含Pods）:${#targetsInfoList[*]}"
-
-i=1
-for targetInfo in ${targetsInfoList[*]}; do
-	tId=$(getTargetInfoValue "$targetInfo" "id")
-	tName=$(getTargetInfoValue "$targetInfo" "name")
-	logit "【构建信息】可构建Target${i}：${tName}"
-	i=$(expr $i + 1 )
-done
+## 获取可构建Target
+getTargetsFromXcprojList "${xcprojList[*]}"
 
 
 ##获取构建的targetName和targetId 和构建的xcodeprojPath
@@ -337,7 +267,7 @@ fi
 ## archivePath 在函数archiveBuild 是全局变量
 logit "【归档信息】开始归档中...";
 archivePath=''
-archiveBuild "$targetName" "$Tmp_Build_Xcconfig_File" 
+archiveBuild "$targetName" "$Tmp_Build_Xcconfig_File" "$xcworkspace" 
 logit "【归档信息】项目构建成功，文件路径：$archivePath"
 
 
@@ -349,12 +279,6 @@ if [[ ! "$exportPath" ]]; then
 fi
 logit "【IPA 导出】IPA导出成功，文件路径：$exportPath"
 
-
-# ## 修复8.3 以下版本的xcent文件
-# xcentFile=$(repairXcentFile "$exportPath" "$archivePath")
-# if [[ "$xcentFile" ]]; then
-# 	logit "【xcent 文件修复】拷贝archived-expanded-entitlements.xcent 到${xcentFile}"
-# fi
 
 ## 检查IPA
 logit "【签名校验】IPA签名校验中..."

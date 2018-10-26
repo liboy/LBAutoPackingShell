@@ -2,7 +2,7 @@
 LBAutoPackingShell
 ==
 
-`LBAutoPackingShell` 一个轻量级 iOS 快速自动打包工具。
+`LBAutoPackingShell` 一个轻量级 iOS 快速自动打包工具。xcode >= 8.3.3
 
 
 ## 安装使用
@@ -366,3 +366,43 @@ security cms -D -i "/Users/liboy/Desktop/自动打包/LBAutoPackingShell/MobileP
 /usr/libexec/PlistBuddy -c 'Print :DeveloperCertificates:0' "/Users/liboy/Desktop/MobileProvision.plist"
 security cms -D -i "/Users/liboy/Desktop/自动打包/LBAutoPackingShell/MobileProvision/xiaolundun_development.mobileprovision" | grep data | head -n 1 | sed 's/.*<data>//g' | sed 's/<\/data>.*//g'
 
+grep "location =" "/Users/liboy/Desktop/PackageLog/Offline/iXiao_build/iXiao.xcworkspace/contents.xcworkspacedata" | cut -d "\"" -f2 | cut -d ":" -f2
+
+
+##打包的时候：会报 archived-expanded-entitlements.xcent  文件缺失!这是xcode的bug
+##链接：http://stackoverflow.com/questions/28589653/mac-os-x-build-server-missing-archived-expanded-entitlements-xcent-file-in-ipa
+## 发现在 xcode >= 8.3.3 以上都不存在 ,在xcode8.2.1 存在
+
+```
+# ## 修复8.3 以下版本的xcent文件
+# xcentFile=$(repairXcentFile "$exportPath" "$archivePath")
+# if [[ "$xcentFile" ]]; then
+#   logit "【xcent 文件修复】拷贝archived-expanded-entitlements.xcent 到${xcentFile}"
+# fi
+
+function repairXcentFile()
+{
+
+    local exportPath=$1
+    local archivePath=$2
+
+    ## 小于8.3(不包含8.3)
+    if ! versionCompareGE "$xcodeVersion" "8.3"; then
+        local appName=`basename "$exportPath" .ipa`
+        local xcentFile="${archivePath}"/Products/Applications/"${appName}".app/archived-expanded-entitlements.xcent
+        if [[ -f "$xcentFile" ]]; then
+            # baxcent文件从archive中拷贝到IPA中
+            unzip -o "$exportPath" -d /"$Package_Dir" >/dev/null 2>&1
+            local app="${Package_Dir}"/Payload/"${appName}".app
+            cp -af "$xcentFile" "$app" >/dev/null 2>&1
+            ##压缩,并覆盖原有的ipa
+            cd "${Package_Dir}"  ##必须cd到此目录 ，否则zip会包含绝对路径
+            zip -qry  "$exportPath" Payload >/dev/null 2>&1 && rm -rf Payload
+            cd - >/dev/null 2>&1
+            ## 因为重新加压，文件名和路径都没有变化
+            local ipa=$exportPath
+            echo  "$ipa"
+        fi
+    fi
+}
+```
