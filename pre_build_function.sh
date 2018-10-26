@@ -13,7 +13,7 @@
 
 # ********************* user_config.plist *********************
 #读取   ShellUserConfigPlist.plist文件
-function printPathPlist() {
+function printUserConfigPlist() {
     echo `$CMD_PlistBuddy -c "Print :${1}" ${ShellUserConfigPlist}`
 }
 #写入   ShellUserConfigPlist.plist文件
@@ -86,7 +86,9 @@ function initUserConfigFile() {
     ## 脚本临时生成最终用于构建的配置文件
     Tmp_Build_Xcconfig_File="$Package_Dir/build.xcconfig"
     ##临时OptionsPlist文件
-    Tmp_Options_Plist_File="$Package_Dir/optionsplist.plist"
+    Tmp_Options_Plist_File="$Package_Dir/OptionsPlist.plist"
+    ##临时ProvisionPlist文件
+    Tmp_Provision_Plist_File="$Package_Dir/ProvisionPlist.plist"
    
     logit "【用户配置】预打包项目路径: ${project_build_path}"
     logit "【用户配置】历史打包备份目录: ${History_Package_Dir}"
@@ -97,18 +99,18 @@ function initUserConfigFile() {
     #脚本全局参数配置文件user_config.plist(脚本参数优先于全局配置参数)
    
     # 项目名称
-    project_name=`printPathPlist "project_name"`
+    project_name=`printUserConfigPlist "project_name"`
     # 项目源码文件路径
-    project_source_path=`printPathPlist "project_source_path"`
+    project_source_path=`printUserConfigPlist "project_source_path"`
     # keychain解锁密码，即开机密码
-    UNLOCK_KEYCHAIN_PWD=`printPathPlist "unlock_keychain_pwd"`
+    UNLOCK_KEYCHAIN_PWD=`printUserConfigPlist "unlock_keychain_pwd"`
     
     # 构建模式：Debug/Release 
     # Simulation/AppStore
-    CONFIGRATION_TYPE=`printPathPlist "configration_type"`
+    CONFIGRATION_TYPE=`printUserConfigPlist "configration_type"`
 
     # 指定分发渠道，development 内部分发，app-store商店分发，enterprise企业分发， ad-hoc 企业内部分发"
-    CHANNEL=`printPathPlist "channel"`
+    CHANNEL=`printUserConfigPlist "channel"`
 
 
     logit "【用户配置】项目名称: ${project_name}"
@@ -273,7 +275,7 @@ function changeProjectProfile() {
         errorExit "Resource中缺少Config.plist 文件"
     fi
     # cp -rf "${resource_config_plist}" "${project_config_plist}"
-    
+    local ConfigPlistKeyArray=("project_id" "merchant_id" "system_color" "baidu_MapKey" "uMeng_AppKey" "bugly_AppId" "bugly_AppKey" "jPush_AppKey" "home_page_num" "mine_page_num" "is_allied_school" "login_type" "is_always_show_guidepage" "guide_count" "weChat_AppID" "weChat_AppSecret") 
 
     for i in "${!ConfigPlistKeyArray[@]}"; do
         local dictKey=${ConfigPlistKeyArray[$i]}
@@ -380,13 +382,14 @@ function configResourceFile() {
 
     #修改配置文件config.plist
     logit "【资源配置】配置资源Config.plist文件中..."
-    # key->value数组
-    ConfigPlistValueArray=($APP_Name $APP_BundleId $APP_Version $APP_Build $CONFIG_project_id $CONFIG_merchant_id $CONFIG_system_color $CONFIG_baidu_MapKey $CONFIG_uMeng_AppKey $CONFIG_bugly_AppId $CONFIG_bugly_AppKey $CONFIG_jPush_AppKey $CONFIG_home_page_num $CONFIG_mine_page_num $CONFIG_is_allied_school $CONFIG_login_type $CONFIG_is_always_show_guidepage $CONFIG_guide_count $CONFIG_weChat_AppID $CONFIG_weChat_AppSecret)
 
     if [ ! -f "${resource_config_plist}" ]; then
         errorExit "Resource中缺少Config.plist 文件"
     fi
-
+    # config.plist key 数组
+    local ConfigPlistKeyArray=("AppName" "BundleIdentifier" "Version" "Build" "project_id" "merchant_id" "system_color" "baidu_MapKey" "uMeng_AppKey" "bugly_AppId" "bugly_AppKey" "jPush_AppKey" "home_page_num" "mine_page_num" "is_allied_school" "login_type" "is_always_show_guidepage" "guide_count" "weChat_AppID" "weChat_AppSecret") 
+    # key->value数组
+    ConfigPlistValueArray=($APP_Name $APP_BundleId $APP_Version $APP_Build $CONFIG_project_id $CONFIG_merchant_id $CONFIG_system_color $CONFIG_baidu_MapKey $CONFIG_uMeng_AppKey $CONFIG_bugly_AppId $CONFIG_bugly_AppKey $CONFIG_jPush_AppKey $CONFIG_home_page_num $CONFIG_mine_page_num $CONFIG_is_allied_school $CONFIG_login_type $CONFIG_is_always_show_guidepage $CONFIG_guide_count $CONFIG_weChat_AppID $CONFIG_weChat_AppSecret)
     for i in "${!ConfigPlistKeyArray[@]}"; do
         dictKey=${ConfigPlistKeyArray[$i]}
         dictValue=${ConfigPlistValueArray[$i]}

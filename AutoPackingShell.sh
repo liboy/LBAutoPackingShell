@@ -41,6 +41,8 @@ if [[ ! $? -eq 0 ]]; then
     errorExit "【环境配置】请使用brew install you-get安装 "  
 fi
 
+## 打包开始时间
+startTimeSeconds=`date +%s`
 
 while [ "$1" != "" ]; do
     case $1 in
@@ -110,9 +112,6 @@ changeProjectProfile
 
 
 ###########################################IPA构建#####################################################
-
-## 构建开始时间
-startTimeSeconds=`date +%s`
 
 ## 备份历史数据
 # historyBackup
@@ -290,45 +289,34 @@ provisionFile=$(matchMobileProvisionFile "$CHANNEL" "$projectBundleId" "$Provisi
 if [[ ! "$provisionFile" ]]; then
 	errorExit "不存在BundleId为:${projectBundleId}，分发渠道为:${CHANNEL}的授权文件，请检查${Provision_Dir}目录是否存在对应授权文件"
 fi
-##导入授权文件
+logit "【构建信息】匹配授权文件: $provisionFile"
+
+## 导入授权文件
 open "$provisionFile"
 
-logit "【构建信息】匹配授权文件: $provisionFile"
+## 解锁钥匙串
+unlockKeychain
+
+## 证书安装
+createCertWithProvision "$provisionFile"
 
 ## 展示授权文件信息
 getProvisionfileInfo "$provisionFile"
 
-## 解锁钥匙串
-unlockKeychain
-if [[ $? -eq 0 ]]; then
-	logit "【钥匙串】unlock-keychain";
-else
-	errorExit "unlock-keychain失败, 请使用-p 参数或者在user.xcconfig配置文件中指定密码";
-fi
+## 生成exportOptionsPlist文件
+generateOptionsPlist "$provisionFile"
 
-## 获取签名
-codeSignIdentity=$(getCodeSignId "$provisionFile")
-if [[ ! "$codeSignIdentity" ]]; then
-	errorExit "获取授权文件签名失败! 授权文件:${provisionFile}"
-fi
-logit "【签名信息】匹配签名ID：$codeSignIdentity"
+## 验证系统中是否有此签名ID证书
+checkCodeSignIdentityValid "$codeSignIdentity"
 
-result=$(checkCodeSignIdentityValid "$codeSignIdentity")
-if [[ ! "$result" ]]; then
-	errorExit "签名ID:${codeSignIdentity}无效，请检查钥匙串是否导入对应的证书或脚本访问keychain权限不足，请使用-p参数指定密码 "
-fi
-
+## 初始化build.xcconfig配置文件
+initBuildXcconfig
 
 ## 进行构建配置信息覆盖，关闭BitCode、签名手动、配置签名等
-xcconfigFile=$(initBuildXcconfig)
-if [[ "$xcconfigFile" ]]; then
-	logit "【签名设置】初始化build.xcconfig配置文件：$xcconfigFile"
-fi
-
 setXCconfigWithKeyValue "CODE_SIGN_STYLE" "$CODE_SIGN_STYLE"
-setXCconfigWithKeyValue "PROVISIONING_PROFILE_SPECIFIER" "$(getProvisionfileName "$provisionFile")" 
-setXCconfigWithKeyValue "PROVISIONING_PROFILE" "$(getProvisionfileUUID "$provisionFile")"
-setXCconfigWithKeyValue "DEVELOPMENT_TEAM" "$(getProvisionfileTeamID "$provisionFile")"
+setXCconfigWithKeyValue "PROVISIONING_PROFILE_SPECIFIER" "$provisionFileName" 
+setXCconfigWithKeyValue "PROVISIONING_PROFILE" "$provisionFileUUID"
+setXCconfigWithKeyValue "DEVELOPMENT_TEAM" "$provisionFileTeamID"
 setXCconfigWithKeyValue "CODE_SIGN_IDENTITY" "$codeSignIdentity"
 setXCconfigWithKeyValue "PRODUCT_BUNDLE_IDENTIFIER" "$projectBundleId"
 
@@ -347,6 +335,7 @@ fi
 ## 开始归档。
 ## 这里使用a=$(...)这种形式会导致xocdebuild日志只能在函数archiveBuild执行完毕的时候输出；
 ## archivePath 在函数archiveBuild 是全局变量
+logit "【归档信息】开始归档中...";
 archivePath=''
 archiveBuild "$targetName" "$Tmp_Build_Xcconfig_File" 
 logit "【归档信息】项目构建成功，文件路径：$archivePath"

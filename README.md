@@ -55,6 +55,43 @@ brew install you-get
 # -c 覆盖旧的Contents.json文件
 ```
 
+
+### OpenSSL版本
+一个安全套接字层密码库，囊括主要的密码算法、常用的密钥和证书封装管理功能及SSL协议，并提供丰富的应用程序供测试或其它目的使用。
+
+- 使用最新的openssl命令，方便研究SSL协议、数字证书。
+
+如果你的openssl是 `LibreSSL` 查看[Mac安装新版OpenSSL问题](https://www.jianshu.com/p/32f068922baf)
+更新前
+
+```
+$ openssl version
+LibreSSL 2.2.7
+
+$ which openssl
+/usr/bin/openssl
+```
+更新后
+
+```
+$ openssl version
+OpenSSL 1.0.2j 26 Sep 2016
+
+$ which openssl
+/usr/local/bin/openssl
+```
+如果更新之后还是没有显示正确的openssl，是因为系统存在两个openssl，可通过设置系统环境变量PATH来优先执行。
+
+```
+echo 'export PATH="/usr/local/Cellar/openssl/1.0.2p/bin/:$PATH"' >> ~/.bash_profile
+source ~/.bash_profile
+```
+或软连接
+```
+ln -s /usr/local/Cellar/openssl/1.0.2p/bin/openssl /usr/local/bin
+```
+>注意：`/usr/local/Cellar/openssl/1.0.2p/bin/` 该路径请按照你实际情况来更改,通常是1.0.2p这个文件夹不同！
+
 ## 配置PHP运行环境
 https://getgrav.org/blog/macos-mojave-apache-multiple-php-versions
 
@@ -309,4 +346,23 @@ ln -s /usr/local/Cellar/php@5.6/5.6.38/sbin/php-fpm  /usr/local/bin/php
 </VirtualHost>
 ```
 
+## 问题
+https://blog.csdn.net/nithumahel/article/details/79870505
+
+security import /Users/liboy/Desktop/xiaolundun.p12 -k ~/Library/Keychains/login.keychain -P 1 -A
+security import /Users/liboy/Desktop/ios_development.cer -k ~/Library/Keychains/login.keychain -T /usr/bin/codesign
+
+security import /tmp/tmp.cer -k ~/Library/Keychains/login.keychain -P p12password -T /usr/bin/codesign
+security import /tmp/tmp.cer -k ~/Library/Keychains/login.keychain -T /usr/bin/codesign
+
+xcode 8.3之后使用-exportFormat导出IPA会报错 xcodebuild: error: invalid option '-exportFormat',改成使用-exportOptionsPlist
+
+生成entitlements.plist文件
+
+先通过“security”命令，从mobileprovision文件中生成一个完整的plist文件
+
+security cms -D -i "/Users/liboy/Desktop/自动打包/LBAutoPackingShell/MobileProvision/xiaolundun_development.mobileprovision" > "/Users/liboy/Desktop/MobileProvision.plist"
+
+/usr/libexec/PlistBuddy -c 'Print :DeveloperCertificates:0' "/Users/liboy/Desktop/MobileProvision.plist"
+security cms -D -i "/Users/liboy/Desktop/自动打包/LBAutoPackingShell/MobileProvision/xiaolundun_development.mobileprovision" | grep data | head -n 1 | sed 's/.*<data>//g' | sed 's/<\/data>.*//g'
 

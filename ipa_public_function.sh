@@ -49,7 +49,9 @@ function initBuildXcconfig() {
 		## 生成文件
 		touch "$xcconfigFile"
 	fi
-	echo $xcconfigFile
+	if [[ "$xcconfigFile" ]]; then
+		logit "【签名设置】初始化build.xcconfig配置文件：$xcconfigFile"
+	fi
 }
 
 ## 备份历史数据
@@ -360,8 +362,7 @@ function getProfileBundleId()
 }
 
 ## 获取授权文件类型
-function getProfileType()
-{
+function getProfileType() {
 	local profile=$1
 	local profileType=''
 	if [[ ! -f "$profile" ]]; then
@@ -377,7 +378,6 @@ function getProfileType()
 			profileType='ad-hoc'
 		fi
 	else
-
 		local haveKeyProvisionsAllDevices=$($CMD_Security cms -D -i "$profile" 2>/dev/null | grep ProvisionsAllDevices)
 		if [[ "$haveKeyProvisionsAllDevices" != '' ]]; then
 			provisionsAllDevices=$($CMD_PlistBuddy -c 'Print :ProvisionsAllDevices' /dev/stdin <<< "$($CMD_Security cms -D -i "$profile" 2>/dev/null)" )
@@ -394,7 +394,7 @@ function getProfileType()
 }
 
 ## 获取授权文件过期时间
-function getProvisionfileExpireTimestmap {
+function getProvisionfileExpireTimestmap() {
 	local provisionFile=$1
 	##切换到英文环境，不然无法转换成时间戳
     export LANG="en_US.UTF-8"
@@ -405,7 +405,7 @@ function getProvisionfileExpireTimestmap {
     echo "$timestamp"
 }
 
-##匹配授权文件
+## 匹配授权文件
 function matchMobileProvisionFile() {	
 	## 分发渠道
 	local channel=$1
@@ -444,7 +444,7 @@ function getProvisionfileTeamID()
 	if [[ ! -f "$provisionFile" ]]; then
 		exit 1
 	fi
-	provisonfileTeamID=$($CMD_PlistBuddy -c 'Print :Entitlements:com.apple.developer.team-identifier' /dev/stdin <<< $($CMD_Security cms -D -i "$provisionFile" 2>/dev/null))
+	provisonfileTeamID=$($CMD_PlistBuddy -c 'Print :Entitlements:com.apple.developer.team-identifier' $Tmp_Provision_Plist_File)
 	echo $provisonfileTeamID
 }
 
@@ -452,10 +452,7 @@ function getProvisionfileTeamID()
 function getProvisionfileName()
 {
 	local provisionFile=$1
-	if [[ ! -f "$provisionFile" ]]; then
-		exit 1
-	fi
-	provisonfileName=$($CMD_PlistBuddy -c 'Print :Name' /dev/stdin <<< $($CMD_Security cms -D -i "$provisionFile" 2>/dev/null))
+	provisonfileName=$($CMD_PlistBuddy -c 'Print :Name' $Tmp_Provision_Plist_File)
 	echo $provisonfileName
 }
 
@@ -484,7 +481,7 @@ function getProvisionfileUUID()
 	if [[ ! -f "$provisionFile" ]]; then
 		exit 1
 	fi
-	provisonfileUUID=$($CMD_PlistBuddy -c 'Print :UUID' /dev/stdin <<< $($CMD_Security cms -D -i "$provisionFile" 2>/dev/null))
+	provisonfileUUID=$($CMD_PlistBuddy -c 'Print :UUID' $Tmp_Provision_Plist_File)
 	echo $provisonfileUUID
 }
 ## 获取授权文件TeamName
@@ -494,7 +491,7 @@ function getProvisionfileTeamName()
 	if [[ ! -f "$provisionFile" ]]; then
 		exit 1
 	fi
-	provisonfileTeamName=$($CMD_PlistBuddy -c 'Print :TeamName' /dev/stdin <<< $($CMD_Security cms -D -i "$provisionFile" 2>/dev/null))
+	provisonfileTeamName=$($CMD_PlistBuddy -c 'Print :TeamName' $Tmp_Provision_Plist_File)
 	echo $provisonfileTeamName
 }
 
@@ -503,7 +500,7 @@ function getProvisionfileCreateTimestmap {
 	##切换到英文环境，不然无法转换成时间戳
     export LANG="en_US.UTF-8"
     ##获取授权文件的过期时间
-    local createTime=`$CMD_PlistBuddy -c 'Print :CreationDate' /dev/stdin <<< $($CMD_Security cms -D -i "$provisionFile" 2>/tmp/log.txt)`
+    local createTime=`$CMD_PlistBuddy -c 'Print :CreationDate' $Tmp_Provision_Plist_File)`
     local timestamp=`date -j -f "%a %b %d  %T %Z %Y" "$createTime" "+%s"`
     # echo $(date -r `expr $timestamp `  "+%Y年%m月%d" )
     echo "$timestamp"
@@ -520,58 +517,46 @@ function getExpiretionDays()
     echo $days
 }
 
-## 将授权文件的签名数据封装成证书
-function wrapProvisionSignDataToCer {
+## 将授权文件的签名数据封装成证书并安装
+function createCertWithProvision() {
 
 	local provisionFile=$1
-	if [[ ! -f "$provisionFile" ]]; then
-		exit 1
-	fi
 	## 获取DeveloperCertificates 字段
 	local data=$($CMD_Security cms -D -i "$provisionFile" | grep data | head -n 1 | sed 's/.*<data>//g' | sed 's/<\/data>.*//g' ) 
-
-
-	if [[ $? -ne 0 ]]; then
-		exit 1
-	fi
+	
 	## 使用openssl进行解码 1. 构建cer证书 2. 解码证书
-	## 1.
-	local tmpCerFile='/tmp/tmp.cer'
-	echo "-----BEGIN CERTIFICATE-----" 	> "$tmpCerFile"
-	echo "${data}"						>> "$tmpCerFile"
-	echo "-----END CERTIFICATE-----"	>> "$tmpCerFile"
-	echo "${tmpCerFile}"
+	echo "-----BEGIN CERTIFICATE-----" 	> "$Tmp_Cer_File"
+	echo "${data}"						>> "$Tmp_Cer_File"
+	echo "-----END CERTIFICATE-----"	>> "$Tmp_Cer_File"
+	$CMD_Security import ${Tmp_Cer_File} -k "$HOME/Library/Keychains/login.keychain" -T /usr/bin/codesign 2>/dev/null
+	if [[ $? -eq 0 ]]; then
+		logit "【证书安装】证书导入成功";
+	fi
 }
 
 ## 获取授权文件中的签名id
 function getCodeSignId() {
 
-	local provisionFile=$1
-	local cerFile=$(wrapProvisionSignDataToCer "$provisionFile")
-	local codeSignIdentity=$(openssl x509 -noout -text -in "$cerFile"  | grep Subject | grep "CN=" | cut -d "," -f2 | cut -d "=" -f2)
+	local codeSignIdentity=$(openssl x509 -noout -text -in "$Tmp_Cer_File"  | grep Subject | grep "CN=" | cut -d "," -f2 | cut -d "=" -f2)
 	##必须使用"${}"这种形式，否则连续的空格会被转换成一个空格
 	## 这里使用-e 来解决中文签名id的问题
 	echo -e "${codeSignIdentity}"
 }
 
 ## 获取授权文件中的证书序列号
-function getProvisionCodeSignSerial {
-	local provisionFile=$1
-	local cerFile=$(wrapProvisionSignDataToCer "$provisionFile")
+function getProvisionCodeSignSerial() {
 	## 去掉空格
-	local serial=$( openssl x509 -noout -text -in "$cerFile" | grep "Serial Number" | cut -d ':' -f2 | sed 's/^[ ]//g')
+	local serial=$( openssl x509 -noout -text -in "$Tmp_Cer_File" | grep "Serial Number" | cut -d ':' -f2 | sed 's/^[ ]//g')
 	echo "$serial"
 }
 
 ## 获取授权文件中指定证书的创建时间
-function getProvisionCodeSignCreateTimestamp {
-	local provisionFile=$1
-	local cerFile=$(wrapProvisionSignDataToCer "$provisionFile")
+function getProvisionCodeSignCreateTimestamp() {
 
     ##切换到英文环境，不然无法转换成时间戳
     export LANG="en_US.UTF-8"
 	## 得到字符串： Not Before: Sep  7 07:21:52 2017 GMT
-	local startTimeStr=$( openssl x509 -noout -text -in "$cerFile" | grep "Not Before" )
+	local startTimeStr=$( openssl x509 -noout -text -in "$Tmp_Cer_File" | grep "Not Before" )
 	## 截图第一个：之后的字符串，得到：Sep  7 07:21:52 2017 GMT
 	startTimeStr=$(echo ${startTimeStr#*:}) ## 截取,echo 去掉前后空格
 
@@ -583,15 +568,13 @@ function getProvisionCodeSignCreateTimestamp {
 
 
 ## 获取授权文件中指定证书的过期时间
-function getProvisionCodeSignExpireTimestamp {
-	local provisionFile=$1
-	local cerFile=$(wrapProvisionSignDataToCer "$provisionFile")
+function getProvisionCodeSignExpireTimestamp() {
 
     ##切换到英文环境，不然无法转换成时间戳
     export LANG="en_US.UTF-8"
     
 	## 得到字符串： Not Before: Sep  7 07:21:52 2017 GMT
-	local endTimeStr=$( openssl x509 -noout -text -in "$cerFile" | grep "Not After" )
+	local endTimeStr=$( openssl x509 -noout -text -in "$Tmp_Cer_File" | grep "Not After" )
 
 	## 截图第一个：之后的字符串，得到：Sep  7 07:21:52 2017 GMT
 	endTimeStr=$(echo ${endTimeStr#*:}) ## 截取，echo 去掉前后空格
@@ -604,9 +587,12 @@ function getProvisionCodeSignExpireTimestamp {
 ## 获取授权文件信息
 function getProvisionfileInfo() {
 
+	local provisionFile=$1
 	if [[ ! -f "$1" ]]; then
 		errorExit "指定授权文件不存在!"
 	fi
+	#从mobileprovision文件中生成一个完整的plist文件
+	security cms -D -i "$1" > "$Tmp_Provision_Plist_File"
 
 	provisionFileTeamID=$(getProvisionfileTeamID "$1")
 
@@ -624,8 +610,11 @@ function getProvisionfileInfo() {
 	provisionfileExpireTime=$(date -r `expr $provisionfileExpireTimestmap `  "+%Y年%m月%d" )
 	provisionFileExpirationDays=$(getExpiretionDays "$provisionfileExpireTimestmap")
 
-	provisionfileCodeSign=$(getCodeSignId "$1")
-	provisionfileCodeSignSerial=$(getProvisionCodeSignSerial "$1")
+	codeSignIdentity=$(getCodeSignId)
+	if [[ ! "$codeSignIdentity" ]]; then
+		errorExit "获取授权文件签名失败!"
+	fi
+	codeSignIdentitySerial=$(getProvisionCodeSignSerial)
 
 	provisionCodeSignCreateTimestmap=$(getProvisionCodeSignCreateTimestamp "$1")
 	provisionCodeSignCreateTime=$(date -r `expr $provisionCodeSignCreateTimestmap `  "+%Y年%m月%d" )
@@ -643,22 +632,24 @@ function getProvisionfileInfo() {
 	logit "【授权文件】创建时间：$provisionfileCreateTime "
 	logit "【授权文件】过期时间：$provisionfileExpireTime "
 	logit "【授权文件】有效天数：$provisionFileExpirationDays "
-	logit "【授权文件】使用的证书签名ID：$provisionfileCodeSign "
-	logit "【授权文件】使用的证书序列号：$provisionfileCodeSignSerial"
+	logit "【授权文件】使用的证书签名ID：$codeSignIdentity "
+	logit "【授权文件】使用的证书序列号：$codeSignIdentitySerial"
 	logit "【授权文件】使用的证书创建时间：$provisionCodeSignCreateTime"
 	logit "【授权文件】使用的证书过期时间：$provisionCodeSignExpireTime"
 	logit "【授权文件】使用的证书有效天数：$provisionCodesignExpirationDays "
 }
 
-
-function checkCodeSignIdentityValid()
-{
+## 验证系统中是否有此签名ID证书
+#codeSignIdentity=iPhone Developer: Jing Han (Q853BJVX2C) 
+function checkCodeSignIdentityValid() {
 	local codeSignIdentity=$1
 	local content=$($CMD_Security find-identity -v -p codesigning | grep "$codeSignIdentity")
-	echo "$content"
+	if [[ ! "$content" ]]; then
+		errorExit "证书签名ID:${codeSignIdentity}无效，请检查钥匙串是否导入对应的证书!"
+	fi 
 }
 
-## 添加一项配置
+## 设置build.xcconfig配置
 function setXCconfigWithKeyValue() {
 
 	local key=$1
@@ -681,15 +672,21 @@ function setXCconfigWithKeyValue() {
 
 ## 解锁keychain
 function unlockKeychain(){
+	#解锁keychain，使其它工具可以访问证书，
 	$CMD_Security unlock-keychain -p "$UNLOCK_KEYCHAIN_PWD" "$HOME/Library/Keychains/login.keychain" 2>/dev/null
-	if [[ $? -ne 0 ]]; then
-		return 1
+	if [[ $? -eq 0 ]]; then
+		logit "【解锁钥匙串】解锁钥匙串成功";
+	else
+		errorExit "unlock-keychain失败, 请使用-p 参数或者在user_config配置文件中指定密码";
 	fi
 	$CMD_Security unlock-keychain -p "$UNLOCK_KEYCHAIN_PWD" "$HOME/Library/Keychains/login.keychain-db" 2>/dev/null
-	if [[ $? -ne 0 ]]; then
-		return 1
+	
+	#解锁后设置keychain关闭时间为1小时
+	$CMD_Security set-keychain-settings -t 3600 -l "$HOME/Library/Keychains/login.keychain"
+	if [[ $? -eq 0 ]]; then
+		logit "【解锁钥匙串】解锁后设置keychain关闭时间为1小时";
 	fi
-	return 0
+
 }
 
 ##检查podfile是否存在
@@ -739,18 +736,8 @@ function archiveBuild()
 }
 
 
-##xcode 8.3之后使用-exportFormat导出IPA会报错 xcodebuild: error: invalid option '-exportFormat',改成使用-exportOptionsPlist
-function generateOptionsPlist(){
-	local provisionFile=$1
-	if [[ ! -f "$provisionFile" ]]; then
-		exit 1
-	fi
-
-	local provisionFileTeamID=$(getProvisionfileTeamID "$provisionFile")
-	local provisionFileType=$(getProfileType "$provisionFile")
-	local provisionFileName=$(getProvisionfileName "$provisionFile")
-	local provisionFileBundleID=$(getProfileBundleId "$provisionFile")
-
+## 生成exportOptionsPlist文件
+function generateOptionsPlist() {
 
 	local plistfileContent="
 	<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n
@@ -775,7 +762,6 @@ function generateOptionsPlist(){
 	"
 	## 重定向
 	echo -e "$plistfileContent" > "$Tmp_Options_Plist_File"
-	echo "$Tmp_Options_Plist_File"
 }
 
 
@@ -799,8 +785,7 @@ function exportIPA() {
 	local cmd="$CMD_Xcodebuild -exportArchive"
 	## xcode版本 >= 8.3
 	if versionCompareGE "$xcodeVersion" "8.3"; then
-		local optionsPlistFile=$(generateOptionsPlist "$provisionFile")
-		cmd="$cmd"" -archivePath \"$archivePath\" -exportPath \"$Package_Dir\" -exportOptionsPlist \"$optionsPlistFile\""
+		cmd="$cmd"" -archivePath \"$archivePath\" -exportPath \"$Package_Dir\" -exportOptionsPlist \"$Tmp_Options_Plist_File\""
 	else
 		cmd="$cmd"" -exportFormat IPA -archivePath \"$archivePath\" -exportPath \"$exportPath\""
 	fi
@@ -1028,30 +1013,5 @@ function pgyerUpload() {
 # 	local rootObject=$($CMD_PlistBuddy -c "Print :rootObject" "$pbxproj")
 # 	##如果需要设置成自动签名,将Manual改成Automatic
 # 	$CMD_PlistBuddy -c "Add :objects:$rootObject:attributes:TargetAttributes:$targetId:ProvisioningStyle string Manual" "$pbxproj"
-# }
-##匹配签名身份--方法已被替换
-# function matchCodeSignIdentity()
-# {
-# 	local provisionFile=$1
-# 	local channel=$2
-# 	local channelFilterString=''
-# 	local startSearchString=''
-# 	local endSearchString='1\\0230\\021\\006\\003U\\004'
-
-
-# 	if [[ ! -f "$provisionFile" ]]; then
-# 		exit 1;
-# 	fi
-
-# 	if [[ "$channel" == 'enterprise' ]] || [[ "$channel" == 'app-store' ]]; then
-# 		channelFilterString='iPhone Distribution: '
-# 		startSearchString='003U\\004\\003\\0142'
-# 	else
-# 		channelFilterString='iPhone Developer: '
-# 		startSearchString='003U\\004\\003\\014&'
-# 	fi
-# 	profileTeamId=$($CMD_PlistBuddy -c 'Print :Entitlements:com.apple.developer.team-identifier' /dev/stdin <<< $($CMD_Security cms -D -i "$provisionFile" 2>/dev/null))
-# 	codeSignIdentity=$($CMD_Security dump-keychain 2>/dev/null | grep "\"subj\"<blob>=" | cut -d '=' -f 2 | grep "$profileTeamId" | awk -F "[\"\"]" '{print $2}' | grep "$channelFilterString" | sed "s/\(.*\)$startSearchString\(.*\)$endSearchString\(.*\)/\2/g" | head -n 1)
-# 	echo "$codeSignIdentity"
 # }
 
