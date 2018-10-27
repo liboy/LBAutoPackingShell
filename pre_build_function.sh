@@ -105,12 +105,14 @@ function initUserConfigFile() {
     # keychain解锁密码，即开机密码
     UNLOCK_KEYCHAIN_PWD=`printUserConfigPlist "unlock_keychain_pwd"`
     
-    # 构建模式：Debug/Release 
-    # Simulation/AppStore
+    # 构建模式：默认(Debug/Release) 自定义(Simulation/AppStore)
     CONFIGRATION_TYPE=`printUserConfigPlist "configration_type"`
 
     # 指定分发渠道，development 内部分发，app-store商店分发，enterprise企业分发， ad-hoc 企业内部分发"
     CHANNEL=`printUserConfigPlist "channel"`
+
+    ##指定构建的target,不指定默认工程的第一个target
+    BUILD_TARGET=`printUserConfigPlist "build_target"`
 
 
     logit "【用户配置】项目名称: ${project_name}"

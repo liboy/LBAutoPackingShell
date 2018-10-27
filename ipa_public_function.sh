@@ -37,7 +37,31 @@ function usage
 	exit 0
 }
 
+function checkToolSupport() {
 
+	jqPath=$(which jq)
+	if [[ ! "$jqPath" ]]; then
+	    errorExit "【环境配置】请使用brew install jq安装 "  
+	fi
+	logit "【环境配置】jq安装:$jqPath"
+	yougetPath=$(which you-get)
+	# you-get -h >/dev/null 2>&1
+	if [[ ! "$yougetPath" ]]; then
+	    errorExit "【环境配置】请使用brew install you-get安装 "  
+	fi
+	logit "【环境配置】you-get安装:$yougetPath"
+}
+
+## 检查openssl
+function checkOpenssl() {
+	local opensslInfo=$(openssl version)
+	local opensslName=$(echo $opensslInfo | cut -d " " -f1)
+	local opensslVersion=$(echo $opensslInfo | cut -d " " -f2)
+	if [[ "$opensslName" == "LibreSSL" ]] || ! versionCompareGE "${opensslVersion%\.*}" "1.0"; then
+		errorExit "${opensslInfo} 版本过旧，请更新 OpenSSL 版本"
+	fi
+	logit "【环境配置】OpenSSL 版本:$opensslVersion"
+}
 
 #############################################基本配置#############################################
 
@@ -71,6 +95,13 @@ function historyBackup() {
 		done
 	else
 		mkdir -p "$History_Package_Dir"
+	fi
+
+	# $?表示"最后一次执行命令"的退出状态.
+	# 0为成功,非0为失败.
+	# 前一个命令执行成功
+	if [[ $? -eq 0 ]]; then
+		logit "【数据备份】上一次打包文件已备份到：$History_Package_Dir"	
 	fi
 }
 
@@ -146,7 +177,7 @@ function getAllXcprojPathFromWorkspace() {
 }
 
 
-## 获取xcproj的所有target
+## 获取xcproj的所有可构建target
 ## 比分数组元素本身带有空格，所以采用字符串用“;”作为分隔符，而不是用数组。
 function getTargetsFromXcprojList() {
 	local xcprojList=$1
@@ -185,13 +216,42 @@ function getTargetsFromXcprojList() {
 	logit "【构建信息】可构建的Target数量（不含Pods）:${#targetsInfoList[*]}"
 	for i in "${!targetsInfoList[@]}"; do
 		local targetInfo=${targetsInfoList[$i]} 
-		tId=$(getTargetInfoValue "$targetInfo" "id")
-		tName=$(getTargetInfoValue "$targetInfo" "name")
+		local tId=$(getTargetInfoValue "$targetInfo" "id")
+		local tName=$(getTargetInfoValue "$targetInfo" "name")
 		logit "【构建信息】可构建Target${i}：${tName}"
 	done
 
 }
 
+## 获取构建的targetName和targetId 和xcodeprojPath
+function getBuildTarget() {
+	## 初始化默认设置构建Target
+	if [[ "$BUILD_TARGET" ]]; then
+		for targetInfo in ${targetsInfoList[*]}; do
+			tId=$(getTargetInfoValue "$targetInfo" "id")
+			tName=$(getTargetInfoValue "$targetInfo" "name")
+			path=$(getTargetInfoValue "$targetInfo" "xcproj")
+			if [[ "$tName" == "$BUILD_TARGET" ]]; then
+				targetName="$tName"
+				targetId="$tId"
+				xcodeprojPath="$path"
+				break;
+			fi
+
+		done
+	else
+		## 默认选择第一个target
+		targetInfo=${targetsInfoList[0]}
+		targetId=$(getTargetInfoValue "$targetInfo" "id")
+		targetName=$(getTargetInfoValue "$targetInfo" "name")
+		xcodeprojPath=$(getTargetInfoValue "$targetInfo" "xcproj")
+	fi
+
+	logit "【构建信息】构建Target：${targetName}（${targetId}）"
+	if [[ ! "targetName" ]] || [[ ! "targetId" ]] || [[ ! "xcodeprojPath" ]]; then
+		errorExit "获取构建信息失败!"
+	fi
+}
 
 ## 例如分割
 # 16A99C1E1C744CE000907D37:iXiao:/iXiao.xcworkspace/../iXiao.xcodeproj;
@@ -223,10 +283,8 @@ function getTargetInfoValue(){
 	echo "$value"
 }
 
-
-## 获取配置ID列表,主要是后续用来获取bundle id
-function getConfigurationIds() {
-
+## 获取配置ID
+function getConfigurationId() {
 	##配置模式：Debug 或 Release
 	local targetId=$2
 	local pbxproj=$1/project.pbxproj
@@ -236,40 +294,48 @@ function getConfigurationIds() {
   	local buildConfigurationListId=$($CMD_PlistBuddy -c "Print :objects:$targetId:buildConfigurationList" "$pbxproj")
   	local buildConfigurationList=$($CMD_PlistBuddy -c "Print :objects:$buildConfigurationListId:buildConfigurations" "$pbxproj" | sed -e '/Array {/d' -e '/}/d' -e 's/^[ \t]*//')
   	##数组中存放的分别是release和debug对应的id
-  	local configurationTypeIds=$(echo $buildConfigurationList)
-  	echo $configurationTypeIds
+  	configurationTypeIds=$(echo $buildConfigurationList)
 
-}
-## 获取配置ID，通过targetid、CONFIGRATION_TYPE
-function getConfigurationIdWithType(){
-
-	local configrationType=$3
-	local targetId=$2
-	local pbxproj=$1/project.pbxproj
-	if [[ ! -f "$pbxproj" ]]; then
-		exit 1
+  	if [[ ! "$configurationTypeIds" ]]; then
+		errorExit "获取配置模式Id列表失败"
 	fi
+	logit "【构建信息】配置模式ID列表：$configurationTypeIds"
 
-	local configurationTypeIds=$(getConfigurationIds "$1" $targetId)
+
 	for id in ${configurationTypeIds[@]}; do
 		local name=$($CMD_PlistBuddy -c "Print :objects:$id:name" "$pbxproj")
-		if [[ "$configrationType" == "$name" ]]; then
-			echo $id
+		if [[ "$CONFIGRATION_TYPE" == "$name" ]]; then
+			configurationId=$id
+			break;
 		fi
 	done
+	if [[ ! "$configurationId" ]]; then
+		errorExit "获取${CONFIGRATION_TYPE}配置模式Id失败"
+	fi
+	logit "【构建信息】配置模式：$CONFIGRATION_TYPE （${configurationId}）"
+  	
 }
 
 ## 根据配置模式ID，获取项目bundleId,分为Releae和Debug
-function getProjectBundleId()
-{	
+function getProjectBundleId() {	
 	# 配置模式ID
 	local configurationId=$2
 	local pbxproj=$1/project.pbxproj
 	if [[ ! -f "$pbxproj" ]]; then
 		exit 1
 	fi
-	local bundleId=$($CMD_PlistBuddy -c "Print :objects:$configurationId:buildSettings:PRODUCT_BUNDLE_IDENTIFIER" "$pbxproj" | sed -e '/Array {/d' -e '/}/d' -e 's/^[ \t]*//')
-	echo $bundleId
+	if [[ $NEW_BUNDLE_IDENTIFIER ]]; then
+		## 重新指定Bundle Id
+		projectBundleId=$NEW_BUNDLE_IDENTIFIER
+	else
+		## 获取工程中的Bundle Id
+		projectBundleId=$($CMD_PlistBuddy -c "Print :objects:$configurationId:buildSettings:PRODUCT_BUNDLE_IDENTIFIER" "$pbxproj" | sed -e '/Array {/d' -e '/}/d' -e 's/^[ \t]*//')
+		if [[ ! "$projectBundleId" ]] ; then
+			errorExit "获取项目的Bundle Id失败"
+		fi
+	fi
+	logit "【构建信息】Bundle Id：$projectBundleId"
+
 }
 
 ## 获取infoPlist文件
@@ -280,12 +346,16 @@ function getInfoPlistFile()
 	if [[ ! -f "$pbxproj" ]]; then
 		exit 1
 	fi
-   local  infoPlistFileName=$($CMD_PlistBuddy -c "Print :objects:$configurationId:buildSettings:INFOPLIST_FILE" "$pbxproj" )
-   ## 替换$(SRCROOT)为.
-   infoPlistFileName=${infoPlistFileName//\$(SRCROOT)/.}
-	  ### 完整路径
-	infoPlistFilePath="$1/../$infoPlistFileName"
-	echo $infoPlistFilePath
+ 	local  infoPlistFileName=$($CMD_PlistBuddy -c "Print :objects:$configurationId:buildSettings:INFOPLIST_FILE" "$pbxproj" )
+ 	## 替换$(SRCROOT)为.
+ 	infoPlistFileName=${infoPlistFileName//\$(SRCROOT)/.}
+	### 完整路径
+	infoPlistFile="$1/../$infoPlistFileName"
+	if [[ ! -f "$infoPlistFile" ]]; then
+		errorExit "获取infoPlist文件失败"
+	fi
+	logit "【构建信息】InfoPlist 文件：$infoPlistFile"
+	
 }
 
 ## 获取git仓库版本数量
@@ -306,28 +376,32 @@ function getGitRepositoryVersionNumbers (){
 
 
 #############################################签名设置#############################################
-
-##获取签名方式,##设置手动签名,即不勾选：Xcode -> General -> Signing -> Automatically manage signning
+## 设置手动签名
+## 设置手动签名,即不勾选：Xcode -> General -> Signing -> Automatically manage signning
 ## 在xcode 9之前（不包含9），只有在General这里配置是否手动签名，在xcode9之后，多加了一项在setting中
-function getCodeSigningStyle ()
+function setManualCodeSigningStyle ()
 {
-
+	local project=$1
 	local pbxproj=$1/project.pbxproj
 	local targetId=$2
-	local rootObject=$($CMD_PlistBuddy -c "Print :rootObject" "$pbxproj")
 	if [[ ! -f "$pbxproj" ]]; then
 		exit 1
 	fi
-	##没有勾选过Automatically manage signning时，则不存在ProvisioningStyle
-	signingStyle=$($CMD_PlistBuddy -c "Print :objects:$rootObject:attributes:TargetAttributes:$targetId:ProvisioningStyle " "$pbxproj" 2>/dev/null)
-	echo $signingStyle
+	local rootObject=$($CMD_PlistBuddy -c "Print :rootObject" "$pbxproj")
+	#没有勾选过Automatically manage signning时，则不存在ProvisioningStyle
+	#获取签名方式
+	codeSigningStyle=$($CMD_PlistBuddy -c "Print :objects:$rootObject:attributes:TargetAttributes:$targetId:ProvisioningStyle " "$pbxproj" 2>/dev/null)
+	logit "【签名信息】项目签名方式为:$codeSigningStyle"
+	if [[ ! "$codeSigningStyle" ]] || [[ "$codeSigningStyle" != "Manual" ]]; then
+		logit "【签名信息】设置签名方式:Manual"
+		ruby "$Shell_File_Path/set_codesign_style.rb" "$project" "$targetId" 2>/dev/null
+	fi
 
 }
 
 # ##设置签名方式（手动/自动）,注意：如果项目存在中文文件名，使用PlistBuddy 命令对pbxproj文件进行修改导致乱码！该方法已被抛弃!
 # function setManulCodeSigning ()
 # {
-
 # 	local pbxproj=$1/project.pbxproj
 # 	local targetId=$2
 # 	local rootObject=$($CMD_PlistBuddy -c "Print :rootObject" "$pbxproj")
@@ -336,41 +410,6 @@ function getCodeSigningStyle ()
 
 # }
 
-## 设置手动签名
-function setManulCodeSigningRuby() {
-	local project=$1
-	local targetId=$2
-	local pbxproj=$1/project.pbxproj
-	##获取签名方式
-	local codeSigningStyle=$(getCodeSigningStyle "$xcodeprojPath" "$targetId")
-	echo  $codeSigningStyle
-	if [[ ! "$codeSigningStyle" ]] || [[ "$codeSigningStyle" != "Manual" ]]; then
-		logit "【签名信息】设置签名方式:Manual"
-		ruby "$Shell_File_Path/set_codesign_style.rb" "$project" "$targetId" 2>/dev/null
-		## 这里会报错 :如果c [Xcodeproj] Unknown object version. (RuntimeError),但是实际可以修改成功，暂时不做下面的逻辑处理
-		# if [[ $? -ne 0 ]]; then
-		# 	local rootObject=$($CMD_PlistBuddy -c "Print :rootObject" "$pbxproj")
-		# 	local compatibilityVersion=$($CMD_PlistBuddy -c "Print :objects:$rootObject:compatibilityVersion" "$pbxproj")
-		# 	if [[ "$compatibilityVersion"=="Xcode 9.3" ]]; then
-		# 		errorExit "设置手动签名失败,cocoapod 不兼容Xcode 9.3。版本请在【项目】- xxxTarget】- Show the File inspector】- Project Document】-【Project Format】 中选中小于Xcode 9.3-compatible的一项"
-		# 	else
-		# 		errorExit "设置手动签名失败，请在【项目】-【General】-【Signing】中去掉勾选Automatically manage signning"
-		# 	fi
-
-		# fi
-	fi
-}
-
-## 检查openssl
-function checkOpenssl() {
-	local opensslInfo=$(openssl version)
-	local opensslName=$(echo $opensslInfo | cut -d " " -f1)
-	local opensslVersion=$(echo $opensslInfo | cut -d " " -f2)
-	if [[ "$opensslName" == "LibreSSL" ]] || ! versionCompareGE "${opensslVersion%\.*}" "1.0"; then
-		errorExit "${opensslInfo} 版本过旧，请更新 OpenSSL 版本"
-	fi
-	logit "【构建信息】OpenSSL 版本:$opensslVersion"
-}
 
 #############################################授权文件#############################################
 
@@ -432,23 +471,23 @@ function getProvisionfileExpireTimestmap() {
 }
 
 ## 匹配授权文件
-function matchMobileProvisionFile() {	
+function matchProvisionFile() {	
 	## 分发渠道
 	local channel=$1
 	## BundleId
 	local appBundleId=$2
 	## 授权文件目录
-	local mobileProvisionFileDir=$3
-	if [[ ! -d "$mobileProvisionFileDir" ]]; then
+	local provisionFileDir=$3
+	if [[ ! -d "$provisionFileDir" ]]; then
 		exit 1
 	fi
-	##遍历
-	local provisionFile=''
+	
+	provisionFile=''
 	local maxExpireTimestmap=0
-
-	for file in "${mobileProvisionFileDir}"/*.mobileprovision; do
-		local bundleIdFromProvisionFile=$(getProfileBundleId "$file")
-		if [[ "$bundleIdFromProvisionFile" ]] && [[ "$appBundleId" == "$bundleIdFromProvisionFile" ]]; then
+	logit "【构建信息】进行授权文件匹配..."
+	for file in "${provisionFileDir}"/*.mobileprovision; do
+		local provisionBundleId=$(getProfileBundleId "$file")
+		if [[ "$provisionBundleId" ]] && [[ "$appBundleId" == "$provisionBundleId" ]]; then
 			local profileType=$(getProfileType "$file")
 			if [[ "$profileType" == "$channel" ]]; then
 				local timestmap=$(getProvisionfileExpireTimestmap "$file")
@@ -460,7 +499,13 @@ function matchMobileProvisionFile() {
 			fi
 		fi
 	done
-	echo $provisionFile
+	if [[ ! "$provisionFile" ]]; then
+		errorExit "请检查${Provision_Dir}目录是否存在对应授权文件"
+	fi
+	logit "【构建信息】匹配到的授权文件: $provisionFile"
+
+	## 导入授权文件
+	open "$provisionFile"
 }
 
 ## 获取授权文件TeamID
@@ -482,21 +527,21 @@ function getProvisionfileName()
 	echo $provisonfileName
 }
 
-## 获取profile type的中文名字
-function getProfileTypeCNName()
+## 获取profiletype或渠道的文字描述
+function getChannelName()
 {
     local profileType=$1
-    local profileTypeName
+    local channelName
     if [[ "$profileType" == 'app-store' ]]; then
-        profileTypeName='商店分发'
+        channelName='商店分发'
     elif [[ "$profileType" == 'enterprise' ]]; then
-        profileTypeName='企业分发'
+        channelName='企业分发'
 	elif [[ "$profileType" == 'ad-hoc' ]]; then
-        profileTypeName='内部测试(ad-hoc)'
+        channelName='内部发布'
     else
-        profileTypeName='内部测试'
+        channelName='内部开发'
     fi
-    echo $profileTypeName
+    echo $channelName
 
 }
 
@@ -533,8 +578,7 @@ function getProvisionfileCreateTimestmap {
 }
 
 ##获取授权文件过期天数
-function getExpiretionDays()
-{
+function getExpiretionDays() {
 
 	local expireTimestamp=$1
     local nowTimestamp=`date +%s`
@@ -623,7 +667,7 @@ function getProvisionfileInfo() {
 	provisionFileTeamID=$(getProvisionfileTeamID "$1")
 
 	provisionFileType=$(getProfileType "$1")
-	channelName=$(getProfileTypeCNName $provisionFileType)
+	channelName=$(getChannelName $provisionFileType)
 
 	provisionFileName=$(getProvisionfileName "$1")
 	provisionFileBundleID=$(getProfileBundleId "$1")
@@ -716,13 +760,16 @@ function unlockKeychain(){
 }
 
 ##检查podfile是否存在
-function checkPodfileExist() {
+function checkPodfileAndInstall() {
 
 	local podfile=$(find "$project_build_path" -maxdepth 1  -type f -iname "Podfile")
-	if [[ ! -f "$podfile" ]]; then
-		exit 1
+	if [[ -f "$podfile" ]]; then
+		logit "【cocoapods】pod install";
+		##必须cd到此工程目录
+		cd "${project_build_path}"  
+		pod install
+		cd - 
 	fi
-	echo $podfile
 }
 
 
@@ -732,9 +779,10 @@ function archiveBuild() {
 	local xcconfigFile=$2
 	local xcworkspacePath=$3
 
-	## 暂时使用全局变量---
-	archivePath="${Package_Dir}"/$targetName.xcarchive
+	logit "【归档信息】开始归档中...";
 
+	## archivePath 在函数archiveBuild 是全局变量
+	archivePath="${Package_Dir}"/$targetName.xcarchive
 
 	####################进行归档########################
 	local cmd="$CMD_Xcodebuild archive"
@@ -749,15 +797,13 @@ function archiveBuild() {
 		## 格式化日志输出
 		cmd="$cmd"" | xcpretty "
 	fi
-
+	logit "【归档信息】归档命令为：$cmd"
 	# 执行构建，set -o pipefail 为了获取到管道前一个命令xcodebuild的执行结果，否则$?一直都会是0
 	eval "set -o pipefail && $cmd " 
 	if [[ $? -ne 0 ]]; then
 		errorExit "归档失败，请检查编译日志(编译错误、签名错误等)。"
 	fi
-
-
-	# echo "$archivePath"
+	logit "【归档信息】项目构建成功，文件路径：$archivePath"
 }
 
 
@@ -825,12 +871,13 @@ function exportIPA() {
 	if [[ $? -ne 0 ]]; then
 		errorExit "导出ipa失败，请检查日志。"
 	fi
+	logit "【IPA 导出】IPA导出成功，文件路径：$exportPath"
 }
 
 
 #构建完成，校验ipa
 function checkIPA() {
-
+	logit "【签名校验】IPA签名校验中..."
 	local exportPath=$1
 	if [[ ! -f "$exportPath" ]]; then
 		errorExit "无法找到$exportPath"
@@ -907,25 +954,32 @@ function getBuildVersion() {
 }
 
 
-## 获取最终IPA名称
-function finalIPAName ()
-{
-
+## IPA和日志重命名
+function renameIPAAndLogFile () {
 	local targetName=$1
 	local infoPlistFile=$2
 	local channelName=$3
-
 	if [[ ! -f "$infoPlistFile" ]]; then
 		return;
 	fi
-		## IPA和日志重命名
+	logit "【IPA 信息】IPA和日志文件重命名..."
+
 	local curDatte=`date +"%Y%m%d_%H%M%S"`
 	local ipaName=${targetName}_${curDatte}
 	local projectVersion=$(getProjectVersion "$infoPlistFile")
 	local buildVersion=$(getBuildVersion "$infoPlistFile")
 
 	ipaName="${ipaName}""_${channelName}""_${projectVersion}""(${buildVersion})"
-	echo "$ipaName"
+	
+	## 去除最后的文件名称,得到纯路径
+	exportDir=${exportPath%/*} 
+	ipaFilePath=${exportDir}/${ipaName}.ipa
+	logTxtFilePath=${exportDir}/${ipaName}.txt
+	logit "【IPA 信息】IPA路径:$ipaFilePath"
+	logit "【IPA 信息】日志路径:$logTxtFilePath"
+	# 重命名
+	mv "$exportPath" 	"$ipaFilePath"
+	mv "$Tmp_Log_File" 	"$logTxtFilePath"
 }
 
 #执行完毕，删除临时文件

@@ -12,5 +12,8 @@
 	<string>Simulation</string>
 	<key>channel</key>
 	<string>development</string>
+	<key>build_target</key>
+	<string></string>
+	
 </dict>
 </plist>

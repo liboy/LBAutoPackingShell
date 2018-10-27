@@ -28,20 +28,24 @@ if [[ ! -d "$Package_Dir" ]]; then
     mkdir -p "$Package_Dir"
 fi
 
+
+## 用户配置Plist文件
+ShellUserConfigPlist="$Shell_File_Path/user_config.plist"
+# 授权文件目录，默认在~/Library/MobileDevice/Provisioning Profiles
+Provision_Dir="${Shell_File_Path}/MobileProvision"
+
 ## 脚本生成的日志文件
 Tmp_Log_File="$Package_Dir/${CurrentDateStr}.txt"
 ## 脚本生成的证书文件
 Tmp_Cer_File="$Package_Dir/tmp.cer"
 
+##############################################默认配置###############################################
+
+CODE_SIGN_STYLE='Manual'
+pgyer_userKey="b805f985351b48620bd95cc5e4ab579b"
+pgyer_apiKey="b9bcf5ef168fdf8ce379ae9ab9bd8dcc"
 # 默认资源文件路径
-Tmp_resource_path="${Shell_File_Path}/Resource/xiaolundun"
-# 授权文件目录，默认在~/Library/MobileDevice/Provisioning Profiles
-Provision_Dir="${Shell_File_Path}/MobileProvision"
-# if [[ "$Provision_Dir" ]]; then
-#     Provision_Dir="${HOME}/Library/MobileDevice/Provisioning Profiles"
-# fi
-## 用户配置Plist文件
-ShellUserConfigPlist="$Shell_File_Path/user_config.plist"
+Tmp_resource_path="${Shell_File_Path}/Resource/dianjin"
 
 #############################################业务配置#############################################
 

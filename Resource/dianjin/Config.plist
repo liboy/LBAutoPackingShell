@@ -17,7 +17,7 @@
 	<key>system_color</key>
 	<string>E50112</string>
 	<key>baidu_MapKey</key>
-	<string>b5szEXmNbWMIfXH4cwfVlexGnLQpCbWU</string>
+	<string>f57G9BmSjcu0vU8gji8mGvcZM7ymnINm</string>
 	<key>weChat_AppID</key>
 	<string>wx072e0f656539b1eb</string>
 	<key>weChat_AppSecret</key>
@@ -25,11 +25,11 @@
 	<key>jPush_AppKey</key>
 	<string>7bb990da76e240750c63cfc7</string>
 	<key>uMeng_AppKey</key>
-	<string>5bac8cfdb465f599b6000195</string>
+	<string>5bcd30abb465f5231c000190</string>
 	<key>bugly_AppId</key>
-	<string>75625fb530</string>
+	<string>e355163bcd</string>
 	<key>bugly_AppKey</key>
-	<string>baffe4c1-8bbb-4090-a2a9-395cd807df7f</string>
+	<string>6b2a7b3e-88e2-42eb-9811-c16b35145556</string>
 	<key>home_page_num</key>
 	<string>5</string>
 	<key>mine_page_num</key>
