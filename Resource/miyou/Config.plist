@@ -3,37 +3,37 @@
 <plist version="1.0">
 <dict>
 	<key>BundleIdentifier</key>
-	<string>com.baonahao.yidiantong</string>
+	<string>com.baonahao.annihuaschool</string>
 	<key>AppName</key>
-	<string>易点通教育</string>
+	<string>蜜由</string>
 	<key>Version</key>
-	<string>2.0.0</string>
+	<string>2.0.6</string>
 	<key>Build</key>
-	<string>200</string>
+	<string>260</string>
 	<key>project_id</key>
-	<string>b324b4495e7b422ebedb72ecd6770441</string>
+	<string>9230b019b68d4c03b33f1b0af1301641</string>
 	<key>merchant_id</key>
-	<string>39436b1d219e4d31a2e8fe1e9e7a3f03</string>
+	<string>7fbe80e1b180464090d4eeb4a1432efb</string>
 	<key>system_color</key>
-	<string>9b4431</string>
+	<string>F2D940</string>
 	<key>baidu_MapKey</key>
-	<string>ozrkuAH0AWmMfUc0QhzEpay3Qbrsl5FF</string>
+	<string>p3g5OoSvTaDN0rYBuErAxhMbmEwFyE3s</string>
 	<key>weChat_AppID</key>
-	<string></string>
+	<string>wx072e0f656539b1eb</string>
 	<key>weChat_AppSecret</key>
-	<string></string>
+	<string>e3baccc03ab047f1f3cf490b1e588aac</string>
 	<key>jPush_AppKey</key>
-	<string>a37192748f7e9deb19a98ff4</string>
+	<string>d3b9e5c5017342b6955105b7</string>
 	<key>uMeng_AppKey</key>
-	<string>5b815573a40fa3250f000041 </string>
+	<string>5bd910ddf1f556f567000210</string>
 	<key>bugly_AppId</key>
-	<string>5cb0d2b688</string>
+	<string>18e18883a5</string>
 	<key>bugly_AppKey</key>
-	<string>1855a192-3e60-4436-8fb7-a5f7aa40d366</string>
+	<string>ae47af8b-c698-492e-b031-672e8b166d23</string>
 	<key>home_page_num</key>
-	<string>3</string>
+	<string>1</string>
 	<key>mine_page_num</key>
-	<string>5</string>
+	<string>7</string>
 	<key>is_allied_school</key>
 	<string>2</string>
 	<key>login_type</key>
@@ -41,6 +41,6 @@
 	<key>is_always_show_guidepage</key>
 	<string>0</string>
 	<key>guide_count</key>
-	<string>3</string>
+	<string>0</string>
 </dict>
 </plist>

@@ -81,13 +81,13 @@ function initUserConfigFile() {
 
     ## 打包工程文件拷贝目录路径
     project_build_path="$Package_Dir/iXiao_build"
-    ##历史打包备份目录
+    ## 历史打包备份目录
     History_Package_Dir="$Package_Dir/History"
     ## 脚本临时生成最终用于构建的配置文件
     Tmp_Build_Xcconfig_File="$Package_Dir/build.xcconfig"
-    ##临时OptionsPlist文件
+    ## 临时OptionsPlist文件
     Tmp_Options_Plist_File="$Package_Dir/OptionsPlist.plist"
-    ##临时ProvisionPlist文件
+    ## 临时ProvisionPlist文件
     Tmp_Provision_Plist_File="$Package_Dir/ProvisionPlist.plist"
    
     logit "【用户配置】预打包项目路径: ${project_build_path}"
@@ -96,8 +96,8 @@ function initUserConfigFile() {
     logit "【用户配置】脚本生成构建的配置文件: ${Tmp_Build_Xcconfig_File}"
     logit "【用户配置】脚本生成OptionsPlist文件: ${Tmp_Options_Plist_File}"
     logit "【用户配置】授权文件目录: ${Provision_Dir}"
+
     #脚本全局参数配置文件user_config.plist(脚本参数优先于全局配置参数)
-   
     # 项目名称
     project_name=`printUserConfigPlist "project_name"`
     # 项目源码文件路径
@@ -107,6 +107,7 @@ function initUserConfigFile() {
     
     # 构建模式：默认(Debug/Release) 自定义(Simulation/AppStore)
     CONFIGRATION_TYPE=`printUserConfigPlist "configration_type"`
+    CONFIGRATION_TYPE="AppStore"
 
     # 指定分发渠道，development 内部分发，app-store商店分发，enterprise企业分发， ad-hoc 企业内部分发"
     CHANNEL=`printUserConfigPlist "channel"`

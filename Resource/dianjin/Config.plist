@@ -7,9 +7,9 @@
 	<key>AppName</key>
 	<string>点津教育</string>
 	<key>Version</key>
-	<string>2.5.0</string>
+	<string>2.0.6</string>
 	<key>Build</key>
-	<string>250</string>
+	<string>260</string>
 	<key>project_id</key>
 	<string>9230b019b68d4c03b33f1b0af1301641</string>
 	<key>merchant_id</key>
@@ -31,7 +31,7 @@
 	<key>bugly_AppKey</key>
 	<string>6b2a7b3e-88e2-42eb-9811-c16b35145556</string>
 	<key>home_page_num</key>
-	<string>5</string>
+	<string>2</string>
 	<key>mine_page_num</key>
 	<string>4</string>
 	<key>is_allied_school</key>

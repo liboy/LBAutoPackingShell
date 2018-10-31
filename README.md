@@ -349,11 +349,14 @@ ln -s /usr/local/Cellar/php@5.6/5.6.38/sbin/php-fpm  /usr/local/bin/php
 ## 问题
 https://blog.csdn.net/nithumahel/article/details/79870505
 
-security import /Users/liboy/Desktop/xiaolundun.p12 -k ~/Library/Keychains/login.keychain -P 1 -A
-security import /Users/liboy/Desktop/ios_development.cer -k ~/Library/Keychains/login.keychain -T /usr/bin/codesign
-
+security import /Users/liboy/Desktop/dianjin_dev.p12 -k ~/Library/Keychains/login.keychain -P 1 -A
+security import /Users/liboy/Desktop/ios_distribution.cer -k ~/Library/Keychains/login.keychain -T /usr/bin/codesign
+security import /Users/liboy/Desktop/PackageLog/Offline/tmp.cer -k ~/Library/Keychains/login.keychain -P 1 -A
+dianjin_dev.p12
 security import /tmp/tmp.cer -k ~/Library/Keychains/login.keychain -P p12password -T /usr/bin/codesign
 security import /tmp/tmp.cer -k ~/Library/Keychains/login.keychain -T /usr/bin/codesign
+
+security delete-certificate -c "iPhone Developer: Yumei Xing (9X7JK3J2YZ)" -t ~/Library/Keychains/login.keychain
 
 xcode 8.3之后使用-exportFormat导出IPA会报错 xcodebuild: error: invalid option '-exportFormat',改成使用-exportOptionsPlist
 
