@@ -45,7 +45,7 @@ CODE_SIGN_STYLE='Manual'
 pgyer_userKey="b805f985351b48620bd95cc5e4ab579b"
 pgyer_apiKey="b9bcf5ef168fdf8ce379ae9ab9bd8dcc"
 # 默认资源文件路径
-Tmp_resource_path="${Shell_File_Path}/Resource/yidiantong"
+Tmp_resource_path="${Shell_File_Path}/Resource/dianjin"
 
 #############################################业务配置#############################################
 

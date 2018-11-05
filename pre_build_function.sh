@@ -146,15 +146,8 @@ function copyProjectFile() {
     fi
 }
 
-## 生成并替换AppIcon
+## 用Blade生成并替换AppIcon
 function createAppIcon() {
-
-    # ************* 安装Blade ************* https://github.vimcom/jondot/blade
-    # blade --help 查看命令
-    # -s Icon( *注意：1024*1024,无alph,png格式)
-    # -t AppIcon.appiconset里的Contents.json文件
-    # -o 输出路径 AppIcon.appiconset
-    # -c 覆盖旧的Contents.json文件
 
     ResourceIconFilePath="$Tmp_resource_path/icon.png"
     if [ ! -f "${ResourceIconFilePath}" ]; then

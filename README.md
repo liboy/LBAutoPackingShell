@@ -283,7 +283,7 @@ sudo ./install
 extension=phalcon.so
 ```
 - 重启服务器`sudo apachectl restart`
-- 使用`php－m|grep phalcon` 命令，查看刚添加的`phalcon`扩展是否成功 
+- 使用`php -m|grep phalcon` 命令，查看刚添加的`phalcon`扩展是否成功 
 
 > 注意：Mac系统自带`php.ini`在`/etc`目录下默认没有，可以拷贝`php.ini.default`为`php.ini`配置。
 

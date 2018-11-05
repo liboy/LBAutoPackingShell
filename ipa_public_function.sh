@@ -44,12 +44,20 @@ function checkToolSupport() {
 	    errorExit "【环境配置】请使用brew install jq安装 "  
 	fi
 	logit "【环境配置】jq安装:$jqPath"
+
 	yougetPath=$(which you-get)
 	# you-get -h >/dev/null 2>&1
 	if [[ ! "$yougetPath" ]]; then
 	    errorExit "【环境配置】请使用brew install you-get安装 "  
 	fi
 	logit "【环境配置】you-get安装:$yougetPath"
+
+	blade=$(which blade)
+	if [[ ! "$blade" ]]; then
+	    errorExit "【环境配置】请使用brew install blade安装 "  
+	fi
+	logit "【环境配置】blade安装:$blade"
+	
 }
 
 ## 检查openssl
