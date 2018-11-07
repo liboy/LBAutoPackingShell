@@ -37,6 +37,7 @@ function usage
 	exit 0
 }
 
+## 检查所需工具是否安装
 function checkToolSupport() {
 
 	jqPath=$(which jq)
@@ -608,7 +609,7 @@ function createCertWithProvision() {
 	echo "-----END CERTIFICATE-----"	>> "$Tmp_Cer_File"
 	$CMD_Security import ${Tmp_Cer_File} -k "$HOME/Library/Keychains/login.keychain" -T /usr/bin/codesign 2>/dev/null
 	if [[ $? -eq 0 ]]; then
-		logit "【证书安装】证书导入成功";
+		logit "【证书安装】证书Cer导入成功";
 	fi
 }
 

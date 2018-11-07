@@ -205,8 +205,8 @@ function changeProjectInfoPlist() {
     #**************************Resource/Config.plist ***************************
     APP_BundleId=`printResource_Config "BundleIdentifier"`
     APP_Name=`printResource_Config "AppName"`
-    #APP_Version=`printResource_Config "Version"`
-    #APP_Build=`printResource_Config "Build"`
+    APP_Version=`printResource_Config "Version"`
+    APP_Build=`printResource_Config "Build"`
 
      #工程原BundleId
     ProjectBundleId=`printProject_Info "CFBundleIdentifier"`
@@ -218,8 +218,8 @@ function changeProjectInfoPlist() {
     #========================= 更改info.plist文件 =========================
     setProject_Info "CFBundleIdentifier" "$APP_BundleId"
     setProject_Info "CFBundleDisplayName" "$APP_Name"
-#    setProject_Info "CFBundleShortVersionString" "$APP_Version"
-#    setProject_Info "CFBundleVersion" "$APP_Build"
+    setProject_Info "CFBundleShortVersionString" "$APP_Version"
+    setProject_Info "CFBundleVersion" "$APP_Build"
     logit "【配置信息】更改后BundleId: `printProject_Info "CFBundleIdentifier"`"
 
 
@@ -270,7 +270,7 @@ function changeProjectProfile() {
     if [ ! -f "${resource_config_plist}" ]; then
         errorExit "Resource中缺少Config.plist 文件"
     fi
-    # cp -rf "${resource_config_plist}" "${project_config_plist}"
+    
     local ConfigPlistKeyArray=("project_id" "merchant_id" "system_color" "baidu_MapKey" "uMeng_AppKey" "bugly_AppId" "bugly_AppKey" "jPush_AppKey" "home_page_num" "mine_page_num" "is_allied_school" "login_type" "is_always_show_guidepage" "guide_count" "weChat_AppID" "weChat_AppSecret") 
 
     for i in "${!ConfigPlistKeyArray[@]}"; do

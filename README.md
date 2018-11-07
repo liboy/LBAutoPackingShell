@@ -1,10 +1,41 @@
 
-LBAutoPackingShell
-==
+# LBAutoPackingShell
 
-`LBAutoPackingShell` 一个轻量级 iOS 快速自动打包工具。xcode >= 8.3.3
+`LBAutoPackingShell` 一个轻量级 iOS 快速自动打包工具。如果你需要更多的功能，详见帮助`-h | --help` 
 
+## 功能
 
+- <font color=#006400 size=3>自动匹配最新的描述文件(Provisioning Profile)</font>
+- <font color=#006400 size=3>自动匹配签名身份(Code Signing Identity)</font>
+- 支持`--show-profile-detail provisionfile` 查看授权文件类型、创建日期、过期日期、使用证书签名ID、使用证书的创建日期等
+- 允许指定授权文件目录,脚本将只在该目录匹配授权文件
+- 支持Xcode8.3.3以上
+- 支持ipa签名方式：development、app-store、enterprise，ad-hoc，即内部分发、商店分发、企业分发、企业内部分发
+- 支持workplace、cocoapod
+- 支持多工程协同项目使用`-t targetName` 指定构建target
+- 自动关闭BitCode，并可配置开关
+- 支持可选构建架构集合，默认构建"armv7 arm64"
+- 可配置自动修改内部版本号(Build Version)
+- 可配置修改接口生产环境和开发环境
+- 可配置指定新的Bundle Id
+- 可配置指定构建Debug、Release模式
+- 可指定构建的Architcture(arm64、armv7)
+- 自动格式化IPA名称，例如:
+
+ ```
+ MyApp_20170321_222303_开发环境_企业分发_2.1.0(67).ipa
+ MyApp_20170321_222403_生产环境_商店分发_2.1.0(68).ipa`
+ ```
+- 自动校验ipa签名
+- 格式化日志输出
+
+### 常用IPA分发途径：
+```
+- 内部测试(development)：用于给我们内部人员测试使用的，指定的授权用户设备才可以通过使用“同步助手”、“APP助手”等工具安装
+- 商店分发(app-store)：用于提交到商店审核，用户设备只能通过在App Store下载安装
+- 企业分发(enterprise)：用于部署到服务器，所有用户设备都可通过扫描二维码或使用浏览器点击链接下载安装
+- 企业内部分发(ad-hoc)：用于部署到服务器，授权用户设备才可以通过扫描二维码或使用浏览器点击链接下载安装
+```
 ## 安装使用
 ```
 # 该脚本使用方法
@@ -54,7 +85,12 @@ brew install you-get
 # -o 输出路径 AppIcon.appiconset
 # -c 覆盖旧的Contents.json文件
 ```
+### 安装xcpretty（可选）
+用来格式化xcodebuild输出日志，建议安装
 
+```
+sudo gem install xcpretty
+```
 
 ### OpenSSL版本
 一个安全套接字层密码库，囊括主要的密码算法、常用的密钥和证书封装管理功能及SSL协议，并提供丰富的应用程序供测试或其它目的使用。
@@ -87,13 +123,31 @@ echo 'export PATH="/usr/local/Cellar/openssl/1.0.2p/bin/:$PATH"' >> ~/.bash_prof
 source ~/.bash_profile
 ```
 或软连接
+
 ```
 ln -s /usr/local/Cellar/openssl/1.0.2p/bin/openssl /usr/local/bin
 ```
 >注意：`/usr/local/Cellar/openssl/1.0.2p/bin/` 该路径请按照你实际情况来更改,通常是1.0.2p这个文件夹不同！
 
+### user_config.plist 文件说明
+
+执行脚本时，要指定一些些固定的参数，需要在`user_config.plist`文件中配置这些参数：
+
+```
+//脚本全局参数配置文件(脚本参数优先于全局配置参数)
+
+//keychain解锁密码，即PC开机密码。通常只有在第一次执行脚本时候需要。相当于脚本参数 -p | --keychain-password
+UNLOCK_KEYCHAIN_PWD =
+
+//构建模式：Debug/Release ；默认 Release。相当于脚本参数 -t | --configration-type
+CONFIGRATION_TYPE=
+
+//授权文件目录，默认在~/Library/MobileDevice/Provisioning Profiles。相当于脚本参数 -d | --provision-dir
+PROVISION_DIR=
+
+```
+
 ## 配置PHP运行环境
-https://getgrav.org/blog/macos-mojave-apache-multiple-php-versions
 
 ### 环境要求
 
@@ -329,7 +383,7 @@ cp /usr/local/opt/php@5.6/homebrew.mxcl.php@5.6.plist ~/Library/LaunchAgents/lau
 ```
 软连接：
 ln -s /usr/local/Cellar/php@5.6/5.6.38/bin/php  /usr/local/bin/php
-ln -s /usr/local/Cellar/php@5.6/5.6.38/sbin/php-fpm  /usr/local/bin/php
+ln -s /usr/local/Cellar/php@5.6/5.6.38/sbin/php-fpm  /usr/local/sbin/php-fpm
 ```
 ```
 <VirtualHost *:80>
@@ -346,35 +400,54 @@ ln -s /usr/local/Cellar/php@5.6/5.6.38/sbin/php-fpm  /usr/local/bin/php
 </VirtualHost>
 ```
 
-## 问题
-https://blog.csdn.net/nithumahel/article/details/79870505
 
+## 签名相关命令
+
+允许 `codesign` 访问您的钥匙串中的密钥
+
+```
 security import /Users/liboy/Desktop/dianjin_dev.p12 -k ~/Library/Keychains/login.keychain -P 1 -A
 security import /Users/liboy/Desktop/ios_distribution.cer -k ~/Library/Keychains/login.keychain -T /usr/bin/codesign
 security import /Users/liboy/Desktop/PackageLog/Offline/tmp.cer -k ~/Library/Keychains/login.keychain -P 1 -A
 dianjin_dev.p12
 security import /tmp/tmp.cer -k ~/Library/Keychains/login.keychain -P p12password -T /usr/bin/codesign
 security import /tmp/tmp.cer -k ~/Library/Keychains/login.keychain -T /usr/bin/codesign
-
 security delete-certificate -c "iPhone Developer: Yumei Xing (9X7JK3J2YZ)" -t ~/Library/Keychains/login.keychain
+```
+从`mobileprovision`文件中生成一个完整的plist文件
 
-xcode 8.3之后使用-exportFormat导出IPA会报错 xcodebuild: error: invalid option '-exportFormat',改成使用-exportOptionsPlist
-
-生成entitlements.plist文件
-
-先通过“security”命令，从mobileprovision文件中生成一个完整的plist文件
-
+```
 security cms -D -i "/Users/liboy/Desktop/自动打包/LBAutoPackingShell/MobileProvision/xiaolundun_development.mobileprovision" > "/Users/liboy/Desktop/MobileProvision.plist"
+```
+以XML格式查看描述文件的命令：
 
-/usr/libexec/PlistBuddy -c 'Print :DeveloperCertificates:0' "/Users/liboy/Desktop/MobileProvision.plist"
+```
+security cms -D -i "/Users/liboy/Desktop/自动打包/LBAutoPackingShell/MobileProvision/xiaolundun_development.mobileprovision"
+```
+开发者证书被包含在`Provisioning Profile`文件中DeveloperCertificates选项里面，所有的证书都是基于 Base64 编码符合 PEM (Privacy Enhanced Mail, RFC 1848) 格式的。
+
+```
 security cms -D -i "/Users/liboy/Desktop/自动打包/LBAutoPackingShell/MobileProvision/xiaolundun_development.mobileprovision" | grep data | head -n 1 | sed 's/.*<data>//g' | sed 's/<\/data>.*//g'
+```
+提取`DeveloperCertificates/<data></data>` 之间的内容复制粘贴到一个文件中去，像下面这样：
 
+```
+-----BEGIN CERTIFICATE-----
+MIIFnjCCBIagAwIBAgIIE/IgVItTuH4wDQYJKoZIhvcNAQEFBQAwgZYxCzA…
+-----END CERTIFICATE-----`
+```
+然后使用 `openssl x509 -text -in file.pem` 来显示证书详细内容。
+
+
+查找xcworkspace工程启动文件,获取xcproj 工程列表
+
+```
 grep "location =" "/Users/liboy/Desktop/PackageLog/Offline/iXiao_build/iXiao.xcworkspace/contents.xcworkspacedata" | cut -d "\"" -f2 | cut -d ":" -f2
-
-
-##打包的时候：会报 archived-expanded-entitlements.xcent  文件缺失!这是xcode的bug
-##链接：http://stackoverflow.com/questions/28589653/mac-os-x-build-server-missing-archived-expanded-entitlements-xcent-file-in-ipa
-## 发现在 xcode >= 8.3.3 以上都不存在 ,在xcode8.2.1 存在
+```
+## 问题
+1. xcode的bug打包的时候：会报 archived-expanded-entitlements.xcent  文件缺失!
+链接：http://stackoverflow.com/questions/28589653/mac-os-x-build-server-missing-archived-expanded-entitlements-xcent-file-in-ipa
+发现在 xcode >= 8.3.3 以上都不存在 ,在xcode8.2.1 存在
 
 ```
 # ## 修复8.3 以下版本的xcent文件
@@ -409,3 +482,85 @@ function repairXcentFile()
     fi
 }
 ```
+## 版本更新日志
+
+```
+# 2018/09/30
+#
+# 版本：1.0.0
+# 功能：
+#   1.显示Build Settings 签名配置
+#   2.获取git版本数量，并自动更改build号为版本数量号
+#   3.日志文本log.txt输出
+#   4.自动匹配签名和授权文件
+#   5.支持workplace、多个scheme
+#   6.校验构建后的ipa的bundle Id、签名、支持最低iOS版本、arm体系等等
+#   7.构建前清理缓存,防止xib更改没有被重新编译
+#   8.备份历史打包ipa以及log.txt
+#   9.可更改OC代码，自动配置服务器测试环境or生产环境
+#   10.格式化输出ipa包名称：name_time_开发环境_企业分发_1.0.0(168).ipa
+
+# 2. 更改默认构建架构集为“armv7 arm64” 
+
+# 1. 增加-t参数指定构建的Target
+# 2. 优化一些日志输出
+# 3. 使用--debug 参数代替-t | --config-type参数 来指定Debug或Release模式，详见 AutoPackingShell -h
+#--------------------------------------------
+# 1. 增加支持ad-hoc打包格式
+# 2. 增加-v参数输出详细的构建信息
+# 3. 增加--show-profile-detail provisionfile 参数查看授权文件内容
+# 4. 修复无法匹配证书签名ID带有多个连续空格的bug
+# 2. 使用xcodeproj工具代替PlistBuddy来修改project.pbxproj文件，防止项目中文乱码和project.pbxproj文件格式发生变化
+# 3. 增加岁OpenSSL的检查校验
+# 1. 自动匹配授权文件和签名（移除config.plist配置）
+# 2. 优化授权文件匹配算法，取有效期最长授权文件
+# 3. 调整脚本参数,详见-h
+# 4. 优化代码
+# 5. 兼容长参数
+# 6. 增加全局配置文件user.xcconfig
+
+
+# 1. 移除使用xcodepro（xceditor.rb）,使用xcodebuild 的`-xcconfig `参数来实现签名等配置修改
+# 2. 保持工程配置(project.pbxproj)文件不被修改
+
+# 1. 优化build函数代码。
+# 2. 增加xcpretty 来格式化日志输出
+# 3. 支持xcode9（8.0~9.3）
+
+# 1. 增加一个“修改Bundle Id”功能。如-b com.xxx.xx。
+
+# 优化：默认构建ipa支持armch 为 arm64。（因iOS 11强制禁用32位）
+
+# 优化：对授权文件mobiprovision有效期检测，授权文件有效期小于90天，强制打包失败！
+
+# 优化：兼容xcode8.3以上版本
+# xcode 8.3之后使用-exportFormat导出IPA会报错 xcodebuild: error: invalid option '-exportFormat',改成使用-exportOptionsPlist
+# Available options: app-store, ad-hoc, package, enterprise, development, and developer-id.
+# 当前用到：app-store ,ad-hoc, enterprise, development
+#
+#--------------------------------------------
+#		为了节省打包时间，在打开发环境的包时，只打armv7
+#		profileType==development 时，设置archs=armv7 （向下兼容） ，否则archs为默认值：arm64 和armv7。
+：
+#		1.去掉可配置签名、授权文件，并修改为自动匹配签名和授权文件！
+#
+#--------------------------------------------
+
+
+# 备注：
+#		1.security 命令会报警告,忽略即可:security: SecPolicySetValue: One or more parameters passed to a function were not valid.
+#		2.支持Xcode8.0及以上版本（8.0前没有测试过）
+
+
+```
+
+## 参考
+https://getgrav.org/blog/macos-mojave-apache-multiple-php-versions
+https://www.cnblogs.com/wangyang1213/p/5209119.html
+[代码签名探析](https://objccn.io/issue-17-2/)
+
+Mac升级bash到最新版本
+https://blog.csdn.net/pz0605/article/details/51954868
+https://www.cnblogs.com/litifeng/p/8448019.html
+
+
