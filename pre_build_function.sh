@@ -107,7 +107,6 @@ function initUserConfigFile() {
     
     # 构建模式：默认(Debug/Release) 自定义(Simulation/AppStore)
     CONFIGRATION_TYPE=`printUserConfigPlist "configration_type"`
-    CONFIGRATION_TYPE="AppStore"
 
     # 指定分发渠道，development 内部分发，app-store商店分发，enterprise企业分发， ad-hoc 企业内部分发"
     CHANNEL=`printUserConfigPlist "channel"`
@@ -301,7 +300,7 @@ function configResourceFile() {
     if [[ ! $CurrentDateStr ]]; then
         errorExit "请传入服务器时间字符串"
     fi
-    logit "$CurrentDateStr"
+
     ## 线上打包输出目录
     Package_Dir=~/Desktop/PackageLog/Online/$CurrentDateStr
     if [[ ! -d "$Package_Dir" ]]; then
@@ -355,8 +354,8 @@ function configResourceFile() {
     CONFIG_login_type=`cat $resource_json_file | jq -r '.LOGINFIRST'`
     CONFIG_is_always_show_guidepage=`cat $resource_json_file | jq -r '.GuideModel'`
     CONFIG_guide_count=`cat $resource_json_file | jq -r '.GuideCount'`
-    # CONFIG_weChat_AppID=`printResource_Config "weChat_AppID"`
-    # CONFIG_weChat_AppSecret=`printResource_Config "weChat_AppSecret"`
+    CONFIG_weChat_AppID=`cat $resource_json_file | jq -r '.weChat_AppID'`
+    CONFIG_weChat_AppSecret=`cat $resource_json_file | jq -r '.weChat_AppSecret'`
     
     #************************** 图片文件资源 ***************************
     
@@ -369,8 +368,12 @@ function configResourceFile() {
     # 描述文件路径
     MobileProvision=`cat $resource_json_file | jq -r '.mobileprovision'`
     # 下载
-    you-get -o $Tmp_resource_path -O ProvisionFile "$Domain_Url$MobileProvision"
-    
+    you-get -o $Tmp_resource_path -O ProvisionFile.mobileprovision "$Domain_Url$MobileProvision"
+
+     # p12证书文件路径
+    CertFile=`cat $resource_json_file | jq -r '.cert_file'`
+    # 下载
+    you-get -o $Tmp_resource_path -O tmp_cert.p12 "$Domain_Url$CertFile"
 
     # 脚本资源里Config.plist文件路径
     resource_config_plist="${Tmp_resource_path}/Config.plist"

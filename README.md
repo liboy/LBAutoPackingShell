@@ -406,7 +406,7 @@ ln -s /usr/local/Cellar/php@5.6/5.6.38/sbin/php-fpm  /usr/local/sbin/php-fpm
 允许 `codesign` 访问您的钥匙串中的密钥
 
 ```
-security import /Users/liboy/Desktop/dianjin_dev.p12 -k ~/Library/Keychains/login.keychain -P 1 -A
+security import /Users/liboy/Desktop/dianjin_dev.txt -k ~/Library/Keychains/login.keychain -P 1 -A
 security import /Users/liboy/Desktop/ios_distribution.cer -k ~/Library/Keychains/login.keychain -T /usr/bin/codesign
 security import /Users/liboy/Desktop/PackageLog/Offline/tmp.cer -k ~/Library/Keychains/login.keychain -P 1 -A
 dianjin_dev.p12

@@ -7,9 +7,9 @@
 	<key>AppName</key>
 	<string>小伦敦英语</string>
 	<key>Version</key>
-	<string>1.5.0</string>
+	<string>2.0.8</string>
 	<key>Build</key>
-	<string>150</string>
+	<string>208</string>
 	<key>project_id</key>
 	<string>29290642a8b94dda859e6c53ee62a2ce</string>
 	<key>merchant_id</key>
@@ -19,9 +19,9 @@
 	<key>baidu_MapKey</key>
 	<string>b5szEXmNbWMIfXH4cwfVlexGnLQpCbWU</string>
 	<key>weChat_AppID</key>
-	<string></string>
+	<string>wxbc8b0e9291acd677</string>
 	<key>weChat_AppSecret</key>
-	<string></string>
+	<string>4653510f3966d3fdf587f4efc953938a</string>
 	<key>jPush_AppKey</key>
 	<string>8fe193ea835599acc4f937a0</string>
 	<key>uMeng_AppKey</key>
@@ -31,7 +31,7 @@
 	<key>bugly_AppKey</key>
 	<string>baffe4c1-8bbb-4090-a2a9-395cd807df7f</string>
 	<key>home_page_num</key>
-	<string>4</string>
+	<string>9</string>
 	<key>mine_page_num</key>
 	<string>4</string>
 	<key>is_allied_school</key>

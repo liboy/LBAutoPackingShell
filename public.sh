@@ -45,7 +45,7 @@ CODE_SIGN_STYLE='Manual'
 pgyer_userKey="b805f985351b48620bd95cc5e4ab579b"
 pgyer_apiKey="b9bcf5ef168fdf8ce379ae9ab9bd8dcc"
 # 默认资源文件路径
-Tmp_resource_path="${Shell_File_Path}/Resource/xiaolundun"
+Tmp_resource_path="${Shell_File_Path}/Resource/taiyanghua"
 
 #############################################业务配置#############################################
 
@@ -72,6 +72,7 @@ function logit() {
 ## 错误日志输出
 function errorExit() {
     echo -e "\033[31m【AutoPackingShell】$@ \033[0m"
+    echo "$@" >> "$Tmp_Log_File"
     exit 1
 }
 
