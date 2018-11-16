@@ -5,9 +5,9 @@
 	<key>project_name</key>
 	<string>iXiao</string>
 	<key>project_source_path</key>
-	<string>/Users/liboy/Desktop/小禾项目/iXiao2.0.6</string>
+	<string>/Users/xiaohe/Desktop/iXiao</string>
 	<key>unlock_keychain_pwd</key>
-	<string>4765030</string>
+	<string>xiaohe</string>
 	<key>configration_type</key>
 	<string>Simulation</string>
 	<key>channel</key>

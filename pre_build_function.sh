@@ -296,11 +296,12 @@ function configResourceFile() {
     # 所需的json配置文件路径
     local json_file_path=$1
     # 服务器动态时间标记（用来隔离打包）
-    CurrentDateStr=$2
+    local CurrentDateStr=$2
+    
     if [[ ! $CurrentDateStr ]]; then
         errorExit "请传入服务器时间字符串"
     fi
-    
+    logit "$CurrentDateStr"
     ## 线上打包输出目录
     Package_Dir=~/Desktop/PackageLog/Online/$CurrentDateStr
     if [[ ! -d "$Package_Dir" ]]; then
@@ -321,10 +322,10 @@ function configResourceFile() {
     cp -rp "${Shell_File_Path}/config_tpl.plist" $Tmp_resource_path
     
     # 测试
-    json_file_path="${Shell_File_Path}/test.json"
+    # json_file_path="${Shell_File_Path}/test.json"
 
     resource_json_file="$Tmp_resource_path/config.json"
-    logit "【资源配置】json文件: $resource_json_file" 
+    logit "【资源配置】json文件: $json_file_path" 
     # 复制打包参数json文件到打包脚本目录
     cp -rp $json_file_path $resource_json_file
     # 打印json
