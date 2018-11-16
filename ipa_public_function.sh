@@ -596,7 +596,20 @@ function getExpiretionDays() {
     echo $days
 }
 
-## 将授权文件的签名数据封装成证书并安装
+## 证书安装
+function installiCertFile() {
+
+	local certFile=$1
+	if [[ ! -f "$certFile" ]]; then
+		errorExit "指定证书文件不存在!"
+	fi
+	$CMD_Security import $certFile -k "$HOME/Library/Keychains/login.keychain" -P 1 -T /usr/bin/codesign 2>/dev/null
+	# $CMD_Security import ${Tmp_Cer_File} -k "$HOME/Library/Keychains/login.keychain" -T /usr/bin/codesign 2>/dev/null
+	if [[ $? -eq 0 ]]; then
+		logit "【证书安装】证书Cer导入成功";
+	fi
+}
+
 function createCertWithProvision() {
 
 	local provisionFile=$1
@@ -607,10 +620,7 @@ function createCertWithProvision() {
 	echo "-----BEGIN CERTIFICATE-----" 	> "$Tmp_Cer_File"
 	echo "${data}"						>> "$Tmp_Cer_File"
 	echo "-----END CERTIFICATE-----"	>> "$Tmp_Cer_File"
-	$CMD_Security import ${Tmp_Cer_File} -k "$HOME/Library/Keychains/login.keychain" -T /usr/bin/codesign 2>/dev/null
-	if [[ $? -eq 0 ]]; then
-		logit "【证书安装】证书Cer导入成功";
-	fi
+
 }
 
 ## 获取授权文件中的签名id

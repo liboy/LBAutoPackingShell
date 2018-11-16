@@ -208,14 +208,14 @@ function changeProjectInfoPlist() {
     APP_Build=`printResource_Config "Build"`
 
      #工程原BundleId
-    ProjectBundleId=`printProject_Info "CFBundleIdentifier"`
-
+    # ProjectBundleId=`printProject_Info "CFBundleIdentifier"`
+    ProjectBundleId="com.baonahao.xiaolundunschool"
     logit "【项目配置】APP名称: $APP_Name"
     logit "【项目配置】新BundleId: $APP_BundleId"
     logit "【项目配置】原BundleId: ${ProjectBundleId}"
 
     #========================= 更改info.plist文件 =========================
-    setProject_Info "CFBundleIdentifier" "$APP_BundleId"
+    # setProject_Info "CFBundleIdentifier" "$APP_BundleId"
     setProject_Info "CFBundleDisplayName" "$APP_Name"
     setProject_Info "CFBundleShortVersionString" "$APP_Version"
     setProject_Info "CFBundleVersion" "$APP_Build"
@@ -370,10 +370,12 @@ function configResourceFile() {
     # 下载
     you-get -o $Tmp_resource_path -O ProvisionFile.mobileprovision "$Domain_Url$MobileProvision"
 
-     # p12证书文件路径
+    # p12证书文件路径
     CertFile=`cat $resource_json_file | jq -r '.cert_file'`
     # 下载
-    you-get -o $Tmp_resource_path -O tmp_cert.p12 "$Domain_Url$CertFile"
+    you-get -o $Tmp_resource_path -O tmp_p12_file.p12 "$Domain_Url$CertFile"
+    ## 脚本下载证书文件路径
+    Tmp_P12_File="$Tmp_resource_path/tmp_p12_file.p12"
 
     # 脚本资源里Config.plist文件路径
     resource_config_plist="${Tmp_resource_path}/Config.plist"

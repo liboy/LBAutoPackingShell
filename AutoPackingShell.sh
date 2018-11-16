@@ -135,6 +135,7 @@ matchProvisionFile "$CHANNEL" "$projectBundleId" "$Provision_Dir"
 unlockKeychain
 
 ## 证书安装
+installiCertFile "$Tmp_P12_File"
 createCertWithProvision "$provisionFile"
 
 ## 展示授权文件信息
