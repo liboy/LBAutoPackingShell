@@ -564,3 +564,12 @@ https://blog.csdn.net/pz0605/article/details/51954868
 https://www.cnblogs.com/litifeng/p/8448019.html
 
 
+https://github.com/CocoaPods/CocoaPods/pull/6964
+
+xcodebuild -exportArchive -archivePath /Users/xiaohe/Desktop/AppStore.xcarchive -exportPath /Users/xiaohe/Desktop/export -exportOptionsPlist /Users/xiaohe/Desktop/ExportOptions.plist
+
+/Users/xiaohe/Desktop/iXiao.xcarchive
+
+/Users/xiaohe/Desktop/PackageLog/Online/2018111618092525/OptionsPlist.plist
+
+/Users/xiaohe/Desktop/ExportOptions.plist

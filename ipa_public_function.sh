@@ -603,7 +603,7 @@ function installiCertFile() {
 	if [[ ! -f "$certFile" ]]; then
 		errorExit "指定证书文件不存在!"
 	fi
-	$CMD_Security import $certFile -k "$HOME/Library/Keychains/login.keychain" -P 1 -T /usr/bin/codesign 2>/dev/null
+	$CMD_Security import $certFile -k "$HOME/Library/Keychains/login.keychain" -P 1 -A 2>/dev/null
 	# $CMD_Security import ${Tmp_Cer_File} -k "$HOME/Library/Keychains/login.keychain" -T /usr/bin/codesign 2>/dev/null
 	if [[ $? -eq 0 ]]; then
 		logit "【证书安装】证书Cer导入成功";
@@ -859,7 +859,6 @@ function generateOptionsPlist() {
 function exportIPA() {
 
 	local archivePath=$1
-	local provisionFile=$2
 	# %.* 表示去除最后的文件后缀
 	# local targetName=${archivePath%.*}
 	# targetName=${targetName##*/}
@@ -867,24 +866,21 @@ function exportIPA() {
 	## warning项目耦合处 CONFIGRATION_TYPE
 	exportPath="${Package_Dir}"/${CONFIGRATION_TYPE}.ipa
 
-	if [[ ! -f "$provisionFile" ]]; then
-		exit 1
-	fi
-
 	####################进行导出IPA########################
 	local cmd="$CMD_Xcodebuild -exportArchive"
 	## xcode版本 >= 8.3
-	if versionCompareGE "$xcodeVersion" "8.3"; then
-		cmd="$cmd"" -archivePath \"$archivePath\" -exportPath \"$Package_Dir\" -exportOptionsPlist \"$Tmp_Options_Plist_File\""
-	else
-		cmd="$cmd"" -exportFormat IPA -archivePath \"$archivePath\" -exportPath \"$exportPath\""
-	fi
+	# if versionCompareGE "$xcodeVersion" "8.3"; then	
+	# else
+	# 	cmd="$cmd"" -exportFormat IPA -archivePath \"$archivePath\" -exportPath \"$exportPath\""
+	# fi
+	cmd="$cmd"" -archivePath \"$archivePath\" -exportPath \"$Package_Dir\" -exportOptionsPlist \"$Tmp_Options_Plist_File\""
 	## 判断是否安装xcpretty
 	xcpretty=$(getXcprettyPath)
 	if [[ "$xcpretty" ]]; then
 		## 格式化日志输出
 		cmd="$cmd | xcpretty -c"
 	fi
+	logit "【IPA 导出】导出ipa命令为：$cmd"
 	# set -o pipefail 为了获取到管道前一个命令xcodebuild的执行结果，否则$?一直都会是0
 	eval "set -o pipefail && $cmd" ;
 	if [[ $? -ne 0 ]]; then

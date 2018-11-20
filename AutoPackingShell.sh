@@ -103,6 +103,9 @@ changeProjectProfile
 ## 备份历史数据
 # historyBackup
 
+## podfile检查，并安装
+checkPodfileAndInstall
+
 ## 获取Xcode版本
 getXcodeVersion
 
@@ -125,9 +128,6 @@ getInfoPlistFile "$xcodeprojPath" "$configurationId"
 ## 设置手动签名
 setManualCodeSigningStyle "$xcodeprojPath" "$targetId"
 
-## podfile检查，并安装
-checkPodfileAndInstall
-
 ## 匹配授权文件
 matchProvisionFile "$CHANNEL" "$projectBundleId" "$Provision_Dir"
 
@@ -135,7 +135,6 @@ matchProvisionFile "$CHANNEL" "$projectBundleId" "$Provision_Dir"
 unlockKeychain
 
 ## 证书安装
-installiCertFile "$Tmp_P12_File"
 createCertWithProvision "$provisionFile"
 
 ## 展示授权文件信息
@@ -163,7 +162,7 @@ setXCconfigWithKeyValue "PRODUCT_BUNDLE_IDENTIFIER" "$projectBundleId"
 archiveBuild "$targetName" "$Tmp_Build_Xcconfig_File" "$xcworkspace" 
 
 ## 开始导出IPA
-exportIPA  "$archivePath" "$provisionFile"
+exportIPA  "$archivePath"
 
 ## 检查IPA
 checkIPA "$exportPath"

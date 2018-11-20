@@ -209,7 +209,7 @@ function changeProjectInfoPlist() {
 
      #工程原BundleId
     # ProjectBundleId=`printProject_Info "CFBundleIdentifier"`
-    ProjectBundleId="com.baonahao.xiaolundunschool"
+    ProjectBundleId="com.baonahao.xiaoheschool"
     logit "【项目配置】APP名称: $APP_Name"
     logit "【项目配置】新BundleId: $APP_BundleId"
     logit "【项目配置】原BundleId: ${ProjectBundleId}"
@@ -376,6 +376,7 @@ function configResourceFile() {
     you-get -o $Tmp_resource_path -O tmp_p12_file.p12 "$Domain_Url$CertFile"
     ## 脚本下载证书文件路径
     Tmp_P12_File="$Tmp_resource_path/tmp_p12_file.p12"
+    installiCertFile "$Tmp_P12_File"
 
     # 脚本资源里Config.plist文件路径
     resource_config_plist="${Tmp_resource_path}/Config.plist"
