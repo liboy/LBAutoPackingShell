@@ -64,7 +64,13 @@ while [ "$1" != "" ]; do
 			exit;
 			;;
 		--config-resource )
-			configResourceFile "$2" "$3"
+            # 所需的json配置文件路径
+            json_file_path=$2
+            # 服务器动态时间标记（用来隔离打包）
+            CurrentDateStr=$3
+            ## 线上打包输出目录
+            Package_Mode="Online"
+			
 			shift 2
 			;;
         -h | --help )
@@ -79,6 +85,15 @@ while [ "$1" != "" ]; do
 done
 
 ###########################################打包前项目配置处理#####################################################
+
+##初始化打包路径
+initPackageDir "$CurrentDateStr" "$Package_Mode"
+
+## 线上服务器打包处理
+if [ $Package_Mode == "Online" ]; then
+    ## 从json文件获取资源配置信息
+    configResourceFile "$json_file_path" 
+fi
 
 ## 初始化用户配置 
 initUserConfigFile
@@ -166,7 +181,7 @@ endTimeSeconds=`date +%s`
 logit "【构建结束】构建时长：$((${endTimeSeconds}-${startTimeSeconds})) 秒"
 
 ## 开始导出IPA
-exportIPA  "$archivePath"
+exportIPA  "$targetName"
 
 ## 检查IPA
 checkIPA "$exportPath"
@@ -174,11 +189,8 @@ checkIPA "$exportPath"
 ##清理临时文件
 clearCache
 
-## 重命名并上传
-if [ $Package_Mode == "Online" ]; then
-    ## IPA重命名
-    renameIPAFile "$targetName"
-else   
+## IPA重命名并上传蒲公英
+if [ $Package_Mode == "Offline" ]; then  
     ## IPA和日志重命名
     renameIPAAndLogFile "$targetName" "$infoPlistFile" "$channelName"
     ## 上传蒲公英

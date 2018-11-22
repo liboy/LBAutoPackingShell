@@ -79,6 +79,69 @@ function contains() {
 ## 初始化用户配置
 function initUserConfigFile() {
 
+    #脚本全局参数配置文件user_config.plist(脚本参数优先于全局配置参数)
+    # 项目名称
+    project_name=`printUserConfigPlist "project_name"`
+    # 项目源码文件路径
+    project_source_path=`printUserConfigPlist "project_source_path"`
+    # keychain解锁密码，即开机密码
+    UNLOCK_KEYCHAIN_PWD=`printUserConfigPlist "unlock_keychain_pwd"`
+    
+    # 构建模式：默认(Debug/Release)
+    CONFIGRATION_TYPE=`printUserConfigPlist "configration_type"`
+
+    # 指定分发渠道，development 内部分发，app-store商店分发，enterprise企业分发， ad-hoc 企业内部分发"
+    CHANNEL=`printUserConfigPlist "channel"`
+
+    ##指定构建的target,不指定默认工程的第一个target
+    BUILD_TARGET=`printUserConfigPlist "build_target"`
+
+    ##指定构建的target,不指定默认工程的第一个target
+    resource_name=`printUserConfigPlist "resource_name"`
+    # 设置线下资源文件路径
+    Tmp_resource_path="${Shell_File_Path}/Resource/$resource_name"
+
+    logit "【用户配置】项目名称: ${project_name}"
+    logit "【用户配置】源码文件路径: ${project_source_path}"
+    logit "【用户配置】keychain解锁密码: ${UNLOCK_KEYCHAIN_PWD}"
+    logit "【用户配置】构建模式: ${CONFIGRATION_TYPE}"
+    logit "【用户配置】分发渠道: ${CHANNEL}"
+    
+
+}
+
+##初始化打包路径
+function initPackageDir() {
+
+    local CurrentDateStr=$1
+    local Package_Mode=$2
+
+    ## 默认线下打包输出目录
+    Package_Dir=~/Desktop/PackageLog/$Package_Mode
+    # 默认线下资源文件路径
+    Tmp_resource_path="${Shell_File_Path}/Resource/xxx"
+    # 授权文件目录
+    Provision_Dir="${Shell_File_Path}/MobileProvision"
+    if [[ ! -d "$Package_Dir" ]]; then
+        mkdir -p "$Package_Dir"
+    fi
+    ## 线上服务打包处理
+    if [ $Package_Mode == "Online" ]; then
+        Package_Dir=~/Desktop/PackageLog/$Package_Mode/$CurrentDateStr  
+        # 临时存放资源文件目录
+        Tmp_resource_path="$Package_Dir/Resource"
+        # 授权文件目录
+        Provision_Dir=$Tmp_resource_path
+        if [[ ! -d "$Tmp_resource_path" ]]; then
+            mkdir -p "$Tmp_resource_path"
+        fi
+        # 拷贝配置文件模板config_tpl.plist到资源文件目录
+        cp -rp "${Shell_File_Path}/config_tpl.plist" $Tmp_resource_path
+    fi
+    
+    # 自动打开打包输出目录
+    open $Package_Dir
+
     ## 打包工程文件拷贝目录路径
     project_build_path="$Package_Dir/iXiao_build"
     ## 历史打包备份目录
@@ -89,6 +152,10 @@ function initUserConfigFile() {
     Tmp_Options_Plist_File="$Package_Dir/OptionsPlist.plist"
     ## 临时ProvisionPlist文件
     Tmp_Provision_Plist_File="$Package_Dir/ProvisionPlist.plist"
+    ## 脚本生成的日志文件
+    Tmp_Log_File="$Package_Dir/${CurrentDateStr}.txt"
+    ## 脚本生成的证书文件
+    Tmp_Cer_File="$Package_Dir/tmp.cer"
    
     logit "【用户配置】预打包项目路径: ${project_build_path}"
     logit "【用户配置】历史打包备份目录: ${History_Package_Dir}"
@@ -96,33 +163,9 @@ function initUserConfigFile() {
     logit "【用户配置】脚本生成构建的配置文件: ${Tmp_Build_Xcconfig_File}"
     logit "【用户配置】脚本生成OptionsPlist文件: ${Tmp_Options_Plist_File}"
     logit "【用户配置】授权文件目录: ${Provision_Dir}"
-
-    #脚本全局参数配置文件user_config.plist(脚本参数优先于全局配置参数)
-    # 项目名称
-    project_name=`printUserConfigPlist "project_name"`
-    # 项目源码文件路径
-    project_source_path=`printUserConfigPlist "project_source_path"`
-    # keychain解锁密码，即开机密码
-    UNLOCK_KEYCHAIN_PWD=`printUserConfigPlist "unlock_keychain_pwd"`
-    
-    # 构建模式：默认(Debug/Release) 自定义(Simulation/AppStore)
-    CONFIGRATION_TYPE=`printUserConfigPlist "configration_type"`
-
-    # 指定分发渠道，development 内部分发，app-store商店分发，enterprise企业分发， ad-hoc 企业内部分发"
-    CHANNEL=`printUserConfigPlist "channel"`
-
-    ##指定构建的target,不指定默认工程的第一个target
-    BUILD_TARGET=`printUserConfigPlist "build_target"`
-
-
-    logit "【用户配置】项目名称: ${project_name}"
-    logit "【用户配置】源码文件路径: ${project_source_path}"
-    logit "【用户配置】keychain解锁密码: ${UNLOCK_KEYCHAIN_PWD}"
-    logit "【用户配置】构建模式: ${CONFIGRATION_TYPE}"
-    logit "【用户配置】分发渠道: ${CHANNEL}"
-    
-
 }
+
+
 
 ## 拷贝项目到打包目录
 function copyProjectFile() {
@@ -294,33 +337,7 @@ function configResourceFile() {
 
     # 所需的json配置文件路径
     local json_file_path=$1
-    # 服务器动态时间标记（用来隔离打包）
-    local CurrentDateStr=$2
-    
-    if [[ ! $CurrentDateStr ]]; then
-        errorExit "请传入服务器时间字符串"
-    fi
-
-    ## 线上打包输出目录
-    Package_Mode="Online"
-    Package_Dir=~/Desktop/PackageLog/$Package_Mode/$CurrentDateStr
-    if [[ ! -d "$Package_Dir" ]]; then
-        mkdir -p "$Package_Dir"
-    else
-        errorExit "线上打包输出目录重复，请检查"
-    fi
-    ## 脚本生成的日志文件
-    Tmp_Log_File="$Package_Dir/package_log.txt"
-    # 自动打开打包输出目录
-    open $Package_Dir
-    # 临时存放资源文件目录
-    Tmp_resource_path="$Package_Dir/Resource"
-    # 授权文件目录
-    Provision_Dir=$Tmp_resource_path
-    mkdir -p $Tmp_resource_path
-    # 拷贝配置文件模板config_tpl.plist到资源文件目录
-    cp -rp "${Shell_File_Path}/config_tpl.plist" $Tmp_resource_path
-    
+   
     # 测试
     # json_file_path="${Shell_File_Path}/test.json"
 

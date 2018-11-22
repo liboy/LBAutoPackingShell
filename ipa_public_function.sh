@@ -32,7 +32,7 @@ function usage
 	
 	echo "  --show-profile-detail <provisionfile> 查看授权文件的信息详情(development、enterprise、app-store、ad-hoc)"
 	echo "  --pgyer-upload <ipafilepath>  指定IPA文件上传蒲公英"
-	echo "  --config-resource <jsonfilepath> <datestr> 指定json文件和时间字符串(例:20181023140504）配置脚本资源配置信息后打包项目"
+	echo "  --config-resource <jsonfilepath> <datestr> 服务器调用脚本接口，指定json文件和时间字符串(例:20181023140504）配置脚本资源配置信息后打包项目"
 	
 	exit 0
 }
@@ -808,8 +808,8 @@ function archiveBuild() {
 	if [[ "$xcworkspacePath" ]]; then
 		cmd="$cmd"" -workspace \"$xcworkspacePath\""
 	fi
-	## warning项目耦合处 CONFIGRATION_TYPE
-	cmd="$cmd"" -scheme $CONFIGRATION_TYPE -archivePath \"$archivePath\" -configuration $CONFIGRATION_TYPE -xcconfig $xcconfigFile clean build"
+	## 
+	cmd="$cmd"" -scheme $targetName -archivePath \"$archivePath\" -configuration $CONFIGRATION_TYPE -xcconfig $xcconfigFile clean build"
 
 	local xcpretty=$(getXcprettyPath)
 	if [[ "$xcpretty" ]]; then
@@ -858,13 +858,11 @@ function generateOptionsPlist() {
 ## 导出IPA
 function exportIPA() {
 
-	local archivePath=$1
+	local targetName=$1
 	# %.* 表示去除最后的文件后缀
 	# local targetName=${archivePath%.*}
 	# targetName=${targetName##*/}
-	
-	## warning项目耦合处 CONFIGRATION_TYPE
-	exportPath="${Package_Dir}"/${CONFIGRATION_TYPE}.ipa
+	exportPath="${Package_Dir}"/${targetName}.ipa
 
 	####################进行导出IPA########################
 	local cmd="$CMD_Xcodebuild -exportArchive"
@@ -968,18 +966,7 @@ function getBuildVersion() {
 	echo $projectVersion
 }
 
-## 线上自动打包IPA重命名
-function renameIPAFile () {
-	local targetName=$1
 
-	## 去除最后的文件名称,得到纯路径
-	local exportDir=${exportPath%/*} 
-	local ipaFilePath=${exportDir}/${targetName}.ipa
-	logit "【IPA 信息】IPA路径:$ipaFilePath"
-	# 重命名
-	mv "$exportPath" 	"$ipaFilePath"
-	
-}
 ## 线下手动打包IPA和日志重命名
 function renameIPAAndLogFile () {
 	local targetName=$1

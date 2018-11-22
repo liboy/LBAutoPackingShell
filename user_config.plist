@@ -9,11 +9,13 @@
 	<key>unlock_keychain_pwd</key>
 	<string>4765030</string>
 	<key>configration_type</key>
-	<string>Simulation</string>
+	<string>Debug</string>
 	<key>channel</key>
 	<string>development</string>
 	<key>build_target</key>
 	<string></string>
+	<key>resource_name</key>
+	<string>dianjin</string>
 	
 </dict>
 </plist>
