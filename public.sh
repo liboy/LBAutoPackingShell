@@ -22,8 +22,10 @@ CMD_Codesign=$(which codesign)
 #############################################常用变量#############################################
 
 CurrentDateStr=`date +"%Y%m%d%H%M%S"`
+## 区分（线上自动：Online 线下手动：Offline）
+Package_Mode="Offline"
 ## 默认线下打包输出目录
-Package_Dir=~/Desktop/PackageLog/Offline
+Package_Dir=~/Desktop/PackageLog/$Package_Mode
 if [[ ! -d "$Package_Dir" ]]; then
     mkdir -p "$Package_Dir"
 fi

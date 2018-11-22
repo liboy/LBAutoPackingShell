@@ -161,6 +161,10 @@ setXCconfigWithKeyValue "PRODUCT_BUNDLE_IDENTIFIER" "$projectBundleId"
 ## 开始归档
 archiveBuild "$targetName" "$Tmp_Build_Xcconfig_File" "$xcworkspace" 
 
+##结束时间
+endTimeSeconds=`date +%s`
+logit "【构建结束】构建时长：$((${endTimeSeconds}-${startTimeSeconds})) 秒"
+
 ## 开始导出IPA
 exportIPA  "$archivePath"
 
@@ -170,17 +174,24 @@ checkIPA "$exportPath"
 ##清理临时文件
 clearCache
 
-## IPA和日志重命名
-renameIPAAndLogFile "$targetName" "$infoPlistFile" "$channelName"
+## 重命名并上传
+if [ $Package_Mode == "Online" ]; then
+    ## IPA重命名
+    renameIPAFile "$targetName"
+else   
+    ## IPA和日志重命名
+    renameIPAAndLogFile "$targetName" "$infoPlistFile" "$channelName"
+    ## 上传蒲公英
+    if [ $CHANNEL == "development"]; then
+        pgyerUpload "$ipaFilePath" "$pgyer_userKey" "$pgyer_apiKey"
+    fi
+fi
 
 ##结束时间
 endTimeSeconds=`date +%s`
-logit "【构建结束】构建时长：$((${endTimeSeconds}-${startTimeSeconds})) 秒"
+logit "【打包结束】打包总时长：$((${endTimeSeconds}-${startTimeSeconds})) 秒"
 
-## 上传蒲公英
-if [ $CHANNEL == "development" ]; then
-	pgyerUpload "$ipaFilePath" "$pgyer_userKey" "$pgyer_apiKey"
-fi
+
 
 
 
