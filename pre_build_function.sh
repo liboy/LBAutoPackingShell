@@ -302,7 +302,8 @@ function configResourceFile() {
     fi
 
     ## 线上打包输出目录
-    Package_Dir=~/Desktop/PackageLog/Online/$CurrentDateStr
+    Package_Mode="Online"
+    Package_Dir=~/Desktop/PackageLog/$Package_Mode/$CurrentDateStr
     if [[ ! -d "$Package_Dir" ]]; then
         mkdir -p "$Package_Dir"
     else

@@ -968,8 +968,19 @@ function getBuildVersion() {
 	echo $projectVersion
 }
 
+## 线上自动打包IPA重命名
+function renameIPAFile () {
+	local targetName=$1
 
-## IPA和日志重命名
+	## 去除最后的文件名称,得到纯路径
+	local exportDir=${exportPath%/*} 
+	local ipaFilePath=${exportDir}/${targetName}.ipa
+	logit "【IPA 信息】IPA路径:$ipaFilePath"
+	# 重命名
+	mv "$exportPath" 	"$ipaFilePath"
+	
+}
+## 线下手动打包IPA和日志重命名
 function renameIPAAndLogFile () {
 	local targetName=$1
 	local infoPlistFile=$2
@@ -987,7 +998,7 @@ function renameIPAAndLogFile () {
 	ipaName="${ipaName}""_${channelName}""_${projectVersion}""(${buildVersion})"
 	
 	## 去除最后的文件名称,得到纯路径
-	exportDir=${exportPath%/*} 
+	local exportDir=${exportPath%/*} 
 	ipaFilePath=${exportDir}/${ipaName}.ipa
 	logTxtFilePath=${exportDir}/${ipaName}.txt
 	logit "【IPA 信息】IPA路径:$ipaFilePath"
@@ -995,6 +1006,8 @@ function renameIPAAndLogFile () {
 	# 重命名
 	mv "$exportPath" 	"$ipaFilePath"
 	mv "$Tmp_Log_File" 	"$logTxtFilePath"
+
+	Tmp_Log_File=$logTxtFilePath
 }
 
 #执行完毕，删除临时文件
