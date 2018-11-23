@@ -23,12 +23,6 @@ source "$Shell_File_Path/ipa_public_function.sh"
 
 ###########################################核心逻辑#####################################################
 
-##检查所需工具支持
-checkToolSupport
-
-##检查openssl
-checkOpenssl
-
 ## 打包开始时间
 startTimeSeconds=`date +%s`
 
@@ -88,6 +82,12 @@ done
 
 ##初始化打包路径
 initPackageDir "$CurrentDateStr" "$Package_Mode"
+
+##检查所需工具支持
+checkToolSupport
+
+##检查openssl
+checkOpenssl
 
 ## 线上服务器打包处理
 if [ $Package_Mode == "Online" ]; then

@@ -117,7 +117,7 @@ function initPackageDir() {
     local Package_Mode=$2
 
     ## 默认线下打包输出目录
-    Package_Dir=~/Desktop/PackageLog/$Package_Mode
+    Package_Dir=~/Sites/files/PackageLog/$Package_Mode
     # 默认线下资源文件路径
     Tmp_resource_path="${Shell_File_Path}/Resource/xxx"
     # 授权文件目录
@@ -127,7 +127,7 @@ function initPackageDir() {
     fi
     ## 线上服务打包处理
     if [ $Package_Mode == "Online" ]; then
-        Package_Dir=~/Desktop/PackageLog/$Package_Mode/$CurrentDateStr  
+        Package_Dir=~/Sites/files/PackageLog/$Package_Mode/$CurrentDateStr  
         # 临时存放资源文件目录
         Tmp_resource_path="$Package_Dir/Resource"
         # 授权文件目录

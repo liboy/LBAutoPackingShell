@@ -11,8 +11,7 @@
 # github:       https://github.com/liboy/LBAutoPackingShell
 # ----------------------------------------------------------------------
 
-function usage
-{
+function usage {
 	# setAliasShortCut
 	echo ""
 	# `basename $0`值显示当前脚本或命令的名字
@@ -41,6 +40,7 @@ function usage
 function checkToolSupport() {
 
 	jqPath=$(which jq)
+	logit "$jqPath"
 	if [[ ! "$jqPath" ]]; then
 	    errorExit "【环境配置】请使用brew install jq安装 "  
 	fi
