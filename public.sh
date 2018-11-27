@@ -24,7 +24,12 @@ CMD_Codesign=$(which codesign)
 CurrentDateStr=`date +"%Y%m%d%H%M%S"`
 ## 区分（线上自动：Online 线下手动：Offline）
 Package_Mode="Offline"
-
+# 默认打包输出根目录
+Package_Root_Dir=~/Sites/files/PackageLog
+# 默认线下资源文件路径
+Tmp_resource_path="${Shell_File_Path}/Resource"
+# 授权文件目录
+Provision_Dir="${Shell_File_Path}/MobileProvision"
 ## 用户配置Plist文件
 ShellUserConfigPlist="$Shell_File_Path/user_config.plist"
 

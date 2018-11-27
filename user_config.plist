@@ -2,20 +2,19 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>build_target</key>
+	<string></string>
+	<key>channel</key>
+	<string>development</string>
+	<key>configration_type</key>
+	<string>Debug</string>
 	<key>project_name</key>
 	<string>iXiao</string>
 	<key>project_source_path</key>
-	<string>/Users/xiaohe/Desktop/iXiao</string>
-	<key>unlock_keychain_pwd</key>
-	<string>xiaohe</string>
-	<key>configration_type</key>
-	<string>Debug</string>
-	<key>channel</key>
-	<string>development</string>
-	<key>build_target</key>
-	<string></string>
+	<string>/Users/liboy/Desktop/小禾项目/iXiao</string>
 	<key>resource_name</key>
-	<string>dianjin</string>
-	
+	<string>yidiantong</string>
+	<key>unlock_keychain_pwd</key>
+	<string>4765030</string>
 </dict>
 </plist>

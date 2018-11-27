@@ -80,7 +80,10 @@ done
 
 ###########################################打包前项目配置处理#####################################################
 
-##初始化打包路径
+## 初始化用户配置 
+initUserConfigFile
+
+##初始化打包输出路径
 initPackageDir "$CurrentDateStr" "$Package_Mode"
 
 ##检查所需工具支持
@@ -94,9 +97,6 @@ if [ $Package_Mode == "Online" ]; then
     ## 从json文件获取资源配置信息
     configResourceFile "$json_file_path" 
 fi
-
-## 初始化用户配置 
-initUserConfigFile
 
 ## 拷贝项目(打包工程)
 copyProjectFile

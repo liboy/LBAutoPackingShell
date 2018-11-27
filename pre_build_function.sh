@@ -17,7 +17,7 @@ function printUserConfigPlist() {
     echo `$CMD_PlistBuddy -c "Print :${1}" ${ShellUserConfigPlist}`
 }
 #写入   ShellUserConfigPlist.plist文件
-function setPathPlist() {
+function setUserConfigPlist() {
     echo `$CMD_PlistBuddy -c 'Set :'${1}' "'${2}'"' ${ShellUserConfigPlist}`
 }
 
@@ -75,29 +75,28 @@ function contains() {
     echo "n"
     return 1
 }
-
-replaceResourceName() {
+## 修改配置文件资源名称
+function replaceResourceName() {
 
     while true;do
-        read -p "请输入文件目录:" resource_name
-        resource_path="${Tmp_resource_path}/${resource_name}"
-        if [[ ! -d $resource_path || $resource_name == "" ]]; then
-            echo "${resource_path}目录不存在,或目录名不能为空"
+        read -p "请输入资源文件名称:" resource_name
+        Tmp_resource_path="${Tmp_resource_path}/${resource_name}"
+        if [[ ! -d $Tmp_resource_path || $resource_name == "" ]]; then
+            echo "${Tmp_resource_path}目录不存在,或目录名不能为空"
             resource_name=`printPathPlist "resource_name"`
             continue
         else
-            echo "${resource_path}目录存在"
-            setPathPlist "resource_name" "$resource_name"
+            echo "${Tmp_resource_path}目录存在"
+            setUserConfigPlist "resource_name" "$resource_name"
             break
         fi
     done
 }
-## 设置资源
-setResourceName() {
+## 设置资源名称
+function setResourceName() {
     while true; do
         read -p "当前读取的资源文件 ${resource_name} 是否要改变（y/n）:" isChange
         if [[ $isChange == "y" ]];then
-
             # 列出 Tmp_resource_path 目录下的所有文件夹名称
             cd $Tmp_resource_path
             echo "========现有的资源文件=========>"
@@ -106,7 +105,7 @@ setResourceName() {
                 echo $file
             done
             echo "=============================>"
-            replaceSourceName
+            replaceResourceName
             break
         elif [[ $isChange == "n" ]];then
             break
@@ -136,10 +135,8 @@ function initUserConfigFile() {
     ##指定构建的target,不指定默认工程的第一个target
     BUILD_TARGET=`printUserConfigPlist "build_target"`
 
-    ##指定构建的target,不指定默认工程的第一个target
+    ##指定打包资源文件名称
     resource_name=`printUserConfigPlist "resource_name"`
-    # 设置线下资源文件路径
-    Tmp_resource_path="${Shell_File_Path}/Resource/$resource_name"
 
     logit "【用户配置】项目名称: ${project_name}"
     logit "【用户配置】源码文件路径: ${project_source_path}"
@@ -157,17 +154,13 @@ function initPackageDir() {
     local Package_Mode=$2
 
     ## 默认线下打包输出目录
-    Package_Dir=~/Sites/files/PackageLog/$Package_Mode
-    # 默认线下资源文件路径
-    Tmp_resource_path="${Shell_File_Path}/Resource/xxx"
-    # 授权文件目录
-    Provision_Dir="${Shell_File_Path}/MobileProvision"
+    Package_Dir="$Package_Root_Dir/$Package_Mode"
     if [[ ! -d "$Package_Dir" ]]; then
         mkdir -p "$Package_Dir"
     fi
     ## 线上服务打包处理
     if [ $Package_Mode == "Online" ]; then
-        Package_Dir=~/Sites/files/PackageLog/$Package_Mode/$CurrentDateStr  
+        Package_Dir="$Package_Root_Dir/$Package_Mode/$CurrentDateStr" 
         # 临时存放资源文件目录
         Tmp_resource_path="$Package_Dir/Resource"
         # 授权文件目录
@@ -177,6 +170,8 @@ function initPackageDir() {
         fi
         # 拷贝配置文件模板config_tpl.plist到资源文件目录
         cp -rp "${Shell_File_Path}/config_tpl.plist" $Tmp_resource_path
+    else
+        setResourceName
     fi
     
     # 自动打开打包输出目录
@@ -202,7 +197,8 @@ function initPackageDir() {
     logit "【用户配置】脚本生成的日志文件: ${Tmp_Log_File}"
     logit "【用户配置】脚本生成构建的配置文件: ${Tmp_Build_Xcconfig_File}"
     logit "【用户配置】脚本生成OptionsPlist文件: ${Tmp_Options_Plist_File}"
-    logit "【用户配置】授权文件目录: ${Provision_Dir}"
+    logit "【用户配置】打包资源文件目录: ${Tmp_resource_path}"
+    logit "【用户配置】证书和授权文件目录: ${Provision_Dir}"
 }
 
 
