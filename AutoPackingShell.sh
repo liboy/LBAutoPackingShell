@@ -36,10 +36,6 @@ while [ "$1" != "" ]; do
             shift
             CHANNEL="$1"
             ;;
-        -t | --target)
-            shift
-			BUILD_TARGET="$1"
-            ;;
         -v | --version )
 			getShellVersion
 			exit;

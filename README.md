@@ -142,9 +142,6 @@ UNLOCK_KEYCHAIN_PWD =
 //构建模式：Debug/Release ；默认 Release。相当于脚本参数 -t | --configration-type
 CONFIGRATION_TYPE=
 
-//授权文件目录，默认在~/Library/MobileDevice/Provisioning Profiles。相当于脚本参数 -d | --provision-dir
-PROVISION_DIR=
-
 ```
 
 ## 配置PHP运行环境
@@ -406,10 +403,7 @@ ln -s /usr/local/Cellar/php@5.6/5.6.38/sbin/php-fpm  /usr/local/sbin/php-fpm
 允许 `codesign` 访问您的钥匙串中的密钥
 
 ```
-security import /Users/liboy/Desktop/dianjin_dev.txt -k ~/Library/Keychains/login.keychain -P 1 -A
-security import /Users/liboy/Desktop/ios_distribution.cer -k ~/Library/Keychains/login.keychain -T /usr/bin/codesign
-security import /Users/liboy/Desktop/PackageLog/Offline/tmp.cer -k ~/Library/Keychains/login.keychain -P 1 -A
-dianjin_dev.p12
+security import /Users/xiaohe/Downloads/haina_dev.p12 -k ~/Library/Keychains/login.keychain -P 1 -T /usr/bin/codesign
 security import /tmp/tmp.cer -k ~/Library/Keychains/login.keychain -P p12password -T /usr/bin/codesign
 security import /tmp/tmp.cer -k ~/Library/Keychains/login.keychain -T /usr/bin/codesign
 security delete-certificate -c "iPhone Developer: Yumei Xing (9X7JK3J2YZ)" -t ~/Library/Keychains/login.keychain
@@ -566,10 +560,3 @@ https://www.cnblogs.com/litifeng/p/8448019.html
 
 https://github.com/CocoaPods/CocoaPods/pull/6964
 
-xcodebuild -exportArchive -archivePath /Users/xiaohe/Desktop/AppStore.xcarchive -exportPath /Users/xiaohe/Desktop/export -exportOptionsPlist /Users/xiaohe/Desktop/ExportOptions.plist
-
-/Users/xiaohe/Desktop/iXiao.xcarchive
-
-/Users/xiaohe/Desktop/PackageLog/Online/2018111618092525/OptionsPlist.plist
-
-/Users/xiaohe/Desktop/ExportOptions.plist
