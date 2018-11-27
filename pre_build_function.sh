@@ -79,15 +79,15 @@ function contains() {
 function replaceResourceName() {
 
     while true;do
-        read -p "请输入资源文件名称:" resource_name
-        Tmp_resource_path="${Tmp_resource_path}/${resource_name}"
-        if [[ ! -d $Tmp_resource_path || $resource_name == "" ]]; then
-            echo "${Tmp_resource_path}目录不存在,或目录名不能为空"
-            resource_name=`printPathPlist "resource_name"`
+        read -p "请输入资源文件名称:" input_name
+        local resource_path="${Tmp_resource_path}/$input_name"
+        if [[ ! -d $resource_path || $input_name == "" ]]; then
+            echo "${resource_path}目录不存在,或名称不能为空"
             continue
         else
-            echo "${Tmp_resource_path}目录存在"
-            setUserConfigPlist "resource_name" "$resource_name"
+            echo "${resource_path}目录存在"
+            Tmp_resource_path="$resource_path"
+            setUserConfigPlist "resource_name" "$input_name"
             break
         fi
     done

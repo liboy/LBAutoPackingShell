@@ -30,7 +30,7 @@ while [ "$1" != "" ]; do
     case $1 in
         -b | --bundle-id )
             shift
-            NEW_BUNDLE_IDENTIFIER=("$1")
+            newBundleId=("$1")
             ;;
         -c | --channel )
             shift
@@ -165,12 +165,12 @@ checkCodeSignIdentityValid "$codeSignIdentity"
 initBuildXcconfig
 
 ## 进行构建配置信息覆盖，关闭BitCode、签名手动、配置签名等
-setXCconfigWithKeyValue "CODE_SIGN_STYLE" "$CODE_SIGN_STYLE"
-setXCconfigWithKeyValue "PROVISIONING_PROFILE_SPECIFIER" "$provisionFileName" 
-setXCconfigWithKeyValue "PROVISIONING_PROFILE" "$provisionFileUUID"
-setXCconfigWithKeyValue "DEVELOPMENT_TEAM" "$provisionFileTeamID"
-setXCconfigWithKeyValue "CODE_SIGN_IDENTITY" "$codeSignIdentity"
-setXCconfigWithKeyValue "PRODUCT_BUNDLE_IDENTIFIER" "$projectBundleId"
+setBuildXcconfigFile "CODE_SIGN_STYLE" "$CODE_SIGN_STYLE"
+setBuildXcconfigFile "PROVISIONING_PROFILE_SPECIFIER" "$provisionFileName" 
+setBuildXcconfigFile "PROVISIONING_PROFILE" "$provisionFileUUID"
+setBuildXcconfigFile "DEVELOPMENT_TEAM" "$provisionFileTeamID"
+setBuildXcconfigFile "CODE_SIGN_IDENTITY" "$codeSignIdentity"
+setBuildXcconfigFile "PRODUCT_BUNDLE_IDENTIFIER" "$projectBundleId"
 
 
 ## 开始归档

@@ -333,9 +333,9 @@ function getProjectBundleId() {
 	if [[ ! -f "$pbxproj" ]]; then
 		exit 1
 	fi
-	if [[ $NEW_BUNDLE_IDENTIFIER ]]; then
+	if [[ $newBundleId ]]; then
 		## 重新指定Bundle Id
-		projectBundleId=$NEW_BUNDLE_IDENTIFIER
+		projectBundleId=$newBundleId
 	else
 		## 获取工程中的Bundle Id
 		projectBundleId=$($CMD_PlistBuddy -c "Print :objects:$configurationId:buildSettings:PRODUCT_BUNDLE_IDENTIFIER" "$pbxproj" | sed -e '/Array {/d' -e '/}/d' -e 's/^[ \t]*//')
@@ -739,7 +739,7 @@ function checkCodeSignIdentityValid() {
 }
 
 ## 设置build.xcconfig配置
-function setXCconfigWithKeyValue() {
+function setBuildXcconfigFile() {
 
 	local key=$1
 	local value=$2
