@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>BundleIdentifier</key>
+	<string>com.baonahao.baisijiaoyuschool</string>
+	<key>AppName</key>
+	<string>柏思教育</string>
+	<key>Version</key>
+	<string>2.0.8</string>
+	<key>Build</key>
+	<string>208</string>
+	<key>project_id</key>
+	<string></string>
+	<key>merchant_id</key>
+	<string></string>
+	<key>system_color</key>
+	<string>B1D24F</string>
+	<key>baidu_MapKey</key>
+	<string>TwFY1l5pE3z498hmG4NrWi6WzfeyX6IB</string>
+	<key>weChat_AppID</key>
+	<string>wxbc8b0e9291acd677</string>
+	<key>weChat_AppSecret</key>
+	<string>4653510f3966d3fdf587f4efc953938a</string>
+	<key>jPush_AppKey</key>
+	<string>035ede804ec2956d8f9b3d03</string>
+	<key>uMeng_AppKey</key>
+	<string>5bee84b8f1f5567d9d000237</string>
+	<key>bugly_AppId</key>
+	<string>8af9ae8784</string>
+	<key>bugly_AppKey</key>
+	<string>a766f599-2cc8-468b-8899-f17c78c45d2e</string>
+	<key>home_page_num</key>
+	<string>7</string>
+	<key>mine_page_num</key>
+	<string>7</string>
+	<key>is_allied_school</key>
+	<string>2</string>
+	<key>login_type</key>
+	<string>3</string>
+	<key>is_always_show_guidepage</key>
+	<string>0</string>
+	<key>guide_count</key>
+	<string>0</string>
+</dict>
+</plist>

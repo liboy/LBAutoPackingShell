@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BundleIdentifier</key>
+	<string>com.BaoNaHaoParent.hainaschool</string>
+	<key>AppName</key>
+	<string>海纳培优</string>
+	<key>Version</key>
+	<string>1.5.0</string>
+	<key>Build</key>
+	<string>150</string>
 	<key>project_id</key>
 	<string>006862ad22f54d6cb1d12c898086e036</string>
 	<key>merchant_id</key>

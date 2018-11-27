@@ -931,8 +931,6 @@ function checkIPA() {
 	local supportArchitectures=$($CMD_Lipo -info "$app"/"$appName" | cut -d ":" -f 3)
 
 	logit "【IPA 信息】ipa名字:$appShowingName"
-	# getEnvirionment
-	# logit "配置环境kBMIsTestEnvironment:$currentEnvironmentValue"
 	logit "【IPA 信息】bundleID:$appBundleId"
 	logit "【IPA 信息】版本:$appVersion"
 	logit "【IPA 信息】build:$appBuildVersion"

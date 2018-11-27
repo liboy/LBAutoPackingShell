@@ -2,16 +2,20 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>BundleIdentifier</key>
+	<string>com.BaoNaHaoParent.jerryschool</string>
+	<key>AppName</key>
+	<string>杰睿教育</string>
+	<key>Version</key>
+	<string>1.2.6</string>
+	<key>Build</key>
+	<string>1.2.6</string>
 	<key>project_id</key>
 	<string>387c84e4e765db6e43651888abfb9c7a</string>
 	<key>merchant_id</key>
 	<string>dd6474f78cf35b7dda442c7fc95a3057</string>
 	<key>system_color</key>
 	<string>#ca2729</string>
-	<key>agencyIntro_url</key>
-	<string>http://m.baonahao.com/Guides/agencyIntro/name:jerry</string>
-	<key>merchant_phone</key>
-	<string>400-818-3666</string>
 	<key>baidu_MapKey</key>
 	<string>dGrRmy2wIsPdEcYbCX4A7ovV7O0WXClL</string>
 	<key>weChat_AppID</key>

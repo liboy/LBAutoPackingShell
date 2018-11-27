@@ -76,6 +76,46 @@ function contains() {
     return 1
 }
 
+replaceResourceName() {
+
+    while true;do
+        read -p "请输入文件目录:" resource_name
+        resource_path="${Tmp_resource_path}/${resource_name}"
+        if [[ ! -d $resource_path || $resource_name == "" ]]; then
+            echo "${resource_path}目录不存在,或目录名不能为空"
+            resource_name=`printPathPlist "resource_name"`
+            continue
+        else
+            echo "${resource_path}目录存在"
+            setPathPlist "resource_name" "$resource_name"
+            break
+        fi
+    done
+}
+## 设置资源
+setResourceName() {
+    while true; do
+        read -p "当前读取的资源文件 ${resource_name} 是否要改变（y/n）:" isChange
+        if [[ $isChange == "y" ]];then
+
+            # 列出 Tmp_resource_path 目录下的所有文件夹名称
+            cd $Tmp_resource_path
+            echo "========现有的资源文件=========>"
+            for file in $(ls)
+            do
+                echo $file
+            done
+            echo "=============================>"
+            replaceSourceName
+            break
+        elif [[ $isChange == "n" ]];then
+            break
+        else
+            continue
+        fi
+    done
+}
+
 ## 初始化用户配置
 function initUserConfigFile() {
 
