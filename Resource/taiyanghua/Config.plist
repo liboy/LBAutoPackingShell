@@ -5,7 +5,7 @@
 	<key>BundleIdentifier</key>
 	<string>com.baonahao.taiyanghuaschool</string>
 	<key>AppName</key>
-	<string>太阳花教育</string>
+	<string>乐山太阳花</string>
 	<key>Version</key>
 	<string>2.0.0</string>
 	<key>Build</key>
@@ -15,7 +15,7 @@
 	<key>merchant_id</key>
 	<string>4a53ed08bbf54ad9af60ded5bac76e8e</string>
 	<key>system_color</key>
-	<string>FFCD07 </string>
+	<string>FFCD07</string>
 	<key>baidu_MapKey</key>
 	<string>ZdBL36nFmkMO4kaEVUzmxgl3XyGAtOwI</string>
 	<key>jPush_AppKey</key>
