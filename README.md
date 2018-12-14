@@ -548,6 +548,18 @@ function repairXcentFile()
 
 ```
 
+用ps -def | grep查找进程很方便，最后一行总是会grep自己
+
+用grep -v参数可以将grep命令排除掉
+再用awk提取一下进程ID
+
+ps  -ef | grep AutoPackingShell.sh | grep -v grep | awk '{print $2}'
+
+netstat -nap | grep 12869
+
+4.终止后台运行的进程
+kill -9  12869
+
 ## 参考
 https://getgrav.org/blog/macos-mojave-apache-multiple-php-versions
 https://www.cnblogs.com/wangyang1213/p/5209119.html
@@ -559,4 +571,7 @@ https://www.cnblogs.com/litifeng/p/8448019.html
 
 
 https://github.com/CocoaPods/CocoaPods/pull/6964
+
+[后台执行命令：&和nohup command & 以及关闭、查看后台任务](https://blog.csdn.net/liuxiao723846/article/details/47754479)
+[nohup和&后台运行，进程查看及终止](http://www.cnblogs.com/baby123/p/6477429.html)
 

@@ -418,16 +418,20 @@ function configResourceFile() {
     LaunchImage=`cat $resource_json_file | jq -r '.start_img'`
     ## 下载图片
     downloadResourceFile "$Domain_Url" "$icon" "$LaunchImage" "$CONFIG_guide_count"
+    ## 格式转换
+    convertImgToPNG "$Tmp_resource_path"
+    # 生成不同分辨率启动图
+    createLaunchImages "$Tmp_resource_path/LaunchImage.png"
 
     # 描述文件路径
     MobileProvision=`cat $resource_json_file | jq -r '.mobileprovision'`
     # 下载
-    you-get -o $Tmp_resource_path -O ProvisionFile.mobileprovision "$Domain_Url$MobileProvision"
+    you-get -o $Tmp_resource_path -O ProvisionFile.mobileprovision "$Domain_Url$MobileProvision" >> "$Tmp_Log_File"
 
     # p12证书文件路径
     CertFile=`cat $resource_json_file | jq -r '.cert_file'`
     # 下载
-    you-get -o $Tmp_resource_path -O tmp_p12_file.p12 "$Domain_Url$CertFile"
+    you-get -o $Tmp_resource_path -O tmp_p12_file.p12 "$Domain_Url$CertFile" >> "$Tmp_Log_File"
     ## 脚本下载证书文件路径
     Tmp_P12_File="$Tmp_resource_path/tmp_p12_file.p12"
     installiCertFile "$Tmp_P12_File"
@@ -485,26 +489,36 @@ function downloadResourceFile() {
     local launchImage=$3
     local guideCount=$4
     # icon
-    you-get -o $Tmp_resource_path -O icon "$domain$icon"
+    logit "【启动图下载】$domain$icon"
+    you-get -o $Tmp_resource_path -O icon "$domain$icon" >> "$Tmp_Log_File"
 
     # 启动图
-    you-get -o $Tmp_resource_path -O LaunchImage "$domain$launchImage"
-    # 生成不同分辨率启动图
-    createLaunchImages "$Tmp_resource_path/LaunchImage.png"
+    logit "【启动图下载】$domain$launchImage"
+    you-get -o $Tmp_resource_path -O LaunchImage "$domain$launchImage" >> "$Tmp_Log_File"
 
     # 引导图
     for (( i = 1; i <= "${guideCount}"; i++ )); do
         local jsonName="guide_img_$i"
         local image_url=`cat $resource_json_file | jq -r ."$jsonName"` 
         local filePaht="$Domain_Url/$image_url"
-        logit "【引导图下载】$image_url"
-        you-get -o $Tmp_resource_path -O $jsonName "$filePaht"
+        logit "【引导图下载】$filePaht"
+        you-get -o $Tmp_resource_path -O $jsonName "$filePaht" >> "$Tmp_Log_File"
     done
 
-
 }
+## 转换图片格式，确保为png格式
+function convertImgToPNG() {
 
+    local path=$1
+    cd $path
+    files=`find . -name "*.png"`
 
+    for i in ${files[@]}; do
+        SOURCE_FILE=${i}
+        DESTINATION_FILE=$SOURCE_FILE
+        sips --matchTo '/System/Library/ColorSync/Profiles/sRGB Profile.icc' "$SOURCE_FILE" --out "$DESTINATION_FILE"
+    done
+}
 
 
 

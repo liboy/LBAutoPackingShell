@@ -784,7 +784,7 @@ function checkPodfileAndInstall() {
 		logit "【cocoapods】pod install";
 		##必须cd到此工程目录
 		cd "${project_build_path}"  
-		pod install
+		pod install >> $Tmp_Log_File
 		cd - 
 	fi
 }
@@ -812,7 +812,7 @@ function archiveBuild() {
 	local xcpretty=$(getXcprettyPath)
 	if [[ "$xcpretty" ]]; then
 		## 格式化日志输出
-		cmd="$cmd"" | xcpretty "
+		cmd="$cmd"" | xcpretty >> $Tmp_Log_File"
 	fi
 	logit "【归档信息】归档命令为：$cmd"
 	# 执行构建，set -o pipefail 为了获取到管道前一个命令xcodebuild的执行结果，否则$?一直都会是0
