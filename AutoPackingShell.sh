@@ -88,6 +88,9 @@ checkToolSupport
 ##检查openssl
 checkOpenssl
 
+## 解锁钥匙串
+unlockKeychain
+
 ## 线上服务器打包处理
 if [ $Package_Mode == "Online" ]; then
     ## 从json文件获取资源配置信息
@@ -141,9 +144,6 @@ setManualCodeSigningStyle "$xcodeprojPath" "$targetId"
 
 ## 匹配授权文件
 matchProvisionFile "$CHANNEL" "$projectBundleId" "$Provision_Dir"
-
-## 解锁钥匙串
-unlockKeychain
 
 ## 证书安装
 createCertWithProvision "$provisionFile"

@@ -38,7 +38,7 @@ function usage {
 function checkToolSupport() {
 
 	jqPath=$(which jq)
-	logit "$jqPath"
+	logit "【环境配置】jqPath:$jqPath"
 	if [[ ! "$jqPath" ]]; then
 	    errorExit "【环境配置】请使用brew install jq安装 "  
 	fi
@@ -874,7 +874,7 @@ function exportIPA() {
 	xcpretty=$(getXcprettyPath)
 	if [[ "$xcpretty" ]]; then
 		## 格式化日志输出
-		cmd="$cmd | xcpretty -c"
+		cmd="$cmd | xcpretty -c  >> $Tmp_Log_File"
 	fi
 	logit "【IPA 导出】导出ipa命令为：$cmd"
 	# set -o pipefail 为了获取到管道前一个命令xcodebuild的执行结果，否则$?一直都会是0
