@@ -443,39 +443,6 @@ grep "location =" "/Users/liboy/Desktop/PackageLog/Offline/iXiao_build/iXiao.xcw
 链接：http://stackoverflow.com/questions/28589653/mac-os-x-build-server-missing-archived-expanded-entitlements-xcent-file-in-ipa
 发现在 xcode >= 8.3.3 以上都不存在 ,在xcode8.2.1 存在
 
-```
-# ## 修复8.3 以下版本的xcent文件
-# xcentFile=$(repairXcentFile "$exportPath" "$archivePath")
-# if [[ "$xcentFile" ]]; then
-#   logit "【xcent 文件修复】拷贝archived-expanded-entitlements.xcent 到${xcentFile}"
-# fi
-
-function repairXcentFile()
-{
-
-    local exportPath=$1
-    local archivePath=$2
-
-    ## 小于8.3(不包含8.3)
-    if ! versionCompareGE "$xcodeVersion" "8.3"; then
-        local appName=`basename "$exportPath" .ipa`
-        local xcentFile="${archivePath}"/Products/Applications/"${appName}".app/archived-expanded-entitlements.xcent
-        if [[ -f "$xcentFile" ]]; then
-            # baxcent文件从archive中拷贝到IPA中
-            unzip -o "$exportPath" -d /"$Package_Dir" >/dev/null 2>&1
-            local app="${Package_Dir}"/Payload/"${appName}".app
-            cp -af "$xcentFile" "$app" >/dev/null 2>&1
-            ##压缩,并覆盖原有的ipa
-            cd "${Package_Dir}"  ##必须cd到此目录 ，否则zip会包含绝对路径
-            zip -qry  "$exportPath" Payload >/dev/null 2>&1 && rm -rf Payload
-            cd - >/dev/null 2>&1
-            ## 因为重新加压，文件名和路径都没有变化
-            local ipa=$exportPath
-            echo  "$ipa"
-        fi
-    fi
-}
-```
 ## 版本更新日志
 
 ```
@@ -495,7 +462,6 @@ function repairXcentFile()
 #   10.格式化输出ipa包名称：name_time_开发环境_企业分发_1.0.0(168).ipa
 
 # 2. 更改默认构建架构集为“armv7 arm64” 
-
 # 1. 增加-t参数指定构建的Target
 # 2. 优化一些日志输出
 # 3. 使用--debug 参数代替-t | --config-type参数 来指定Debug或Release模式，详见 AutoPackingShell -h
@@ -504,24 +470,16 @@ function repairXcentFile()
 # 2. 增加-v参数输出详细的构建信息
 # 3. 增加--show-profile-detail provisionfile 参数查看授权文件内容
 # 4. 修复无法匹配证书签名ID带有多个连续空格的bug
-# 2. 使用xcodeproj工具代替PlistBuddy来修改project.pbxproj文件，防止项目中文乱码和project.pbxproj文件格式发生变化
-# 3. 增加岁OpenSSL的检查校验
+# 使用xcodeproj工具代替PlistBuddy来修改project.pbxproj文件，防止项目中文乱码和project.pbxproj文件格式发生变化
+# 3. 增加对OpenSSL的检查校验
 # 1. 自动匹配授权文件和签名（移除config.plist配置）
 # 2. 优化授权文件匹配算法，取有效期最长授权文件
 # 3. 调整脚本参数,详见-h
-# 4. 优化代码
-# 5. 兼容长参数
-# 6. 增加全局配置文件user.xcconfig
 
-
-# 1. 移除使用xcodepro（xceditor.rb）,使用xcodebuild 的`-xcconfig `参数来实现签名等配置修改
-# 2. 保持工程配置(project.pbxproj)文件不被修改
-
-# 1. 优化build函数代码。
-# 2. 增加xcpretty 来格式化日志输出
-# 3. 支持xcode9（8.0~9.3）
-
-# 1. 增加一个“修改Bundle Id”功能。如-b com.xxx.xx。
+# 使用xcodebuild 的`-xcconfig `参数来实现签名等配置修改
+# 增加xcpretty 来格式化日志输出
+# 支持xcode9（8.0~9.3）
+# 增加一个“修改Bundle Id”功能。如-b com.xxx.xx。
 
 # 优化：默认构建ipa支持armch 为 arm64。（因iOS 11强制禁用32位）
 
@@ -533,32 +491,16 @@ function repairXcentFile()
 # 当前用到：app-store ,ad-hoc, enterprise, development
 #
 #--------------------------------------------
-#		为了节省打包时间，在打开发环境的包时，只打armv7
-#		profileType==development 时，设置archs=armv7 （向下兼容） ，否则archs为默认值：arm64 和armv7。
+#为了节省打包时间，在打开发环境的包时，只打armv7
+#profileType==development 时，设置archs=armv7 （向下兼容） ，否则archs为默认值：arm64 和armv7。
 ：
-#		1.去掉可配置签名、授权文件，并修改为自动匹配签名和授权文件！
-#
+#1.去掉可配置签名、授权文件，并修改为自动匹配签名和授权文件！
 #--------------------------------------------
-
-
 # 备注：
-#		1.security 命令会报警告,忽略即可:security: SecPolicySetValue: One or more parameters passed to a function were not valid.
-#		2.支持Xcode8.0及以上版本（8.0前没有测试过）
-
-
+#1.security 命令会报警告,忽略即可:security: SecPolicySetValue: One or more parameters passed to a function were not valid.
+#2.支持Xcode8.0及以上版本（8.0前没有测试过）
 ```
 
-用ps -def | grep查找进程很方便，最后一行总是会grep自己
-
-用grep -v参数可以将grep命令排除掉
-再用awk提取一下进程ID
-
-ps  -ef | grep AutoPackingShell.sh | grep -v grep | awk '{print $2}'
-
-netstat -nap | grep 12869
-
-4.终止后台运行的进程
-kill -9  12869
 
 ## 参考
 https://getgrav.org/blog/macos-mojave-apache-multiple-php-versions
@@ -574,4 +516,5 @@ https://github.com/CocoaPods/CocoaPods/pull/6964
 
 [后台执行命令：&和nohup command & 以及关闭、查看后台任务](https://blog.csdn.net/liuxiao723846/article/details/47754479)
 [nohup和&后台运行，进程查看及终止](http://www.cnblogs.com/baby123/p/6477429.html)
+https://blog.csdn.net/dazhi_100/article/details/46806519
 
