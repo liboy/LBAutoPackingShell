@@ -126,12 +126,17 @@ function initUserConfigFile() {
     # keychain解锁密码，即开机密码
     UNLOCK_KEYCHAIN_PWD=`printUserConfigPlist "unlock_keychain_pwd"`
     
-    # 构建模式：默认(Debug/Release)
+    # 构建模式：Debug/Release ；默认 Release
     CONFIGRATION_TYPE=`printUserConfigPlist "configration_type"`
+    if [[ ! "$CONFIGRATION_TYPE" ]]; then
+        CONFIGRATION_TYPE="Release"
+    fi
 
     # 指定分发渠道，development 内部分发，app-store商店分发，enterprise企业分发， ad-hoc 企业内部分发"
     CHANNEL=`printUserConfigPlist "channel"`
-
+    if [[ ! "$CHANNEL" ]]; then
+        CHANNEL="app-store"
+    fi
     ##指定构建的target,不指定默认工程的第一个target
     BUILD_TARGET=`printUserConfigPlist "build_target"`
 
@@ -206,7 +211,7 @@ function initPackageDir() {
 ## 拷贝项目到打包目录
 function copyProjectFile() {
 
-    if [ -d $project_build_path ]; then
+    if [ -d "$project_build_path" ]; then
         logit "【工程文件】删除之前工程文件 ${project_build_path}"
         rm -rf "$project_build_path"
         if [ $? -eq 0 ];then

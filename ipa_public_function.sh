@@ -400,7 +400,7 @@ function setManualCodeSigningStyle ()
 	codeSigningStyle=$($CMD_PlistBuddy -c "Print :objects:$rootObject:attributes:TargetAttributes:$targetId:ProvisioningStyle " "$pbxproj" 2>/dev/null)
 	logit "【签名信息】项目签名方式为:$codeSigningStyle"
 	if [[ ! "$codeSigningStyle" ]] || [[ "$codeSigningStyle" != "Manual" ]]; then
-		logit "【签名信息】设置签名方式:Manual"
+		logit "【签名信息】设置签名方式为:Manual"
 		ruby "$Shell_File_Path/set_codesign_style.rb" "$project" "$targetId" 2>/dev/null
 	fi
 
