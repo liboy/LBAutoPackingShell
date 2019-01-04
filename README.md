@@ -6,7 +6,7 @@
 ## 功能
 
 - <font color=#006400 size=3>自动匹配最新的描述文件(Provisioning Profile)</font>
-- <font color=#006400 size=3>自动匹配签名身份(Code Signing Identity)</font>
+- 自动匹配签名身份(Code Signing Identity)
 - 支持`--show-profile-detail provisionfile` 查看授权文件类型、创建日期、过期日期、使用证书签名ID、使用证书的创建日期等
 - 允许指定授权文件目录,脚本将只在该目录匹配授权文件
 - 支持Xcode8.3.3以上
@@ -31,7 +31,7 @@
 
 ### 常用IPA分发途径：
 ```
-- 内部测试(development)：用于给我们内部人员测试使用的，指定的授权用户设备才可以通过使用“同步助手”、“APP助手”等工具安装
+- 内部测试(development)：用于给我们内部人员测试使用的，指定的授权用户设备才可以安装
 - 商店分发(app-store)：用于提交到商店审核，用户设备只能通过在App Store下载安装
 - 企业分发(enterprise)：用于部署到服务器，所有用户设备都可通过扫描二维码或使用浏览器点击链接下载安装
 - 企业内部分发(ad-hoc)：用于部署到服务器，授权用户设备才可以通过扫描二维码或使用浏览器点击链接下载安装

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>AppName</key>
+	<string>菲尼英语</string>
+	<key>Build</key>
+	<string>31</string>
+	<key>BundleIdentifier</key>
+	<string>com.baonahao.feiniyingyuschool</string>
+	<key>Version</key>
+	<string>1.8.2</string>
+	<key>baidu_MapKey</key>
+	<string>DFjWjatuj4HYEdyjTsL2PdZQXpeg5YXz</string>
+	<key>bugly_AppId</key>
+	<string>fc38b17c45</string>
+	<key>bugly_AppKey</key>
+	<string>4464319c-7b7e-4fb3-80eb-87849877d27b</string>
+	<key>guide_count</key>
+	<string>1</string>
+	<key>home_page_num</key>
+	<string>4</string>
+	<key>is_allied_school</key>
+	<string>1</string>
+	<key>is_always_show_guidepage</key>
+	<string>1</string>
+	<key>jPush_AppKey</key>
+	<string>28662647c5e4099c8803b8e0</string>
+	<key>login_type</key>
+	<string>3</string>
+	<key>merchant_id</key>
+	<string>6b89a7d16a9743f6a9ed62db33b4ddee</string>
+	<key>mine_page_num</key>
+	<string>4</string>
+	<key>project_id</key>
+	<string>6f0c2256d8ed4770a1f70c0ee8cc5304</string>
+	<key>system_color</key>
+	<string>#6D79CE</string>
+	<key>uMeng_AppKey</key>
+	<string>5b4f055cf29d982ddf000028</string>
+	<key>weChat_AppID</key>
+	<string></string>
+	<key>weChat_AppSecret</key>
+	<string></string>
+</dict>
+</plist>
