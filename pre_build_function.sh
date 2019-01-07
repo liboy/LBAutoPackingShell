@@ -108,6 +108,7 @@ function setResourceName() {
             replaceResourceName
             break
         elif [[ $isChange == "n" ]];then
+            Tmp_resource_path="${Tmp_resource_path}/$resource_name"
             break
         else
             continue
@@ -142,12 +143,6 @@ function initUserConfigFile() {
 
     ##指定打包资源文件名称
     resource_name=`printUserConfigPlist "resource_name"`
-
-    logit "【用户配置】项目名称: ${project_name}"
-    logit "【用户配置】源码文件路径: ${project_source_path}"
-    logit "【用户配置】keychain解锁密码: ${UNLOCK_KEYCHAIN_PWD}"
-    logit "【用户配置】构建模式: ${CONFIGRATION_TYPE}"
-    logit "【用户配置】分发渠道: ${CHANNEL}"
     
 
 }
@@ -176,6 +171,7 @@ function initPackageDir() {
         # 拷贝配置文件模板config_tpl.plist到资源文件目录
         cp -rp "${Shell_File_Path}/config_tpl.plist" $Tmp_resource_path
     else
+        ## 线下设置资源路径
         setResourceName
     fi
     
@@ -196,6 +192,11 @@ function initPackageDir() {
     Tmp_Log_File="$Package_Dir/${CurrentDateStr}.txt"
     ## 脚本生成的证书文件
     Tmp_Cer_File="$Package_Dir/tmp.cer"
+
+    logit "【用户配置】项目名称: ${project_name}"
+    logit "【用户配置】源码文件路径: ${project_source_path}"
+    logit "【用户配置】keychain解锁密码: ${UNLOCK_KEYCHAIN_PWD}"
+    logit "【用户配置】构建模式: ${CONFIGRATION_TYPE}"
    
     logit "【用户配置】预打包项目路径: ${project_build_path}"
     logit "【用户配置】历史打包备份目录: ${History_Package_Dir}"
@@ -234,11 +235,11 @@ function createAppIcon() {
 
     ResourceIconFilePath="$Tmp_resource_path/icon.png"
     if [ ! -f "${ResourceIconFilePath}" ]; then
-        errorExit "${ResourceIconFilePath}不存在"
+        errorExit "【生成AppIcon】${ResourceIconFilePath}不存在"
     fi 
     project_icon_path="${project_build_path}/${project_name}/Assets.xcassets/AppIcon.appiconset"
     if [ ! -d $project_icon_path ];then
-        errorExit "${project_icon_path}不存在"
+        errorExit "【生成AppIcon】${project_icon_path}不存在"
     fi
 
     logit "【生成AppIcon】生成AppIcon中..."
@@ -293,7 +294,8 @@ function changeProjectInfoPlist() {
 
      #工程原BundleId
     # ProjectBundleId=`printProject_Info "CFBundleIdentifier"`
-    ProjectBundleId="com.baonahao.xiaoheschool"
+    # ProjectBundleId="com.baonahao.xiaoheschool"
+    ProjectBundleId="com.xiaohe.ixiaostar"
     logit "【项目配置】APP名称: $APP_Name"
     logit "【项目配置】新BundleId: $APP_BundleId"
     logit "【项目配置】原BundleId: ${ProjectBundleId}"

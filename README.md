@@ -24,7 +24,7 @@
 
  ```
  MyApp_20170321_222303_开发环境_企业分发_2.1.0(67).ipa
- MyApp_20170321_222403_生产环境_商店分发_2.1.0(68).ipa`
+ MyApp_20170321_222403_生产环境_商店分发_2.1.0(68).ipa
  ```
 - 自动校验ipa签名
 - 格式化日志输出
@@ -119,7 +119,7 @@ $ which openssl
 如果更新之后还是没有显示正确的openssl，是因为系统存在两个openssl，可通过设置系统环境变量PATH来优先执行。
 
 ```
-echo 'export PATH="/usr/local/Cellar/openssl/1.0.2p/bin/:$PATH"' >> ~/.bash_profile
+echo 'export PATH="/usr/local/Cellar/openssl/1.0.2p/bin:$PATH"' >> ~/.bash_profile
 source ~/.bash_profile
 ```
 或软连接
@@ -480,9 +480,7 @@ grep "location =" "/Users/liboy/Desktop/PackageLog/Offline/iXiao_build/iXiao.xcw
 # 增加xcpretty 来格式化日志输出
 # 支持xcode9（8.0~9.3）
 # 增加一个“修改Bundle Id”功能。如-b com.xxx.xx。
-
 # 优化：默认构建ipa支持armch 为 arm64。（因iOS 11强制禁用32位）
-
 # 优化：对授权文件mobiprovision有效期检测，授权文件有效期小于90天，强制打包失败！
 
 # 优化：兼容xcode8.3以上版本
