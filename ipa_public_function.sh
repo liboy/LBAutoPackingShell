@@ -979,10 +979,14 @@ function renameIPAAndLogFile () {
 	local buildVersion=$(getBuildVersion "$infoPlistFile")
 
 	ipaName="${ipaName}""_${channelName}""_${projectVersion}""(${buildVersion})"
-	
 	## 去除最后的文件名称,得到纯路径
 	local exportDir=${exportPath%/*} 
-	ipaFilePath=${exportDir}/${ipaName}.ipa
+	# ipa文件路径
+	ipaFilePath=${exportDir}/${targetName}.ipa
+	# 线上打包名字固定，线下打包重命名IPA名称
+	if [ $Package_Mode == "Offline" ]; then
+		ipaFilePath=${exportDir}/${ipaName}.ipa
+	fi
 	logTxtFilePath=${exportDir}/${ipaName}.txt
 	logit "【IPA 信息】IPA路径:$ipaFilePath"
 	logit "【IPA 信息】日志路径:$logTxtFilePath"

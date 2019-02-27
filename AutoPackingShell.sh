@@ -185,14 +185,12 @@ checkIPA "$exportPath"
 ##清理临时文件
 clearCache
 
-## IPA重命名并上传蒲公英
-if [ $Package_Mode == "Offline" ]; then  
-    ## IPA和日志重命名
-    renameIPAAndLogFile "$targetName" "$infoPlistFile" "$channelName"
-    ## 上传蒲公英
-    if [ $CHANNEL == "development"]; then
-        pgyerUpload "$ipaFilePath" "$pgyer_userKey" "$pgyer_apiKey"
-    fi
+## IPA和日志重命名
+renameIPAAndLogFile "$targetName" "$infoPlistFile" "$channelName"
+
+## 上传蒲公英
+if [ $CHANNEL == "development"]; then
+    pgyerUpload "$ipaFilePath" "$pgyer_userKey" "$pgyer_apiKey"
 fi
 
 ##结束时间
