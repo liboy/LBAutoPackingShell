@@ -55,16 +55,6 @@ function setProject_Info() {
     echo `$CMD_PlistBuddy -c 'Set :'${1}' "'${2}'"' ${project_info_plist}`
 }
 
-#设置Info.plist文件的构建版本号
-function setBuildVersion () {
-    local infoPlistFile=$1
-    local buildVersion=$2
-    if [[ ! -f "$infoPlistFile" ]]; then
-        exit 1
-    fi
-    $CMD_PlistBuddy -c "Set :CFBundleVersion $buildVersion" "$infoPlistFile"
-}
-
 
 # 判断 数组是否包含对应元素
 function contains() {
@@ -301,16 +291,17 @@ function changeProjectInfoPlist() {
     # ProjectBundleId=`printProject_Info "CFBundleIdentifier"`
     ProjectBundleId="com.xiaohe.ixiaostar"
     logit "【项目配置】APP名称: $APP_Name"
-    logit "【项目配置】新BundleId: $APP_BundleId"
     logit "【项目配置】原BundleId: ${ProjectBundleId}"
+    logit "【项目配置】新BundleId: $APP_BundleId"
+    logit "【项目配置】版本号: $APP_Version"
+    logit "【项目配置】构建版本号: $APP_Build"
 
     #========================= 更改info.plist文件 =========================
     # setProject_Info "CFBundleIdentifier" "$APP_BundleId"
     setProject_Info "CFBundleDisplayName" "$APP_Name"
     setProject_Info "CFBundleShortVersionString" "$APP_Version"
     setProject_Info "CFBundleVersion" "$APP_Build"
-    logit "【配置信息】更改后BundleId: `printProject_Info "CFBundleIdentifier"`"
-
+    
 
     # project.pbxproj文件路径
     local pbxprojPath="${project_build_path}/${project_name}.xcodeproj/project.pbxproj"
