@@ -1,2 +1,4 @@
 # My configurations:
 user_config.plist
+.DS_Store
+*/.DS_Store

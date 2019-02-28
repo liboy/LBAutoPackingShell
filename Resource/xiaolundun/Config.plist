@@ -7,7 +7,7 @@
 	<key>AppName</key>
 	<string>小伦敦英语</string>
 	<key>Version</key>
-	<string>2.0.8</string>
+	<string>2.0.9</string>
 	<key>Build</key>
 	<string>208</string>
 	<key>project_id</key>
@@ -42,5 +42,9 @@
 	<string>0</string>
 	<key>guide_count</key>
 	<string>0</string>
+	<key>is_ixiao_star</key>
+	<string>2</string>
+	<key>is_has_agreement</key>
+	<string>1</string>
 </dict>
 </plist>
