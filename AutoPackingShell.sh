@@ -92,7 +92,7 @@ checkOpenssl
 unlockKeychain
 
 ## 线上服务器打包处理
-if [ $Package_Mode == "Online" ]; then
+if [[ $Package_Mode == "Online" ]]; then
     ## 从json文件获取资源配置信息
     configResourceFile "$json_file_path" 
 fi
@@ -100,10 +100,10 @@ fi
 ## 拷贝项目(打包工程)
 copyProjectFile
 
-## 生成并替换AppIcon
+# ## 生成并替换AppIcon
 createAppIcon
 
-## 替换launchImage
+# ## 替换launchImage
 replaceLaunchImage
 
 ## 更改项目info.plist文件
@@ -189,7 +189,7 @@ clearCache
 renameIPAAndLogFile "$targetName" "$infoPlistFile" "$channelName"
 
 ## 上传蒲公英
-if [ $CHANNEL == "development"]; then
+if [[ $CHANNEL == "development" ]]; then
     pgyerUpload "$ipaFilePath" "$pgyer_userKey" "$pgyer_apiKey"
 fi
 

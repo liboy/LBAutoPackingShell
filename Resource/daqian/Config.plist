@@ -3,48 +3,48 @@
 <plist version="1.0">
 <dict>
 	<key>AppName</key>
-	<string>东隅教育</string>
+	<string>K宝典</string>
 	<key>Build</key>
-	<string>210</string>
+	<string>200</string>
 	<key>BundleIdentifier</key>
-	<string>com.baonahao.dongyuschool</string>
+	<string>com.baonahao.daqianschool</string>
 	<key>Version</key>
-	<string>2.1.0</string>
+	<string>2.0.0</string>
 	<key>baidu_MapKey</key>
-	<string>moSe0zqqK3XzTe6VkTGsEipKchQKnuqs</string>
+	<string>usUNHgkSn0n2UH1KzEanA7TLGG3bKH4p</string>
 	<key>bugly_AppId</key>
-	<string>8ff4571190</string>
+	<string>ec35cbfbbe</string>
 	<key>bugly_AppKey</key>
-	<string>0c2d2189-7ff0-42d8-b338-efe073d23b10</string>
+	<string>0598fa86-1ac1-4996-8729-2b9b3ea990dc</string>
 	<key>guide_count</key>
 	<string>0</string>
 	<key>home_page_num</key>
-	<string>9</string>
+	<string>4</string>
 	<key>is_allied_school</key>
 	<string>2</string>
 	<key>is_always_show_guidepage</key>
 	<string>1</string>
+	<key>is_has_agreement</key>
+	<string>0</string>
+	<key>is_ixiao_star</key>
+	<string>0</string>
 	<key>jPush_AppKey</key>
-	<string>1d6411f597ce4a338bc87a6f</string>
+	<string>8ce88a5b8ddb7b62a3ecf908</string>
 	<key>login_type</key>
 	<string>2</string>
 	<key>merchant_id</key>
-	<string>4f9de6d72eee4246a89ded6e10598296</string>
+	<string>76e446de12244189ae9e80938df79b61</string>
 	<key>mine_page_num</key>
 	<string>4</string>
 	<key>project_id</key>
-	<string>0e718d4937414bcb87b71260655cb44f</string>
+	<string>01d0fdb552954ff6ad6d832ef71adcdf</string>
 	<key>system_color</key>
-	<string>EA5404</string>
+	<string>#FF3E00</string>
 	<key>uMeng_AppKey</key>
-	<string>5be00728b465f55d590002e4</string>
+	<string>5c7deb6d3fc195db59000a69</string>
 	<key>weChat_AppID</key>
-	<string>wx88ee6cce3ca30a01</string>
+	<string></string>
 	<key>weChat_AppSecret</key>
-	<string>ebc1763f09094254a235d08dfd79a043</string>
-	<key>is_ixiao_star</key>
-	<string>2</string>
-	<key>is_has_agreement</key>
-	<string>0</string>
+	<string></string>
 </dict>
 </plist>

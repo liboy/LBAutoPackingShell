@@ -154,7 +154,7 @@ function initPackageDir() {
         mkdir -p "$Package_Dir"
     fi
     ## 线上服务打包处理
-    if [ $Package_Mode == "Online" ]; then
+    if [[ $Package_Mode == "Online" ]]; then
         Package_Dir="$Package_Root_Dir/$Package_Mode/$CurrentDateStr" 
         # 临时存放资源文件目录
         Tmp_resource_path="$Package_Dir/Resource"
@@ -192,6 +192,8 @@ function initPackageDir() {
     logit "【用户配置】源码文件路径: ${project_source_path}"
     logit "【用户配置】keychain解锁密码: ${UNLOCK_KEYCHAIN_PWD}"
     logit "【用户配置】构建模式: ${CONFIGRATION_TYPE}"
+    logit "【用户配置】分发渠道: ${CHANNEL}"
+    
    
     logit "【用户配置】预打包项目路径: ${project_build_path}"
     logit "【用户配置】历史打包备份目录: ${History_Package_Dir}"

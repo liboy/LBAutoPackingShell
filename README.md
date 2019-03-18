@@ -29,13 +29,7 @@
 - 自动校验ipa签名
 - 格式化日志输出
 
-### 常用IPA分发途径：
-```
-- 内部测试(development)：用于给我们内部人员测试使用的，指定的授权用户设备才可以安装
-- 商店分发(app-store)：用于提交到商店审核，用户设备只能通过在App Store下载安装
-- 企业分发(enterprise)：用于部署到服务器，所有用户设备都可通过扫描二维码或使用浏览器点击链接下载安装
-- 企业内部分发(ad-hoc)：用于部署到服务器，授权用户设备才可以通过扫描二维码或使用浏览器点击链接下载安装
-```
+
 ## 安装使用
 ```
 # 该脚本使用方法
@@ -54,7 +48,7 @@
 ```
 $ brew doctor
 ```
-### XCode命令行工具
+### Xcode命令行工具
 ```
 $ xcode-select --install
 ```
@@ -129,19 +123,26 @@ ln -s /usr/local/Cellar/openssl/1.0.2p/bin/openssl /usr/local/bin
 ```
 >注意：`/usr/local/Cellar/openssl/1.0.2p/bin/` 该路径请按照你实际情况来更改,通常是1.0.2p这个文件夹不同！
 
-### user_config.plist 文件说明
-
-执行脚本时，要指定一些些固定的参数，需要在`user_config.plist`文件中配置这些参数：
+### 文件说明 
+#### user_config.plist 
+脚本全局参数配置文件
+执行脚本前，需要在文件中配置的参数：
 
 ```
-//脚本全局参数配置文件(脚本参数优先于全局配置参数)
+- unlock_keychain_pwd:keychain解锁密码，即Mac开机密码。通常只有在第一次执行脚本时候需要。相当于脚本参数 -p | --keychain-password
+- channel:分发渠道,development 内部分发，app-store商店分发，enterprise企业分发， ad-hoc 企业内部分发
+- configration_type:构建模式：Debug/Release ；默认 Release。相当于脚本参数 -t | --configration-type
+- project_source_path:项目源码文件路径
+- project_name:项目名称
+- build_target:构建Target
+```
 
-//keychain解锁密码，即PC开机密码。通常只有在第一次执行脚本时候需要。相当于脚本参数 -p | --keychain-password
-UNLOCK_KEYCHAIN_PWD =
-
-//构建模式：Debug/Release ；默认 Release。相当于脚本参数 -t | --configration-type
-CONFIGRATION_TYPE=
-
+##### 常用IPA分发途径：
+```
+- 内部测试(development)：用于给我们内部人员测试使用的，指定的授权用户设备才可以安装
+- 商店分发(app-store)：用于提交到商店审核，用户设备只能通过在App Store下载安装
+- 企业分发(enterprise)：用于部署到服务器，所有用户设备都可通过扫描二维码或使用浏览器点击链接下载安装
+- 企业内部分发(ad-hoc)：用于部署到服务器，授权用户设备才可以通过扫描二维码或使用浏览器点击链接下载安装
 ```
 
 ## 配置PHP运行环境
@@ -351,13 +352,13 @@ Include /private/etc/apache2/extra/httpd-vhosts.conf
 ```
 <VirtualHost *:80>
     DocumentRoot "/Users/liboy/Sites/apiapppack/webroot"
-    ServerName ios.pack.com
+    ServerName iospack.com
 </VirtualHost>
 ```
 在`/etc/hosts`添加
 
 ```
-127.0.0.1 ios.pack.com
+127.0.0.1 iospack.com
 ```
 
 ### 常用路径记录
@@ -367,6 +368,7 @@ Include /private/etc/apache2/extra/httpd-vhosts.conf
 /private/etc/apache2/extra/httpd-vhosts.conf
 
 # brew安装apache
+Include /usr/local/etc/httpd/extra/httpd-vhosts.conf
 /usr/local/etc/httpd/httpd.conf
 /usr/local/etc/httpd/extra/httpd-vhosts.conf
 ```
@@ -432,72 +434,6 @@ MIIFnjCCBIagAwIBAgIIE/IgVItTuH4wDQYJKoZIhvcNAQEFBQAwgZYxCzA…
 ```
 然后使用 `openssl x509 -text -in file.pem` 来显示证书详细内容。
 
-
-查找xcworkspace工程启动文件,获取xcproj 工程列表
-
-```
-grep "location =" "/Users/liboy/Desktop/PackageLog/Offline/iXiao_build/iXiao.xcworkspace/contents.xcworkspacedata" | cut -d "\"" -f2 | cut -d ":" -f2
-```
-## 问题
-1. xcode的bug打包的时候：会报 archived-expanded-entitlements.xcent  文件缺失!
-链接：http://stackoverflow.com/questions/28589653/mac-os-x-build-server-missing-archived-expanded-entitlements-xcent-file-in-ipa
-发现在 xcode >= 8.3.3 以上都不存在 ,在xcode8.2.1 存在
-
-## 版本更新日志
-
-```
-# 2018/09/30
-#
-# 版本：1.0.0
-# 功能：
-#   1.显示Build Settings 签名配置
-#   2.获取git版本数量，并自动更改build号为版本数量号
-#   3.日志文本log.txt输出
-#   4.自动匹配签名和授权文件
-#   5.支持workplace、多个scheme
-#   6.校验构建后的ipa的bundle Id、签名、支持最低iOS版本、arm体系等等
-#   7.构建前清理缓存,防止xib更改没有被重新编译
-#   8.备份历史打包ipa以及log.txt
-#   9.可更改OC代码，自动配置服务器测试环境or生产环境
-#   10.格式化输出ipa包名称：name_time_开发环境_企业分发_1.0.0(168).ipa
-
-# 2. 更改默认构建架构集为“armv7 arm64” 
-# 1. 增加-t参数指定构建的Target
-# 2. 优化一些日志输出
-# 3. 使用--debug 参数代替-t | --config-type参数 来指定Debug或Release模式，详见 AutoPackingShell -h
-#--------------------------------------------
-# 1. 增加支持ad-hoc打包格式
-# 2. 增加-v参数输出详细的构建信息
-# 3. 增加--show-profile-detail provisionfile 参数查看授权文件内容
-# 4. 修复无法匹配证书签名ID带有多个连续空格的bug
-# 使用xcodeproj工具代替PlistBuddy来修改project.pbxproj文件，防止项目中文乱码和project.pbxproj文件格式发生变化
-# 3. 增加对OpenSSL的检查校验
-# 1. 自动匹配授权文件和签名（移除config.plist配置）
-# 2. 优化授权文件匹配算法，取有效期最长授权文件
-# 3. 调整脚本参数,详见-h
-
-# 使用xcodebuild 的`-xcconfig `参数来实现签名等配置修改
-# 增加xcpretty 来格式化日志输出
-# 支持xcode9（8.0~9.3）
-# 增加一个“修改Bundle Id”功能。如-b com.xxx.xx。
-# 优化：默认构建ipa支持armch 为 arm64。（因iOS 11强制禁用32位）
-# 优化：对授权文件mobiprovision有效期检测，授权文件有效期小于90天，强制打包失败！
-
-# 优化：兼容xcode8.3以上版本
-# xcode 8.3之后使用-exportFormat导出IPA会报错 xcodebuild: error: invalid option '-exportFormat',改成使用-exportOptionsPlist
-# Available options: app-store, ad-hoc, package, enterprise, development, and developer-id.
-# 当前用到：app-store ,ad-hoc, enterprise, development
-#
-#--------------------------------------------
-#为了节省打包时间，在打开发环境的包时，只打armv7
-#profileType==development 时，设置archs=armv7 （向下兼容） ，否则archs为默认值：arm64 和armv7。
-：
-#1.去掉可配置签名、授权文件，并修改为自动匹配签名和授权文件！
-#--------------------------------------------
-# 备注：
-#1.security 命令会报警告,忽略即可:security: SecPolicySetValue: One or more parameters passed to a function were not valid.
-#2.支持Xcode8.0及以上版本（8.0前没有测试过）
-```
 
 
 ## 参考
