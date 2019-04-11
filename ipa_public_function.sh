@@ -1063,7 +1063,7 @@ function pgyerUpload() {
         logit "【上传蒲公英】上传成功"
     else
         warning "【上传蒲公英】上传失败，重新上传"
-        pgyerUpload
+        pgyerUpload "$ipaFilePath" "$pgyer_userKey" "$pgyer_apiKey"
     fi
 	
 }

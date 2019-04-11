@@ -72,6 +72,7 @@ function errorExit() {
 ## 警告日志输出
 function warning() {
     echo -e "\033[33m【警告】$@ \033[0m"
+    echo "$@" >> "$Tmp_Log_File"
 }
 
 
