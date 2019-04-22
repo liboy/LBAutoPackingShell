@@ -9,7 +9,7 @@
 	<key>BundleIdentifier</key>
 	<string>com.baonahao.feiniyingyuschool</string>
 	<key>Version</key>
-	<string>1.8.2</string>
+	<string>2.0.0</string>
 	<key>baidu_MapKey</key>
 	<string>DFjWjatuj4HYEdyjTsL2PdZQXpeg5YXz</string>
 	<key>bugly_AppId</key>
@@ -17,7 +17,7 @@
 	<key>bugly_AppKey</key>
 	<string>4464319c-7b7e-4fb3-80eb-87849877d27b</string>
 	<key>guide_count</key>
-	<string>1</string>
+	<string>0</string>
 	<key>home_page_num</key>
 	<string>4</string>
 	<key>is_allied_school</key>
@@ -42,5 +42,7 @@
 	<string></string>
 	<key>weChat_AppSecret</key>
 	<string></string>
+	<key>is_ixiao_star</key>
+	<string>2</string>
 </dict>
 </plist>

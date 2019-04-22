@@ -58,7 +58,9 @@ LaunchImageArray=("1125x2436" "1242x2208" "750x1334" "640x1136" "640x960")
 ## 日志格式化输出
 function logit() {
     echo -e "\033[32m [AutoPackingShell] \033[0m $@" 
-    echo "$@" >> "$Tmp_Log_File"
+    if [[ $Tmp_Log_File ]]; then
+    	echo "$@" >> "$Tmp_Log_File"
+    fi
 
 }
 
@@ -72,6 +74,7 @@ function errorExit() {
 ## 警告日志输出
 function warning() {
     echo -e "\033[33m【警告】$@ \033[0m"
+    # echo "$@" >> "$Tmp_Log_File"
 }
 
 
