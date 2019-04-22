@@ -435,6 +435,8 @@ MIIFnjCCBIagAwIBAgIIE/IgVItTuH4wDQYJKoZIhvcNAQEFBQAwgZYxCzA…
 然后使用 `openssl x509 -text -in file.pem` 来显示证书详细内容。
 
 
+/Users/xiaohe/Desktop/LBAutoPackingShell/AutoPackingShell.sh --config-resource /Users/xiaohe/Sites/apiapppack/app/Logic/6e72ea4c9040cda10af4910d800ced50_2019042214382323.json 2019042214382323
+
 
 ## 参考
 https://getgrav.org/blog/macos-mojave-apache-multiple-php-versions

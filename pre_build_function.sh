@@ -30,11 +30,6 @@ function printResource_Config() {
 function setResource_Config() {
     local configPlistPath="${Tmp_resource_path}/Config.plist"
     echo `$CMD_PlistBuddy -c 'Set :'${1}' "'${2}'"' $configPlistPath`
-    if [ $? -eq 0 ];then
-        logit "【资源配置】${1}: ${2}"
-    else
-        warning "配置资源Config.plist文件${1}失败"
-    fi
 }
 
 function setProject_Config() {
@@ -353,7 +348,7 @@ function changeProjectProfile() {
         errorExit "Resource中缺少Config.plist 文件"
     fi
     
-    local ConfigPlistKeyArray=("project_id" "merchant_id" "system_color" "baidu_MapKey" "uMeng_AppKey" "bugly_AppId" "bugly_AppKey" "jPush_AppKey" "home_page_num" "mine_page_num" "is_allied_school" "login_type" "is_always_show_guidepage" "guide_count" "weChat_AppID" "weChat_AppSecret" "is_ixiao_star" "is_has_agreement") 
+    local ConfigPlistKeyArray=("project_id" "merchant_id" "system_color" "baidu_MapKey" "uMeng_AppKey" "bugly_AppId" "bugly_AppKey" "jPush_AppKey" "home_page_num" "mine_page_num" "is_allied_school" "login_type" "is_always_show_guidepage" "guide_count" "weChat_AppID" "weChat_AppSecret" "is_ixiao_star") 
 
     for i in "${!ConfigPlistKeyArray[@]}"; do
         local dictKey=${ConfigPlistKeyArray[$i]}
@@ -411,11 +406,11 @@ function configResourceFile() {
     CONFIG_is_allied_school=`cat $resource_json_file | jq -r '.IsAlliedSchool'`
     CONFIG_login_type=`cat $resource_json_file | jq -r '.LOGINFIRST'`
     CONFIG_is_always_show_guidepage=`cat $resource_json_file | jq -r '.GuideModel'`
-    CONFIG_guide_count=`cat $resource_json_file | jq -r '.GuideCount'`
+    # CONFIG_guide_count=`cat $resource_json_file | jq -r '.GuideCount'`
+    CONFIG_guide_count="0"
     CONFIG_weChat_AppID=`cat $resource_json_file | jq -r '.weChat_AppID'`
     CONFIG_weChat_AppSecret=`cat $resource_json_file | jq -r '.weChat_AppSecret'`
     CONFIG_is_ixiao_star=""
-    CONFIG_is_has_agreement=""
 
     
     #************************** 图片文件资源 ***************************
@@ -455,14 +450,19 @@ function configResourceFile() {
         errorExit "Resource中缺少Config.plist 文件"
     fi
     # config.plist key 数组
-    local ConfigPlistKeyArray=("AppName" "BundleIdentifier" "Version" "Build" "project_id" "merchant_id" "system_color" "baidu_MapKey" "uMeng_AppKey" "bugly_AppId" "bugly_AppKey" "jPush_AppKey" "home_page_num" "mine_page_num" "is_allied_school" "login_type" "is_always_show_guidepage" "guide_count" "weChat_AppID" "weChat_AppSecret" "is_ixiao_star" "is_has_agreement") 
+    local ConfigPlistKeyArray=("AppName" "BundleIdentifier" "Version" "Build" "project_id" "merchant_id" "system_color" "baidu_MapKey" "uMeng_AppKey" "bugly_AppId" "bugly_AppKey" "jPush_AppKey" "home_page_num" "mine_page_num" "is_allied_school" "login_type" "is_always_show_guidepage" "guide_count" "weChat_AppID" "weChat_AppSecret" "is_ixiao_star") 
     # key对应->value数组
-    local ConfigPlistValueArray=($APP_Name $APP_BundleId $APP_Version $APP_Build $CONFIG_project_id $CONFIG_merchant_id $CONFIG_system_color $CONFIG_baidu_MapKey $CONFIG_uMeng_AppKey $CONFIG_bugly_AppId $CONFIG_bugly_AppKey $CONFIG_jPush_AppKey $CONFIG_home_page_num $CONFIG_mine_page_num $CONFIG_is_allied_school $CONFIG_login_type $CONFIG_is_always_show_guidepage $CONFIG_guide_count $CONFIG_weChat_AppID $CONFIG_weChat_AppSecret $CONFIG_is_ixiao_star $CONFIG_is_has_agreement)
+    local ConfigPlistValueArray=($APP_Name $APP_BundleId $APP_Version $APP_Build $CONFIG_project_id $CONFIG_merchant_id $CONFIG_system_color $CONFIG_baidu_MapKey $CONFIG_uMeng_AppKey $CONFIG_bugly_AppId $CONFIG_bugly_AppKey $CONFIG_jPush_AppKey $CONFIG_home_page_num $CONFIG_mine_page_num $CONFIG_is_allied_school $CONFIG_login_type $CONFIG_is_always_show_guidepage $CONFIG_guide_count $CONFIG_weChat_AppID $CONFIG_weChat_AppSecret $CONFIG_is_ixiao_star)
     for i in "${!ConfigPlistKeyArray[@]}"; do
         dictKey=${ConfigPlistKeyArray[$i]}
         dictValue=${ConfigPlistValueArray[$i]}
         # 替换对应值
         setResource_Config "$dictKey" "$dictValue"
+        if [ $? -eq 0 ];then
+            logit "【项目配置】$dictKey: $dictValue"
+        else
+            warning "替换Config.plist文件$dictKey失败"
+        fi
     done
 }
 

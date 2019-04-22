@@ -1054,7 +1054,7 @@ function pgyerUpload() {
 	if [[ ! "$userKey" ]] || [[ ! "$apiKey" ]]; then
 		userKey="b805f985351b48620bd95cc5e4ab579b"
 		apiKey="b9bcf5ef168fdf8ce379ae9ab9bd8dcc"
-		logit "【上传蒲公英】userKey: $userKey"
+		logit "【上传蒲公英】userKey:$userKey"
 		logit "【上传蒲公英】apiKey:$apiKey"
 	fi
 	logit "【上传蒲公英】蒲公英上传中..."
@@ -1063,7 +1063,7 @@ function pgyerUpload() {
         logit "【上传蒲公英】上传成功"
     else
         warning "【上传蒲公英】上传失败，重新上传"
-        pgyerUpload "$ipaFilePath" "$pgyer_userKey" "$pgyer_apiKey"
+        # pgyerUpload "$ipaFilePath" "$pgyer_userKey" "$pgyer_apiKey"
     fi
 	
 }
