@@ -86,7 +86,7 @@ initPackageDir "$CurrentDateStr" "$Package_Mode"
 checkToolSupport
 
 ##检查openssl
-checkOpenssl
+# checkOpenssl
 
 ## 解锁钥匙串
 unlockKeychain

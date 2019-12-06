@@ -53,7 +53,7 @@ function checkToolSupport() {
 
 	blade=$(which blade)
 	if [[ ! "$blade" ]]; then
-	    errorExit "【环境配置】请使用brew install blade安装 "  
+	    errorExit "【环境配置】请使用brew tap jondot/tap\nbrew install blade安装 "  
 	fi
 	logit "【环境配置】blade安装:$blade"
 	
