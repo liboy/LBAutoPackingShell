@@ -5,11 +5,11 @@
 	<key>AppName</key>
 	<string>涂来涂去</string>
 	<key>Build</key>
-	<string>31</string>
+	<string>300</string>
 	<key>BundleIdentifier</key>
 	<string>com.xiaohe.coloraround</string>
 	<key>Version</key>
-	<string>2.0.0</string>
+	<string>3.0.0</string>
 	<key>baidu_MapKey</key>
 	<string>MejIjBVQxYp4jlC2a8BNWlGT27MowSfe</string>
 	<key>bugly_AppId</key>
@@ -27,13 +27,13 @@
 	<key>jPush_AppKey</key>
 	<string>6d4b04322c9aec07c698f889</string>
 	<key>login_type</key>
-	<string>1</string>
+	<string>3</string>
 	<key>merchant_id</key>
 	<string>dbd7dc4080a0474981ec9d982d613210</string>
 	<key>mine_page_num</key>
 	<string>10</string>
 	<key>project_id</key>
-	<string>6f0c2256d8ed4770a1f70c0ee8cc5304</string>
+	<string>52fd05d5f1f54e9abc7cb8ca6f5a2043</string>
 	<key>system_color</key>
 	<string>FB2A0A</string>
 	<key>uMeng_AppKey</key>

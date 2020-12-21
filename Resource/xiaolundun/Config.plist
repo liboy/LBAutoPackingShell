@@ -7,9 +7,9 @@
 	<key>AppName</key>
 	<string>小伦敦英语</string>
 	<key>Version</key>
-	<string>2.0.9</string>
+	<string>3.0.7</string>
 	<key>Build</key>
-	<string>208</string>
+	<string>307</string>
 	<key>project_id</key>
 	<string>29290642a8b94dda859e6c53ee62a2ce</string>
 	<key>merchant_id</key>
@@ -37,12 +37,13 @@
 	<key>is_allied_school</key>
 	<string>2</string>
 	<key>login_type</key>
-	<string>2</string>
+	<string>4</string>
 	<key>is_always_show_guidepage</key>
 	<string>0</string>
 	<key>guide_count</key>
 	<string>0</string>
 	<key>is_ixiao_star</key>
 	<string>2</string>
+	
 </dict>
 </plist>

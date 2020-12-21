@@ -3,46 +3,47 @@
 <plist version="1.0">
 <dict>
 	<key>BundleIdentifier</key>
-	<string>com.baonahao.dianjinschool</string>
+	<string>com.baonahao.feifeischool</string>
 	<key>AppName</key>
-	<string>点津作文</string>
+	<string>菲菲教育</string>
 	<key>Version</key>
-	<string>2.3.0</string>
+	<string>3.0.0</string>
 	<key>Build</key>
-	<string>230</string>
+	<string>300</string>
 	<key>project_id</key>
-	<string>9230b019b68d4c03b33f1b0af1301641</string>
+	<string>29290642a8b94dda859e6c53ee62a2ce</string>
 	<key>merchant_id</key>
-	<string>7fbe80e1b180464090d4eeb4a1432efb</string>
+	<string>a93443ae1f9c424c80a636799355e6d5</string>
 	<key>system_color</key>
-	<string>E50112</string>
+	<string>C92026</string>
 	<key>baidu_MapKey</key>
-	<string>f57G9BmSjcu0vU8gji8mGvcZM7ymnINm</string>
+	<string>b5szEXmNbWMIfXH4cwfVlexGnLQpCbWU</string>
 	<key>weChat_AppID</key>
-	<string>wx072e0f656539b1eb</string>
+	<string>wxbc8b0e9291acd677</string>
 	<key>weChat_AppSecret</key>
-	<string>e3baccc03ab047f1f3cf490b1e588aac</string>
+	<string>4653510f3966d3fdf587f4efc953938a</string>
 	<key>jPush_AppKey</key>
-	<string>7bb990da76e240750c63cfc7</string>
+	<string>8fe193ea835599acc4f937a0</string>
 	<key>uMeng_AppKey</key>
-	<string>5bcd30abb465f5231c000190</string>
+	<string>5bac8cfdb465f599b6000195</string>
 	<key>bugly_AppId</key>
-	<string>e355163bcd</string>
+	<string>75625fb530</string>
 	<key>bugly_AppKey</key>
-	<string>6b2a7b3e-88e2-42eb-9811-c16b35145556</string>
+	<string>baffe4c1-8bbb-4090-a2a9-395cd807df7f</string>
 	<key>home_page_num</key>
-	<string>2</string>
+	<string>9</string>
 	<key>mine_page_num</key>
-	<string>4</string>
+	<string>2</string>
 	<key>is_allied_school</key>
 	<string>2</string>
 	<key>login_type</key>
-	<string>2</string>
+	<string>1</string>
 	<key>is_always_show_guidepage</key>
 	<string>0</string>
 	<key>guide_count</key>
 	<string>0</string>
 	<key>is_ixiao_star</key>
 	<string>2</string>
+	
 </dict>
 </plist>
