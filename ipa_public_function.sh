@@ -38,11 +38,11 @@ function usage {
 function checkToolSupport() {
 
 	jqPath=$(which jq)
-	logit "【环境配置】jqPath:$jqPath"
+	logit "【环境配置】jqPath:$jqPath"xxxxxxxxxxxxx
 	if [[ ! "$jqPath" ]]; then
 	    errorExit "【环境配置】请使用brew install jq安装 "  
 	fi
-	logit "【环境配置】jq安装:$jqPath"
+	logit "【环境配置】jq安装:$jqPath"xxxxxxxxxxxxx
 
 	yougetPath=$(which you-get)
 	# you-get -h >/dev/null 2>&1

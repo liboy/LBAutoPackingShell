@@ -14,17 +14,17 @@
 # ********************* user_config.plist *********************
 #读取   ShellUserConfigPlist.plist文件
 function printUserConfigPlist() {
-    echo `$CMD_PlistBuddy -c "Print :${1}" ${ShellUserConfigPlist}`
+    echo `$CMD_PlistBuddy -c "Print :${1}" ${ShellUserConfigPlist}`xxxxxxxxxxx
 }
 #写入   ShellUserConfigPlist.plist文件
 function setUserConfigPlist() {
-    echo `$CMD_PlistBuddy -c 'Set :'${1}' "'${2}'"' ${ShellUserConfigPlist}`
+    echo `$CMD_PlistBuddy -c 'Set :'${1}' "'${2}'"' ${ShellUserConfigPlist}`xxxxxxxxxxxx
 }
 
 # ********************* 读资源文件 *********************
 function printResource_Config() {
     # 脚本资源里Config.plist文件路径
-    local configPlistPath="${Tmp_resource_path}/Config.plist"
+    local configPlistPath="${Tmp_resource_path}/Config.plist"xxxxxxxxx
     echo `$CMD_PlistBuddy -c "Print :${1}" ${configPlistPath}`
 }
 function setResource_Config() {
