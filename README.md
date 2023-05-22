@@ -1,5 +1,5 @@
 
-# LBAutoPackingShell
+# LBAutoPackingShellxxxxxxxxxxxxxxxxxxx
 
 `LBAutoPackingShell` 一个轻量级 iOS 快速自动打包工具。如果你需要更多的功能，详见帮助`-h | --help` 
 
@@ -26,7 +26,7 @@
  MyApp_20170321_222303_开发环境_企业分发_2.1.0(67).ipa
  MyApp_20170321_222403_生产环境_商店分发_2.1.0(68).ipa
  ```
-- 自动校验ipa签名
+- 自动校验ipa签名xxxxxxxxxxxxxx
 - 格式化日志输出
 
 
@@ -39,7 +39,7 @@
 # step 4. 选择不同选项....
 # step 5. Success  🎉 🎉 🎉!
 ```
-## 安装脚本所需工具
+## 安装脚本所需工具xxxxxxxxxxxx
 ### 安装 [Homebrew](https://brew.sh/index_zh-cn)
 ```
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
