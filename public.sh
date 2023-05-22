@@ -13,15 +13,15 @@
 
 #############################################常用工具#############################################
 
-CMD_PlistBuddy="/usr/libexec/PlistBuddy"
-CMD_Xcodebuild=$(which xcodebuild)
+CMD_PlistBuddy="/usr/libexec/PlistBuddy"xxxxxxx
+CMD_Xcodebuild=$(which xcodebuild)xxxxxx
 CMD_Security=$(which security)
 CMD_Lipo=$(which lipo)
-CMD_Codesign=$(which codesign)
+CMD_Codesign=$(which codesign)xxxxxxx
 
 #############################################常用变量#############################################
 
-CurrentDateStr=`date +"%Y%m%d%H%M%S"`
+CurrentDateStr=`date +"%Y%m%d%H%M%S"`xxxxxxxxxxxxx
 ## 区分（线上自动：Online 线下手动：Offline）
 Package_Mode="Offline"
 # 默认打包输出根目录
